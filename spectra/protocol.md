@@ -58,17 +58,12 @@ ordered steps, files touched, verification. Reference the source `NNNN`.
    - **architect** — structure, boundaries, or dependencies change
    - **security** — auth, input handling, secrets, scripts that run in consumers, or new deps
 
-   Spawn the selected personas as sub-agents using `docs/spectra/personas/*`. Each posts
-   findings **as inline comments on the PR, anchored to the relevant file and line** (general
-   findings go in the review summary) — never as detached top-level comments. Use this form:
-   ```
-   _Spectra <Persona>_
-   **<nit|minor|major|blocker>**
-   <comment>
-   ```
-   Severity: `nit` (optional polish) · `minor` (should fix) · `major` (must fix before merge)
-   · `blocker` (broken/unsafe — stop). Treat every **major** and **blocker** as feedback:
-   capture it in `docs/feedback/` and roll the lesson into `overview/learnings.md` (step 6).
+   Spawn the selected personas as sub-agents. Each reads `docs/spectra/personas/persona.md`
+   (how to review, comment, and the format) plus its own `docs/spectra/personas/<persona>.md`
+   (what to look for), then posts findings **as inline comments anchored to file:line** —
+   never a single detached top-level comment. Treat every **major** and **blocker** as
+   feedback: capture it in `docs/feedback/` and roll the lesson into `overview/learnings.md`
+   (step 6).
 5. **Address** every comment; re-test; push fixes.
 6. **Merge** on developer approval.
 
