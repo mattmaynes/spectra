@@ -2,6 +2,12 @@
 
 Process lessons and feedback distilled into guidance. Append as they arise (newest first).
 
+- **Put the cheapest outcome first; make the choice decidable before you pay for it.** Persona
+  selection was a prose list that buried the no-persona happy path in a skip note. A gated
+  decision tree — "pure docs, no behavior change? → no personas" first, then add-on triggers
+  decided *from the diff alone, before reading any persona file* — exits the common case at
+  the gate, since each persona is a sub-agent that reads two files. — from
+  [`feedback/0004`](../feedback/0004-persona-decision-tree.md)
 - **A local-only guard isn't a guarantee — promote it to CI.** The README token-drift check
   lived solely in an *untracked* `.git/hooks/pre-commit`, so anyone without the hook (fork PRs,
   fresh clones) bypassed it silently. CI (`.github/workflows/ci.yml`) re-runs `test.sh` and the
