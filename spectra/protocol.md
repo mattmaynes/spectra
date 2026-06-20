@@ -57,6 +57,8 @@ ordered steps, files touched, verification. Reference the source `NNNN`.
    - **tester** — observable behavior changed
    - **architect** — boundaries, deps, or data-flow changed
    - **security** — auth, input, secrets, consumer-run scripts, or new deps
+   - **user** — user-facing behavior or experience, only once `docs/spectra/personas/user.md`
+     exists (a developer ran `spectra-setup`)
 
    Spawn the selected personas as sub-agents. Each reads `docs/spectra/personas/persona.md`
    (how to review, comment, and the format) plus its own `docs/spectra/personas/<persona>.md`
@@ -73,7 +75,12 @@ Update only what changed:
 - mission/direction shifted → `overview/project.md`
 - new capability → `overview/features.md`
 - structure/boundaries changed → `overview/architecture.md`
-- feedback, PR friction, or "could've gone better" → `overview/learnings.md`
+- a lesson from feedback or friction → `overview/learnings.md`
+
+A **learning** is what you'd do *differently* next time, distilled from feedback or friction —
+**not** a description of what you shipped or why you designed it that way. Describing the feature
+is `features.md`; the design rationale is `architecture.md`. No feedback, no learning — don't
+manufacture one to fill the section.
 
 A `pre-commit` hook reminds you if specs/plans/feedback changed without an overview update.
 The reminder is non-blocking — skip it only when truly nothing changed.

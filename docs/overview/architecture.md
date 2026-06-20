@@ -26,6 +26,13 @@ chains a guarded call.
 **Command discovery:** skills are auto-discovered from `spectra/skills/<name>/SKILL.md` — the
 folder name becomes the `/<name>` command; `plugin.json` carries no explicit skill list.
 
+**Create-on-demand persona (`user.md`):** the 👤 User (ICP) persona is **developer-owned** and
+lives only in the installed instance — `spectra-setup` writes `docs/spectra/personas/user.md`
+into the consumer's repo, and it is **never shipped** under `spectra/personas/`. Because the
+update/install glob is `cp "$SRC/personas/"*.md` and `$SRC` has no `user.md`, the file simply
+falls outside the copy: preservation is a property of the layout, not of any exclusion logic.
+Absence is the default "off" state — reviews scope the persona in only when the file exists.
+
 **Host files:** `AGENTS.md` is canonical; `CLAUDE.md` and `GEMINI.md` symlink to it; Codex
 reads `AGENTS.md` natively. The Spectra block is delimited by `<!-- spectra:start/end -->`
 markers so updates are idempotent.

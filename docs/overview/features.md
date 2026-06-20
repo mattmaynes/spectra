@@ -3,10 +3,14 @@
 - **Plugin marketplace** — `.claude-plugin/marketplace.json` exposing the `spectra` plugin.
 - **`spectra-install` skill** — scaffolds `docs/`, copies protocol + personas, installs the
   reflection hook, wires up AGENTS.md.
-- **`spectra-update` skill** — re-syncs Spectra-owned files; preserves the repo's own content.
+- **`spectra-update` skill** — re-syncs Spectra-owned files; preserves the repo's own content
+  (including a configured `docs/spectra/personas/user.md`).
+- **`spectra-setup` skill** — a guided dialog that defines the repo's 👤 *User (ICP)* persona,
+  written to `docs/spectra/personas/user.md`. Re-running refines the existing persona.
 - **Protocol** (`spectra/protocol.md`) — route → spec → plan → build → test → review → merge → reflect.
-- **Review personas** — engineer 🔧, tester 🧪, architect 📐, security 🔒; **scoped per
-  change** (triage which apply). A shared `personas/persona.md` holds the review contract
+- **Review personas** — engineer 🔧, tester 🧪, architect 📐, security 🔒, and an optional,
+  consumer-defined user 👤 (ICP, present only once `spectra-setup` writes `user.md`); **scoped
+  per change** (triage which apply). A shared `personas/persona.md` holds the review contract
   (inline-only comments, one issue each, concrete fixes, and the canonical emoji-tagged,
   severity-graded comment format); each persona file holds only its specific, opinionated
   checklist. Major/blocker feed `learnings.md`.
