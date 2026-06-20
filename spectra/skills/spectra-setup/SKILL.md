@@ -12,8 +12,9 @@ from the repo root. This skill writes only that one file; it reads nothing from 
 
 ## Steps
 
-1. **Refine or start** — if `docs/spectra/personas/user.md` already exists, read it, summarize
-   it back to the developer in a sentence or two, and frame this as a **refinement** of the
+1. **Refine or start** — if `docs/spectra/personas/user.md` already exists **and has real
+   content** (a filled-in profile, not an empty or half-written stub), read it, summarize it
+   back to the developer in a sentence or two, and frame this as a **refinement** of the
    existing persona. Otherwise start fresh.
 
 2. **Describe** — ask the developer for an initial description of their ideal customer: who is
@@ -23,9 +24,11 @@ from the repo root. This skill writes only that one file; it reads nothing from 
    make the profile concrete, covering: who they are, their goals / jobs-to-be-done, their pain
    points, their technical level, what they value, and what they'd reject.
 
-4. **Write** — create `docs/spectra/personas/user.md` from this template, filling every field
-   from the dialog and deriving the Review checklist from the profile so the persona has
-   concrete things to look for:
+4. **Write** — ensure the directory exists (`mkdir -p docs/spectra/personas`, in case this runs
+   before `spectra-install`), then create `docs/spectra/personas/user.md` from this template,
+   filling every field from the dialog and deriving the Review checklist from the profile so the
+   persona has concrete things to look for. `persona.md` remains the authority on *how* to
+   review; this template only mirrors the shipped personas' shape:
 
    ```markdown
    # 👤 User (ICP)

@@ -29,6 +29,13 @@ done
 # user.md is create-on-demand (spectra-setup writes it into a consumer) — never shipped
 [ ! -e "$SRC/personas/user.md" ] && ok "personas/user.md not shipped (create-on-demand)" \
   || bad "personas/user.md shipped — must be created on demand by spectra-setup"
+# spectra-setup's embedded template carries the canonical persona shape (guards silent drift)
+setup="$SRC/skills/spectra-setup/SKILL.md"; miss=
+for h in '# 👤 User (ICP)' '## Profile' '## Review'; do
+  grep -qF "$h" "$setup" || miss="$miss|$h"
+done
+[ -z "$miss" ] && ok "spectra-setup template has 👤 title + Profile + Review" \
+  || bad "spectra-setup template missing heading(s):$miss"
 
 echo "3. reflection hook behavior"
 T=$(mktemp -d); cd "$T"
@@ -84,6 +91,8 @@ cp "$SRC/personas/"*.md docs/spectra/personas/
   && ok "specs/overview untouched" || bad "update clobbered user content"
 [ "$(cat docs/spectra/personas/user.md)" = "MY ICP" ] \
   && ok "personas/user.md preserved (glob didn't clobber it)" || bad "update clobbered user.md"
+[ -f docs/spectra/personas/engineer.md ] \
+  && ok "shipped personas copied (glob non-empty)" || bad "persona glob matched nothing — preservation test would false-pass"
 cmp -s docs/spectra/protocol.md "$SRC/protocol.md" && ok "protocol refreshed from source" || bad "protocol not refreshed"
 cd "$ROOT"; rm -rf "$T"
 
