@@ -95,5 +95,12 @@ for kw in Route spec plan Build Test Review Merge Reflect; do
 done
 [ -z "$miss" ] && ok "route->spec->plan->build->test->review->merge->reflect" || bad "protocol missing:$miss"
 
+echo "8. README token figures in sync with spectra/"
+if "$ROOT/scripts/token-report.sh" --check >/dev/null 2>&1; then
+  ok "token-report --check passes (README matches spectra/)"
+else
+  bad "README token figures stale — run scripts/token-report.sh --write"
+fi
+
 echo
 [ "$fail" -eq 0 ] && echo "PASS" || { echo "FAILURES"; exit 1; }

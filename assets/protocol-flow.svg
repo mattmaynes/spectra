@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 420" width="1240" height="420" role="img" aria-label="The Spectra loop: Route, Spec, Plan, Build, Test, Review, Merge, Reflect — with learnings feeding back into the next change">
+  <defs>
+    <marker id="arrow" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M1 1 L11 6 L1 11 z" fill="#5b6b7d"/>
+    </marker>
+    <marker id="arrowv" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="11" markerHeight="11" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M1 1 L11 6 L1 11 z" fill="#b07cff"/>
+    </marker>
+  </defs>
+
+  <rect x="0.5" y="0.5" width="1239" height="419" rx="22" fill="#0d1117" stroke="#222b36"/>
+
+  <!-- title -->
+  <text x="620" y="50" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif"
+        font-size="27" font-weight="700" fill="#eef3f8">The Spectra loop</text>
+  <text x="620" y="80" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif"
+        font-size="14.5" fill="#8b98a9">spec-driven flow with a feedback loop — intent captured up front, learning captured at the end</text>
+
+  <!-- phase captions -->
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="2" fill="#6b7888" text-anchor="middle">
+    <text x="257.5" y="126">INTENT</text>
+    <text x="620"   y="126">MAKE</text>
+    <text x="910"   y="126">SHIP</text>
+    <text x="1127.5" y="126">LEARN</text>
+  </g>
+
+  <!-- inter-node arrows -->
+  <g stroke="#5b6b7d" stroke-width="2.5" marker-end="url(#arrow)">
+    <line x1="174.5"  y1="186" x2="195.5"  y2="186"/>
+    <line x1="319.5"  y1="186" x2="340.5"  y2="186"/>
+    <line x1="464.5"  y1="186" x2="485.5"  y2="186"/>
+    <line x1="609.5"  y1="186" x2="630.5"  y2="186"/>
+    <line x1="754.5"  y1="186" x2="775.5"  y2="186"/>
+    <line x1="899.5"  y1="186" x2="920.5"  y2="186"/>
+    <line x1="1044.5" y1="186" x2="1065.5" y2="186"/>
+  </g>
+
+  <!-- nodes -->
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" text-anchor="middle">
+    <!-- Route -->
+    <rect x="52.5"   y="150" width="120" height="72" rx="14" fill="#161b22" stroke="#ff5c5c" stroke-width="2"/>
+    <text x="112.5"  y="184" font-size="21" font-weight="600" fill="#eef3f8">Route</text>
+    <text x="112.5"  y="205" font-size="12" fill="#8b98a9">triage the change</text>
+    <!-- Spec -->
+    <rect x="197.5"  y="150" width="120" height="72" rx="14" fill="#161b22" stroke="#ff9f43" stroke-width="2"/>
+    <text x="257.5"  y="184" font-size="21" font-weight="600" fill="#eef3f8">Spec</text>
+    <text x="257.5"  y="205" font-size="12" fill="#8b98a9">docs/specs/</text>
+    <!-- Plan -->
+    <rect x="342.5"  y="150" width="120" height="72" rx="14" fill="#161b22" stroke="#ffd24a" stroke-width="2"/>
+    <text x="402.5"  y="184" font-size="21" font-weight="600" fill="#eef3f8">Plan</text>
+    <text x="402.5"  y="205" font-size="12" fill="#8b98a9">docs/plans/</text>
+    <!-- Build -->
+    <rect x="487.5"  y="150" width="120" height="72" rx="14" fill="#161b22" stroke="#4ad991" stroke-width="2"/>
+    <text x="547.5"  y="184" font-size="21" font-weight="600" fill="#eef3f8">Build</text>
+    <text x="547.5"  y="205" font-size="12" fill="#8b98a9">git worktree</text>
+    <!-- Test -->
+    <rect x="632.5"  y="150" width="120" height="72" rx="14" fill="#161b22" stroke="#2dd4bf" stroke-width="2"/>
+    <text x="692.5"  y="184" font-size="21" font-weight="600" fill="#eef3f8">Test</text>
+    <text x="692.5"  y="205" font-size="12" fill="#8b98a9">green first</text>
+    <!-- Review -->
+    <rect x="777.5"  y="150" width="120" height="72" rx="14" fill="#161b22" stroke="#4aa8ff" stroke-width="2"/>
+    <text x="837.5"  y="184" font-size="21" font-weight="600" fill="#eef3f8">Review</text>
+    <text x="837.5"  y="205" font-size="12" fill="#8b98a9">4 personas</text>
+    <!-- Merge -->
+    <rect x="922.5"  y="150" width="120" height="72" rx="14" fill="#161b22" stroke="#7c8cff" stroke-width="2"/>
+    <text x="982.5"  y="184" font-size="21" font-weight="600" fill="#eef3f8">Merge</text>
+    <text x="982.5"  y="205" font-size="12" fill="#8b98a9">on approval</text>
+    <!-- Reflect -->
+    <rect x="1067.5" y="150" width="120" height="72" rx="14" fill="#161b22" stroke="#b07cff" stroke-width="2"/>
+    <text x="1127.5" y="184" font-size="21" font-weight="600" fill="#eef3f8">Reflect</text>
+    <text x="1127.5" y="205" font-size="12" fill="#8b98a9">docs/overview/</text>
+  </g>
+
+  <!-- feedback loop: Reflect -> learnings -> Route -->
+  <path d="M1127.5 226 C1127.5 332 940 354 690 354 C440 354 112.5 332 112.5 228"
+        fill="none" stroke="#b07cff" stroke-width="2.5" stroke-dasharray="2 7" stroke-linecap="round" marker-end="url(#arrowv)"/>
+  <text x="690" y="349" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif"
+        font-size="14.5" font-weight="600" fill="#b07cff">feedback → learnings feed the next change</text>
+</svg>
