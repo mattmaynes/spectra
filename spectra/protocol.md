@@ -57,9 +57,9 @@ ordered steps, files touched, verification. Reference the source `NNNN`.
 
    ```
    Pure docs/comments/formatting, no behavior change?
-     ├─ yes → no personas. Self-review, then merge (5.6).
+     ├─ yes → no personas — self-review, then merge.
      └─ no  → add each persona whose trigger fires:
-              engineer   code or logic changed
+              engineer   non-trivial code/logic changed (skip tests-only)
               tester     observable behavior changed
               architect  module boundaries, deps, or data-flow changed
               security   auth · input parsing · secrets · consumer-run scripts · new deps

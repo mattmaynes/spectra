@@ -21,6 +21,9 @@ Replaced the bullet list in step 5.4 of both `spectra/protocol.md` (shippable) a
   decided **from the diff alone, before reading any persona file**.
 - Stated the default (typical code change = engineer + tester) so architect/security are
   opt-in on a trigger, not opt-out.
+- Preserved the prior list's `non-trivial` qualifier and `tests-only` skip on the engineer
+  trigger (an engineer-persona review of this very change caught that the first draft had
+  silently dropped them).
 
 ## Learning
 Put the cheapest outcome first and make selection decidable before paying for it — gate on the
