@@ -1,0 +1,9 @@
+{
+  "name": "spectra",
+  "description": "Spec-driven development protocol with learning feedback loops. Adds /spectra-install and /spectra-update.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Matthew Maynes"
+  },
+  "keywords": ["spec-driven", "protocol", "workflow", "reviews", "feedback"]
+}

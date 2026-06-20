@@ -1,0 +1,10 @@
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# Claude Code local state & Spectra worktrees (but NOT .claude-plugin/, which ships)
+.claude/
+.worktrees/
+*.worktrees/
