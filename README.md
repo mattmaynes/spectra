@@ -77,8 +77,7 @@ the protocol and pulling upstream improvements aren't mutually exclusive.
 ## Low token cost
 
 Spectra is deliberately terse — the whole protocol fits in a corner of the context window,
-leaving room for your actual code. These figures are measured from `spectra/` and kept
-honest automatically (see below):
+leaving room for your actual code:[^tokens]
 
 <!-- spectra:tokens:start -->
 | What loads into context | Characters | Tokens (≈4 ch) |
@@ -87,12 +86,6 @@ honest automatically (see below):
 | Full protocol + all four personas | 6,305 | **1,576** |
 | Everything, incl. install/update skills | 11,774 | **2,944** |
 <!-- spectra:tokens:end -->
-
-Counts use a dependency-free `~4 chars/token` heuristic. Regenerate or verify them with
-[`scripts/token-report.sh`](scripts/token-report.sh) (`--write` updates the table above,
-`--check` fails if it's stale). A repo-local `pre-commit` hook runs `--check` whenever
-`spectra/` is touched, so editing the protocol **must** come with a refreshed count — this
-README can't silently drift.
 
 ## What lands in your repo
 
@@ -118,3 +111,6 @@ AGENTS.md                  points your agent at Spectra
 ## License
 
 See [LICENSE](LICENSE).
+
+[^tokens]: Measured from the Markdown in `spectra/` with a dependency-free ~4 chars/token
+    heuristic, and kept in sync with the source automatically.

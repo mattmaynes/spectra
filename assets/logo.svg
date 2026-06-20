@@ -1,61 +1,37 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 168" width="540" height="168" role="img" aria-label="Spectra — spec-driven development with learning loops">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 150" width="520" height="150" role="img" aria-label="Spectra — spec-driven development with learning loops">
   <defs>
-    <linearGradient id="spectrum" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0"    stop-color="#ff5c5c"/>
-      <stop offset="0.18" stop-color="#ff9f43"/>
-      <stop offset="0.36" stop-color="#ffd24a"/>
-      <stop offset="0.54" stop-color="#4ad991"/>
-      <stop offset="0.70" stop-color="#2dd4bf"/>
-      <stop offset="0.85" stop-color="#4aa8ff"/>
-      <stop offset="1"    stop-color="#b07cff"/>
+    <linearGradient id="coolspec" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0"   stop-color="#5a82d6"/>
+      <stop offset="0.5" stop-color="#7d72c8"/>
+      <stop offset="1"   stop-color="#9a6fb0"/>
     </linearGradient>
-    <linearGradient id="bar" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0"    stop-color="#ff5c5c"/>
-      <stop offset="0.25" stop-color="#ffd24a"/>
-      <stop offset="0.50" stop-color="#4ad991"/>
-      <stop offset="0.75" stop-color="#4aa8ff"/>
-      <stop offset="1"    stop-color="#b07cff"/>
+    <linearGradient id="coolspecH" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0"   stop-color="#5a82d6"/>
+      <stop offset="0.5" stop-color="#7d72c8"/>
+      <stop offset="1"   stop-color="#9a6fb0"/>
     </linearGradient>
-    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
-      <stop offset="0"   stop-color="#4aa8ff" stop-opacity="0.45"/>
-      <stop offset="1"   stop-color="#4aa8ff" stop-opacity="0"/>
-    </radialGradient>
-    <radialGradient id="core" cx="0.4" cy="0.35" r="0.7">
-      <stop offset="0" stop-color="#ffffff"/>
-      <stop offset="1" stop-color="#9ec5ff"/>
-    </radialGradient>
-    <filter id="soft" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur stdDeviation="2.2"/>
-    </filter>
+    <linearGradient id="tile" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#161d27"/>
+      <stop offset="1" stop-color="#0f141c"/>
+    </linearGradient>
   </defs>
 
-  <!-- card -->
-  <rect x="0.5" y="0.5" width="539" height="167" rx="22" fill="#0d1117" stroke="#222b36"/>
+  <!-- panel -->
+  <rect x="0.5" y="0.5" width="519" height="149" rx="18" fill="#0d1117" stroke="#1b2129"/>
 
-  <!-- emblem: orbit ring + AI node constellation -->
-  <g transform="translate(96 84)">
-    <circle r="60" fill="url(#glow)"/>
-    <!-- spectrum orbit -->
-    <circle r="46" fill="none" stroke="url(#spectrum)" stroke-width="7" stroke-linecap="round"/>
-    <!-- orbiting node -->
-    <circle cx="32.5" cy="-32.5" r="7.5" fill="#ffffff" filter="url(#soft)"/>
-    <circle cx="32.5" cy="-32.5" r="6" fill="#ffffff"/>
-    <!-- inner AI constellation -->
-    <g stroke="#5b6b7d" stroke-width="1.6">
-      <line x1="0" y1="0" x2="-19" y2="-13"/>
-      <line x1="0" y1="0" x2="20" y2="-10"/>
-      <line x1="0" y1="0" x2="-3" y2="20"/>
-    </g>
-    <circle cx="-19" cy="-13" r="4" fill="#ff9f43"/>
-    <circle cx="20"  cy="-10" r="4" fill="#2dd4bf"/>
-    <circle cx="-3"  cy="20"  r="4" fill="#b07cff"/>
-    <circle r="9" fill="url(#core)"/>
+  <!-- mark: a quiet monoline loop in a product tile -->
+  <g>
+    <rect x="26" y="33" width="84" height="84" rx="20" fill="url(#tile)" stroke="#262e39"/>
+    <!-- open loop (the learning cycle) -->
+    <path d="M68 51 a24 24 0 1 1 -17 7" fill="none" stroke="url(#coolspec)" stroke-width="4" stroke-linecap="round"/>
+    <!-- node on the loop -->
+    <circle cx="68" cy="51" r="5" fill="#cdd6e0"/>
   </g>
 
   <!-- wordmark -->
-  <text x="190" y="86" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif"
-        font-size="54" font-weight="700" letter-spacing="0.5" fill="#eef3f8">Spectra</text>
-  <rect x="192" y="100" width="186" height="5" rx="2.5" fill="url(#bar)"/>
-  <text x="193" y="128" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif"
-        font-size="14.5" font-weight="500" letter-spacing="0.3" fill="#8b98a9">spec-driven development · learning loops</text>
+  <text x="130" y="80" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif"
+        font-size="44" font-weight="650" letter-spacing="0.4" fill="#e6edf3">Spectra</text>
+  <rect x="132" y="93" width="112" height="2.5" rx="1.25" fill="url(#coolspecH)" opacity="0.85"/>
+  <text x="133" y="116" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif"
+        font-size="13.5" font-weight="500" letter-spacing="0.2" fill="#7d8896">spec-driven development · learning loops</text>
 </svg>
