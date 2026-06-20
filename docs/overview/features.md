@@ -20,3 +20,10 @@
   the figures, so the README's efficiency claim can't drift.
 - **Branding assets** — `assets/logo.svg` (spectrum-loop wordmark) and
   `assets/protocol-flow.svg` (the route→…→reflect loop diagram), embedded in the README.
+- **CI** (repo-local, `.github/workflows/ci.yml`) — on push and PR: runs `test.sh`, re-runs
+  the README token-drift guard (`token-report.sh --check`) so fork PRs and fresh clones are
+  covered even though the local hook is untracked, and validates the PR title against
+  Conventional Commits.
+- **Conventional Commits** — commit messages and PR titles follow
+  `<type>[scope][!]: <subject>`, checked by the dependency-free `scripts/check-commit-msg.sh`
+  (repo-local; documented in `AGENTS.md`, enforced by CI on PR titles).

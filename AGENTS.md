@@ -17,3 +17,12 @@ Read `docs/spectra/protocol.md` and follow it for every change:
 - **Before concluding, reflect**: update the relevant `docs/overview/` living docs
   (`project`, `features`, `architecture`, `learnings`).
 <!-- spectra:end -->
+
+## Commits & PR titles
+
+This repo uses **[Conventional Commits](https://www.conventionalcommits.org)**: every commit
+message **and** PR title is `<type>[optional scope][!]: <subject>` (types: `feat`, `fix`,
+`docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`). Because PRs
+squash-merge, the **PR title** becomes the landed commit and is checked in CI. Validate a
+message locally with `scripts/check-commit-msg.sh "<message>"`. (Repo-local convention; not
+part of the shipped plugin.)

@@ -41,3 +41,16 @@ never touch a consumer with them.
   staged). The shipped `spectra/hooks/pre-commit` is untouched.
 - `assets/*.svg` are self-contained dark "cards" (own background + spectrum palette) so they
   render identically under GitHub's light and dark themes, embedded via `<img>`.
+- `scripts/check-commit-msg.sh` is the dependency-free Conventional Commits validator (POSIX
+  `grep -Eq` against `<type>[scope][!]: <subject>`). Same "runs anywhere, no toolchain"
+  rationale as `token-report.sh`. The convention is documented in `AGENTS.md` **outside** the
+  `spectra:start/end` block, so it's repo-local and never shipped.
+
+**CI (repo-local, never shipped):** `.github/workflows/ci.yml` runs on push and PR with three
+least-privilege (`contents: read`) jobs: `test` (`./test.sh`), `readme-drift`
+(`token-report.sh --check`), and `commit-lint` (PR-only, validates the PR title). CI is where
+the repo's local guards become *shared* gates: the token-drift check otherwise lives only in
+an untracked `.git/hooks/pre-commit`, so fork PRs and fresh clones are unprotected until CI
+re-runs it. The PR title is passed to the validator via an `env:` var, never interpolated into
+the shell, so an untrusted title can't inject commands. Squash-merge makes the PR title the
+landed commit, so linting the title (not every intermediate commit) is the high-value gate.
