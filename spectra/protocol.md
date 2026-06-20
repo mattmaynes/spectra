@@ -51,21 +51,12 @@ ordered steps, files touched, verification. Reference the source `NNNN`.
 2. **Test** — run the repo's test suite; fix the code or the tests until green.
    Always do this **before committing**. No suite yet? Add the test that proves this change.
 3. **Commit**, then open a **PR**.
-4. **Review** — **scope before you spawn.** Each persona is a sub-agent that reads two files
-   and re-reads the diff, so decide the set *from the diff alone, before reading any persona
-   file*. Walk the tree top-down, take the first match; the happy path exits at the gate:
-
-   ```
-   Pure docs/comments/formatting, no behavior change?
-     ├─ yes → no personas — self-review, then merge.
-     └─ no  → add each persona whose trigger fires:
-              engineer   non-trivial code/logic changed (skip tests-only)
-              tester     observable behavior changed
-              architect  module boundaries, deps, or data-flow changed
-              security   auth · input parsing · secrets · consumer-run scripts · new deps
-   ```
-   Typical code change = **engineer + tester**; architect/security are opt-in on a trigger.
-   Never spawn all four by reflex.
+4. **Review** — scope from the diff first. Pure docs/formatting, no behavior change →
+   **no personas** (self-review, merge). Else add only the triggers that fire, not all four:
+   - **engineer** — non-trivial code/logic (skip tests-only)
+   - **tester** — observable behavior changed
+   - **architect** — boundaries, deps, or data-flow changed
+   - **security** — auth, input, secrets, consumer-run scripts, or new deps
 
    Spawn the selected personas as sub-agents. Each reads `docs/spectra/personas/persona.md`
    (how to review, comment, and the format) plus its own `docs/spectra/personas/<persona>.md`

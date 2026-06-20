@@ -13,17 +13,21 @@ was no early-exit gate, so the common no-persona / one-persona cases cost as muc
 the full four-way review.
 
 ## Fix
-Replaced the bullet list in step 5.4 of both `spectra/protocol.md` (shippable) and
-`docs/spectra/protocol.md` (installed instance) with a terse gated decision tree:
-- **Gate first** on "pure docs/comments/formatting, no behavior change?" → no personas,
-  self-review, skip to address/merge.
-- Otherwise add each persona whose trigger fires (engineer / tester / architect / security),
-  decided **from the diff alone, before reading any persona file**.
-- Stated the default (typical code change = engineer + tester) so architect/security are
-  opt-in on a trigger, not opt-out.
+Reframed step 5.4 of `spectra/protocol.md` (and its `docs/spectra/protocol.md` symlink) so
+the persona set is **gated, not enumerated**:
+- **Gate first** — "pure docs/formatting, no behavior change → no personas (self-review,
+  merge)." The cheap happy path exits before any persona is considered.
+- Otherwise add only the triggers that fire (engineer / tester / architect / security),
+  decided from the diff alone, before reading any persona file. Each persona is a sub-agent
+  that reads two files, so the runtime win is spawning fewer — independent of the protocol's
+  own size.
 - Preserved the prior list's `non-trivial` qualifier and `tests-only` skip on the engineer
-  trigger (an engineer-persona review of this very change caught that the first draft had
+  trigger (an engineer-persona review of this very change caught that an early draft had
   silently dropped them).
+
+The protocol text itself is read on **every** change, so the edit is also a net **token
+reduction** vs. the bullet list it replaced (434 vs. 456 chars) — an early ASCII-art tree
+draft nearly doubled the block and was rejected for that reason (developer feedback on PR #7).
 
 ## Learning
 Put the cheapest outcome first and make selection decidable before paying for it — gate on the
