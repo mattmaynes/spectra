@@ -26,12 +26,22 @@ chains a guarded call.
 **Command discovery:** skills are auto-discovered from `spectra/skills/<name>/SKILL.md` — the
 folder name becomes the `/<name>` command; `plugin.json` carries no explicit skill list.
 
-**Create-on-demand persona (`user.md`):** the 👤 User (ICP) persona is **developer-owned** and
-lives only in the installed instance — `spectra-setup` writes `docs/spectra/personas/user.md`
-into the consumer's repo, and it is **never shipped** under `spectra/personas/`. Because the
-update/install glob is `cp "$SRC/personas/"*.md` and `$SRC` has no `user.md`, the file simply
-falls outside the copy: preservation is a property of the layout, not of any exclusion logic.
-Absence is the default "off" state — reviews scope the persona in only when the file exists.
+**Persona activation — `active = file present`.** A persona participates in reviews iff
+`docs/spectra/personas/<name>.md` exists in the instance; absence is the "off" state, so a
+disabled persona costs zero loaded tokens. The shipped set is defined by source **layout**, not
+a list: `spectra/personas/*.md` are the default-on core (engineer/tester/architect/security +
+the shared `persona.md` contract), copied by `spectra-install`'s top-level `*.md` glob;
+`spectra/personas/optional/*.md` (designer/compliance/analytics) ship but sit below that glob,
+so install never copies them. `spectra-enable`/`spectra-disable` copy a file in / remove it;
+the protocol scopes in any present persona generically, so adding optional personas adds no
+always-loaded cost. The 👤 User (ICP) persona is the **developer-owned** case — `spectra-setup`
+writes `user.md` only into the instance and it's **never shipped**.
+
+**Update refreshes only what's present.** `spectra-update` loops over the personas already in
+`docs/spectra/personas/` and re-copies each from its source (top-level or `optional/`), instead
+of copying the whole shipped set. One rule covers three needs: a disabled persona is never
+re-added, an enabled optional one is refreshed, and `user.md` (no source) is left untouched —
+preservation and the toggle both fall out of the layout, not of any exclusion logic.
 
 **Host files:** `AGENTS.md` is canonical; `CLAUDE.md` and `GEMINI.md` symlink to it; Codex
 reads `AGENTS.md` natively. The Spectra block is delimited by `<!-- spectra:start/end -->`

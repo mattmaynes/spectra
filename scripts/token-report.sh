@@ -38,23 +38,28 @@ commas() {
 # row LABEL CHARS -> a markdown table row "| LABEL | chars | **tokens** |"
 row() { printf '| %s | %s | **%s** |\n' "$1" "$(commas "$2")" "$(commas "$(tokens "$2")")"; }
 
-# Groupings (sorted for determinism)
-host_files()  { echo "$SRC/agents.md"; }
-proto_files() { echo "$SRC/protocol.md"; }
-core_files()  { echo "$SRC/protocol.md"; find "$SRC/personas" -name '*.md' | sort; }
-all_files()   { find "$SRC" -name '*.md' | sort; }
+# Groupings (sorted for determinism). Core = top-level personas only (the default-on set);
+# optional personas live under personas/optional/ and load only when enabled, so they are
+# excluded from the core row and reported separately.
+host_files()     { echo "$SRC/agents.md"; }
+proto_files()    { echo "$SRC/protocol.md"; }
+core_files()     { echo "$SRC/protocol.md"; find "$SRC/personas" -maxdepth 1 -name '*.md' | sort; }
+optional_files() { find "$SRC/personas/optional" -name '*.md' | sort; }
+all_files()      { find "$SRC" -name '*.md' | sort; }
 
 generate() {
   HOST=$(chars_of $(host_files))
   PROTO=$(chars_of $(proto_files))
   CORE=$(chars_of $(core_files))
+  OPT=$(chars_of $(optional_files))
   ALL=$(chars_of $(all_files))
   echo "$START"
   echo '| What loads into context | Characters | Tokens (≈4 ch) |'
   echo '|---|---|---|'
   row 'Always-on host block (in `AGENTS.md`)' "$HOST"
   row 'Protocol only (no personas needed)' "$PROTO"
-  row 'Full protocol + all four personas' "$CORE"
+  row 'Full protocol + core personas' "$CORE"
+  row 'Optional personas (load only when enabled)' "$OPT"
   row 'Everything, incl. install/update skills' "$ALL"
   echo "$END"
 }

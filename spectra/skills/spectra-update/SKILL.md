@@ -18,10 +18,17 @@ If Spectra was never installed here, run `spectra-install` instead.
    ```sh
    SRC="${CLAUDE_SKILL_DIR}/../.."   # bundled Spectra source
    cp "$SRC/protocol.md" docs/spectra/protocol.md
-   mkdir -p docs/spectra/personas && cp "$SRC/personas/"*.md docs/spectra/personas/
+   mkdir -p docs/spectra/personas
+   for f in docs/spectra/personas/*.md; do            # refresh only personas already present
+     b=$(basename "$f")
+     for cand in "$SRC/personas/$b" "$SRC/personas/optional/$b"; do
+       [ -f "$cand" ] && cp "$cand" "$f" && break
+     done
+   done
    ```
-   The copy is **shipped-personas-only** — `$SRC` has no `user.md`, so a developer's
-   `docs/spectra/personas/user.md` (from `spectra-setup`) is never overwritten.
+   The loop **refreshes only the personas that are present** — so a disabled persona stays
+   gone, an enabled optional one refreshes from `optional/`, and `user.md` (no source) is left
+   untouched. Enable/disable personas with `/spectra-enable` and `/spectra-disable`.
 
 2. **Refresh the hook** — re-copy into the resolved hooks dir (refresh the sidecar if the
    developer chained Spectra onto a pre-existing hook):

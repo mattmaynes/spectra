@@ -60,6 +60,10 @@ ordered steps, files touched, verification. Reference the source `NNNN`.
    - **user** — user-facing behavior or experience, only once `docs/spectra/personas/user.md`
      exists (a developer ran `spectra-setup`)
 
+   Also scope in any **other** persona present in `docs/spectra/personas/` whose facet the change
+   touches — read its title/intro to decide (enable/disable via `/spectra-enable`,
+   `/spectra-disable`).
+
    Spawn the selected personas as sub-agents. Each reads `docs/spectra/personas/persona.md`
    (how to review, comment, and the format) plus its own `docs/spectra/personas/<persona>.md`
    (what to look for), then posts findings **as inline comments anchored to file:line** —

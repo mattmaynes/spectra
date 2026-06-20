@@ -36,6 +36,21 @@ for h in '# 👤 User (ICP)' '## Profile' '## Review'; do
 done
 [ -z "$miss" ] && ok "spectra-setup template has 👤 title + Profile + Review" \
   || bad "spectra-setup template missing heading(s):$miss"
+# optional personas ship under personas/optional/ (off by default) and must NOT sit at the top
+# level, or install/update's top-level `personas/*.md` glob would copy them in unasked.
+for p in designer compliance analytics; do
+  { [ -f "$SRC/personas/optional/$p.md" ] && [ ! -e "$SRC/personas/$p.md" ]; } \
+    && ok "optional persona $p ships under optional/ only" \
+    || bad "optional persona $p missing or leaked to top-level personas/"
+done
+# every persona (core + optional) has a title and references the shared persona.md contract
+miss=
+for f in "$SRC"/personas/*.md "$SRC"/personas/optional/*.md; do
+  b=$(basename "$f"); [ "$b" = persona.md ] && continue
+  { grep -q '^# ' "$f" && grep -qF 'persona.md' "$f"; } || miss="$miss $b"
+done
+[ -z "$miss" ] && ok "every persona has a title + references persona.md" \
+  || bad "personas missing title/contract ref:$miss"
 
 echo "3. reflection hook behavior"
 T=$(mktemp -d); cd "$T"
@@ -78,21 +93,34 @@ refresh; refresh; refresh                             # then idempotent re-runs
 grep -q "Keep me." AGENTS.md && ok "surrounding content preserved" || bad "surrounding content lost"
 cd "$ROOT"; rm -rf "$T"
 
-echo "5. update preserves the developer's own content"
+echo "5. update refreshes only present personas (disabled stay off, user.md preserved)"
 T=$(mktemp -d); cd "$T"
 mkdir -p docs/spectra/personas docs/specs docs/overview
 printf 'MY SPEC\n'      > docs/specs/0001.md
 printf 'MY LEARNINGS\n' > docs/overview/learnings.md
 printf 'stale\n'        > docs/spectra/protocol.md
-printf 'MY ICP\n'       > docs/spectra/personas/user.md  # developer-owned, set via spectra-setup
-cp "$SRC/protocol.md" docs/spectra/protocol.md           # the update copy steps
-cp "$SRC/personas/"*.md docs/spectra/personas/
+printf 'stale\n'        > docs/spectra/personas/persona.md   # shared contract, present
+printf 'stale\n'        > docs/spectra/personas/engineer.md  # present core -> refresh
+printf 'stale\n'        > docs/spectra/personas/designer.md  # enabled optional -> refresh
+printf 'MY ICP\n'       > docs/spectra/personas/user.md      # developer-owned -> preserve
+# (no security.md present: a disabled core persona -> must stay absent after update)
+cp "$SRC/protocol.md" docs/spectra/protocol.md               # update step: protocol
+for f in docs/spectra/personas/*.md; do                      # update step: refresh-only-present
+  b=$(basename "$f")
+  for cand in "$SRC/personas/$b" "$SRC/personas/optional/$b"; do
+    [ -f "$cand" ] && cp "$cand" "$f" && break
+  done
+done
 { [ "$(cat docs/specs/0001.md)" = "MY SPEC" ] && [ "$(cat docs/overview/learnings.md)" = "MY LEARNINGS" ]; } \
   && ok "specs/overview untouched" || bad "update clobbered user content"
 [ "$(cat docs/spectra/personas/user.md)" = "MY ICP" ] \
-  && ok "personas/user.md preserved (glob didn't clobber it)" || bad "update clobbered user.md"
-[ -f docs/spectra/personas/engineer.md ] \
-  && ok "shipped personas copied (glob non-empty)" || bad "persona glob matched nothing — preservation test would false-pass"
+  && ok "user.md preserved (no source to overwrite it)" || bad "update clobbered user.md"
+cmp -s docs/spectra/personas/engineer.md "$SRC/personas/engineer.md" \
+  && ok "present core persona refreshed from source" || bad "engineer.md not refreshed"
+cmp -s docs/spectra/personas/designer.md "$SRC/personas/optional/designer.md" \
+  && ok "enabled optional persona refreshed from optional/" || bad "designer.md not refreshed"
+[ ! -e docs/spectra/personas/security.md ] \
+  && ok "disabled persona stays absent (update didn't re-add it)" || bad "update re-enabled a disabled persona"
 cmp -s docs/spectra/protocol.md "$SRC/protocol.md" && ok "protocol refreshed from source" || bad "protocol not refreshed"
 cd "$ROOT"; rm -rf "$T"
 
