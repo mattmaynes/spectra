@@ -26,3 +26,21 @@ message **and** PR title is `<type>[optional scope][!]: <subject>` (types: `feat
 squash-merge, the **PR title** becomes the landed commit and is checked in CI. Validate a
 message locally with `scripts/check-commit-msg.sh "<message>"`. (Repo-local convention; not
 part of the shipped plugin.)
+
+## Merging
+
+`main` is governed by a GitHub **ruleset** (not classic branch protection), so a green CI run
+is necessary but **not sufficient** to merge. The ruleset requires:
+
+- **All review threads resolved** (`required_review_thread_resolution`). After a persona
+  review, resolve every inline thread once its finding is addressed — otherwise
+  `gh pr merge` fails with *"the base branch policy prohibits the merge"* even when checks pass.
+  Resolve via the GraphQL `resolveReviewThread` mutation (REST can't); list open threads with
+  the `pullRequest.reviewThreads` query.
+- **Squash only**, **linear history**, **0 required approvals**; no force-push or deletion of
+  `main`.
+
+When merging from a worktree, `gh pr merge --delete-branch` may error trying to update the
+local ref (`main` is checked out elsewhere) *after* the remote merge already succeeded — verify
+with `gh pr view <n> --json state`, then remove the branch/worktree manually. (Repo-local
+operational note; not part of the shipped plugin.)
