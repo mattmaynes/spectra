@@ -58,8 +58,8 @@ leaving room for your actual code:
 | Full protocol + all four personas | **~1.6k tokens** |
 | Everything, including the install/update skills | **~2.6k tokens** |
 
-(Rough estimates at ~4 chars/token; measured from `spectra/`.) Reproduce with `./test.sh`'s
-sibling check or `cat spectra/protocol.md spectra/agents.md spectra/personas/*.md | wc -c`.
+(Rough estimates at ~4 chars/token, measured from `spectra/` — reproduce with
+`cat spectra/protocol.md spectra/agents.md spectra/personas/*.md | wc -c`.)
 
 ## What lands in your repo
 
@@ -70,6 +70,7 @@ docs/
   specs/  plans/  feedback/   numbered artifacts (NNNN-<slug>.md)
   overview/                living docs, updated every change
 AGENTS.md                  points your agent at Spectra
+.git/hooks/pre-commit      reflection reminder (copied in; not tracked)
 ```
 
 ## Repo layout (this repo)

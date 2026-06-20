@@ -15,7 +15,7 @@ If a previous install exists, prefer running `spectra-update` instead — it pre
 1. **Scaffold dirs** (keep empties tracked):
    ```sh
    SRC="${CLAUDE_SKILL_DIR}/../.."   # bundled Spectra source
-   mkdir -p docs/spectra/personas docs/specs docs/plans docs/feedback docs/overview docs/spectra/hooks
+   mkdir -p docs/spectra/personas docs/specs docs/plans docs/feedback docs/overview
    for d in docs/specs docs/plans docs/feedback; do touch "$d/.gitkeep"; done
    ```
 
@@ -29,18 +29,21 @@ If a previous install exists, prefer running `spectra-update` instead — it pre
    create `docs/overview/{project,features,architecture,learnings}.md`, each a short stub
    (`# Project`, one line: "Describe the mission." etc.). These are filled in during Reflect.
 
-4. **Install the reflection hook**:
+4. **Install the reflection hook** — **copy** it into the repo's resolved hooks dir (not a
+   symlink to a tracked file: copying keeps updates explicit and reviewable, and the
+   resolved path works with `core.hooksPath` and worktrees):
    ```sh
-   cp "$SRC/hooks/pre-commit" docs/spectra/hooks/pre-commit
-   chmod +x docs/spectra/hooks/pre-commit
-   HOOKS="$(git rev-parse --git-path hooks)"
+   HOOKS="$(git rev-parse --git-path hooks)"; mkdir -p "$HOOKS"
+   if [ ! -e "$HOOKS/pre-commit" ]; then
+     cp "$SRC/hooks/pre-commit" "$HOOKS/pre-commit"            # no existing hook
+   elif ! grep -q spectra "$HOOKS/pre-commit"; then           # existing hook → don't clobber
+     cp "$SRC/hooks/pre-commit" "$HOOKS/spectra-pre-commit"
+     printf '\n[ -x "%s/spectra-pre-commit" ] && "%s/spectra-pre-commit"\n' "$HOOKS" "$HOOKS" \
+       >> "$HOOKS/pre-commit"                                  # chain a guarded call
+   fi
+   chmod +x "$HOOKS/pre-commit"
    ```
-   - If `$HOOKS/pre-commit` does **not** exist → link it:
-     `ln -sf ../../docs/spectra/hooks/pre-commit "$HOOKS/pre-commit"` (adjust the relative
-     prefix if `core.hooksPath` is customized).
-   - If it exists and already references spectra → leave it.
-   - If it exists and is something else → **don't clobber**. Append a guarded call
-     (`sh docs/spectra/hooks/pre-commit`) to the existing hook and tell the developer.
+   Tell the developer if you chained onto a pre-existing hook.
 
 5. **Wire up the host file** — pick `AGENTS.md` if present, else `CLAUDE.md` if present,
    else create `AGENTS.md`. Insert the block from `$SRC/agents.md`:

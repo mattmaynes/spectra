@@ -9,8 +9,8 @@ First draft optimized for terseness and under-specified two things every loop ne
 verification step before code lands, and a machine-skimmable review-comment format.
 
 ## Fix
-- Added protocol step **5.2 Test** — run the suite and fix code/tests until green **before
-  committing**; if no suite exists, add the test that proves the change. Added a repo
+- Added a **Test** step (protocol step 5) — run the suite and fix code/tests until green
+  **before committing**; if no suite exists, add the test that proves the change. Added a repo
   `test.sh` so this repo has a real suite.
 - Standardized persona comments to:
   ```

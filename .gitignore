@@ -4,6 +4,7 @@ Thumbs.db
 *.swp
 *~
 
-# Claude Code local state & worktrees (but NOT .claude-plugin/, which ships)
+# Claude Code local state & Spectra worktrees (but NOT .claude-plugin/, which ships)
 .claude/
+.worktrees/
 *.worktrees/

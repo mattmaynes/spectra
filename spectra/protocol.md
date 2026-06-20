@@ -45,12 +45,22 @@ ordered steps, files touched, verification. Reference the source `NNNN`.
 
 ## 5. Build, test, review, merge
 
-1. **Build** the plan in a git worktree + sub-agent on a branch.
+1. **Build** in a **git worktree** on a new branch — `git worktree add .worktrees/<slug>
+   -b <slug>` — leaving your primary checkout on `main`. A sub-agent does the build inside
+   the worktree; remove it (`git worktree remove`) once merged.
 2. **Test** — run the repo's test suite; fix the code or the tests until green.
    Always do this **before committing**. No suite yet? Add the test that proves this change.
 3. **Commit**, then open a **PR**.
-4. **Review** — spawn sub-agents using `docs/spectra/personas/*` (engineer, tester,
-   architect, security). Each posts findings as PR comments in this form:
+4. **Review** — first **scope it**: pick only the personas whose facet the change actually
+   touches; don't run all four by reflex.
+   - **engineer** — non-trivial code/logic (skip for docs/cosmetic-only or tests-only)
+   - **tester** — behavior changes (skip for cosmetic/docs-only)
+   - **architect** — structure, boundaries, or dependencies change
+   - **security** — auth, input handling, secrets, scripts that run in consumers, or new deps
+
+   Spawn the selected personas as sub-agents using `docs/spectra/personas/*`. Each posts
+   findings **as inline comments on the PR, anchored to the relevant file and line** (general
+   findings go in the review summary) — never as detached top-level comments. Use this form:
    ```
    _Spectra <Persona>_
    **<nit|minor|major|blocker>**

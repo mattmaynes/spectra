@@ -21,16 +21,21 @@ If Spectra was never installed here, run `spectra-install` instead.
    mkdir -p docs/spectra/personas && cp "$SRC/personas/"*.md docs/spectra/personas/
    ```
 
-2. **Refresh the hook**:
+2. **Refresh the hook** — re-copy into the resolved hooks dir (refresh the sidecar if the
+   developer chained Spectra onto a pre-existing hook):
    ```sh
-   cp "$SRC/hooks/pre-commit" docs/spectra/hooks/pre-commit
-   chmod +x docs/spectra/hooks/pre-commit
+   HOOKS="$(git rev-parse --git-path hooks)"
+   if [ -e "$HOOKS/spectra-pre-commit" ]; then
+     cp "$SRC/hooks/pre-commit" "$HOOKS/spectra-pre-commit"    # chained install
+   else
+     cp "$SRC/hooks/pre-commit" "$HOOKS/pre-commit"; chmod +x "$HOOKS/pre-commit"
+   fi
    ```
-   Re-link `$(git rev-parse --git-path hooks)/pre-commit` only if it's missing.
 
-3. **Refresh the host block** — in `AGENTS.md` (or `CLAUDE.md`), replace everything between
-   `<!-- spectra:start -->` and `<!-- spectra:end -->` with `$SRC/agents.md`. If the markers
-   are missing, append the block. Do not duplicate it.
+3. **Refresh the host block** — in `AGENTS.md` (or `CLAUDE.md`), replace the existing block
+   **from `<!-- spectra:start -->` through `<!-- spectra:end -->` inclusive** with the
+   contents of `$SRC/agents.md` (which carries its own markers). If no markers are present,
+   append the block. Never duplicate the markers.
 
 4. **Report** what changed (a short diff summary) and remind the developer that their
    specs/plans/feedback/overview were preserved.
