@@ -20,8 +20,9 @@ README="$ROOT/README.md"
 START='<!-- spectra:tokens:start -->'
 END='<!-- spectra:tokens:end -->'
 
-# chars_of FILE... -> total character count across the given files
-chars_of() { cat "$@" | wc -c | tr -d ' '; }
+# chars_of FILE... -> total character count across the given files (0 for no files, so an
+# empty grouping like personas/optional/ can't turn `cat "$@"` into a stdin-blocking bare cat)
+chars_of() { [ "$#" -eq 0 ] && { echo 0; return; }; cat "$@" | wc -c | tr -d ' '; }
 
 # tokens N -> round(N / 4)
 tokens() { awk -v c="$1" 'BEGIN{ printf "%d", int(c/4 + 0.5) }'; }

@@ -37,11 +37,14 @@ the protocol scopes in any present persona generically, so adding optional perso
 always-loaded cost. The 👤 User (ICP) persona is the **developer-owned** case — `spectra-setup`
 writes `user.md` only into the instance and it's **never shipped**.
 
-**Update refreshes only what's present.** `spectra-update` loops over the personas already in
-`docs/spectra/personas/` and re-copies each from its source (top-level or `optional/`), instead
-of copying the whole shipped set. One rule covers three needs: a disabled persona is never
-re-added, an enabled optional one is refreshed, and `user.md` (no source) is left untouched —
-preservation and the toggle both fall out of the layout, not of any exclusion logic.
+**Update refreshes only what's present — and is therefore non-additive.** `spectra-update` loops
+over the personas already in `docs/spectra/personas/` and re-copies each from its source
+(top-level or `optional/`), instead of copying the whole shipped set. One rule covers three
+needs: a disabled persona is never re-added, an enabled optional one is refreshed, and `user.md`
+(no source) is left untouched — preservation and the toggle both fall out of the layout, not of
+any exclusion logic. The deliberate trade-off: because absence now means *disabled*, update
+**cannot** distribute a newly-shipped persona or repair a removed one — that would undo a
+`/spectra-disable`. Adding or restoring a persona is the explicit job of `/spectra-enable`.
 
 **Host files:** `AGENTS.md` is canonical; `CLAUDE.md` and `GEMINI.md` symlink to it; Codex
 reads `AGENTS.md` natively. The Spectra block is delimited by `<!-- spectra:start/end -->`

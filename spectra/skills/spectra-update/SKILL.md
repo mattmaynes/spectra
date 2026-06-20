@@ -10,6 +10,12 @@ Re-sync Spectra's **distributed** files in the current repo from the bundled sou
 developer's own content: `docs/specs/`, `docs/plans/`, `docs/feedback/`,
 `docs/overview/`, and `docs/spectra/personas/user.md` are left as-is.
 
+Update is **non-additive by design**: it refreshes the personas you already have but never
+adds or restores one — under the "active = file present" model a missing persona is a
+*disabled* persona, so re-adding it would silently undo a `/spectra-disable`. To add a persona
+(including one newly shipped in this release) or restore a removed core one, run
+`/spectra-enable`.
+
 If Spectra was never installed here, run `spectra-install` instead.
 
 ## Steps

@@ -36,21 +36,26 @@ for h in '# 👤 User (ICP)' '## Profile' '## Review'; do
 done
 [ -z "$miss" ] && ok "spectra-setup template has 👤 title + Profile + Review" \
   || bad "spectra-setup template missing heading(s):$miss"
-# optional personas ship under personas/optional/ (off by default) and must NOT sit at the top
-# level, or install/update's top-level `personas/*.md` glob would copy them in unasked.
+# optional personas ship under personas/optional/ (off by default)
 for p in designer compliance analytics; do
-  { [ -f "$SRC/personas/optional/$p.md" ] && [ ! -e "$SRC/personas/$p.md" ]; } \
-    && ok "optional persona $p ships under optional/ only" \
-    || bad "optional persona $p missing or leaked to top-level personas/"
+  [ -f "$SRC/personas/optional/$p.md" ] || bad "optional persona $p missing from optional/"
 done
-# every persona (core + optional) has a title and references the shared persona.md contract
+ok "optional personas designer/compliance/analytics ship under optional/"
+# Structural invariant the layout rests on: no basename collides between the default-on
+# top-level set and optional/. Install/update glob only the top level, and enable/update
+# resolve core-first, so a duplicate basename would leak an optional persona into the default
+# set or shadow a toggle. A blanket check holds as either set grows (beats hardcoded names).
+dup=$(ls "$SRC"/personas/*.md "$SRC"/personas/optional/*.md 2>/dev/null | xargs -n1 basename | sort | uniq -d)
+[ -z "$dup" ] && ok "no persona basename collides between personas/ and optional/" \
+  || bad "persona basename collision (top-level vs optional/):$dup"
+# every persona (core + optional) has a title, references persona.md, and carries a checklist
 miss=
 for f in "$SRC"/personas/*.md "$SRC"/personas/optional/*.md; do
   b=$(basename "$f"); [ "$b" = persona.md ] && continue
-  { grep -q '^# ' "$f" && grep -qF 'persona.md' "$f"; } || miss="$miss $b"
+  { grep -q '^# ' "$f" && grep -qF 'persona.md' "$f" && grep -q '^- ' "$f"; } || miss="$miss $b"
 done
-[ -z "$miss" ] && ok "every persona has a title + references persona.md" \
-  || bad "personas missing title/contract ref:$miss"
+[ -z "$miss" ] && ok "every persona has a title + persona.md ref + a checklist" \
+  || bad "personas missing title/contract-ref/checklist:$miss"
 
 echo "3. reflection hook behavior"
 T=$(mktemp -d); cd "$T"
@@ -94,6 +99,14 @@ grep -q "Keep me." AGENTS.md && ok "surrounding content preserved" || bad "surro
 cd "$ROOT"; rm -rf "$T"
 
 echo "5. update refreshes only present personas (disabled stay off, user.md preserved)"
+# Assert against the real skill body — the loop below mirrors it, so without this a skill that
+# regressed to the old `cp "$SRC/personas/"*.md` glob would keep this test green.
+upd="$SRC/skills/spectra-update/SKILL.md"
+grep -q 'for f in docs/spectra/personas/\*.md' "$upd" \
+  && ok "update skill uses the refresh-only-present loop" || bad "update skill lost the personas loop"
+grep -qF 'cp "$SRC/personas/"*.md' "$upd" \
+  && bad "update skill bulk-copies all personas again (regressed to glob)" \
+  || ok "update skill no longer bulk-copies the persona set"
 T=$(mktemp -d); cd "$T"
 mkdir -p docs/spectra/personas docs/specs docs/overview
 printf 'MY SPEC\n'      > docs/specs/0001.md
@@ -119,6 +132,9 @@ cmp -s docs/spectra/personas/engineer.md "$SRC/personas/engineer.md" \
   && ok "present core persona refreshed from source" || bad "engineer.md not refreshed"
 cmp -s docs/spectra/personas/designer.md "$SRC/personas/optional/designer.md" \
   && ok "enabled optional persona refreshed from optional/" || bad "designer.md not refreshed"
+[ -f "$SRC/personas/security.md" ] \
+  && ok "security is a real shipped persona (disabled-core case is meaningful)" \
+  || bad "security.md not in source — absent-after-update check would be vacuous"
 [ ! -e docs/spectra/personas/security.md ] \
   && ok "disabled persona stays absent (update didn't re-add it)" || bad "update re-enabled a disabled persona"
 cmp -s docs/spectra/protocol.md "$SRC/protocol.md" && ok "protocol refreshed from source" || bad "protocol not refreshed"

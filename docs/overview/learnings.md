@@ -2,6 +2,22 @@
 
 Process lessons and feedback distilled into guidance. Append as they arise (newest first).
 
+- **When state gains a second meaning, re-audit every operation that read the old one.** Making
+  a persona "active = file present" meant absence now means *disabled*, not just *missing* — so
+  `spectra-update` re-adding the full set (correct under the old meaning) would silently undo a
+  `/spectra-disable`. The fix wasn't more logic but making update's now-non-additive contract
+  explicit and routing additions through `/spectra-enable`. Don't assume operations stay correct
+  when the meaning of their inputs shifts. — from [`feedback/0006`](../feedback/0006-update-becomes-non-additive.md)
+- **A skill is an interface with untrusted input — validate it like code.** `spectra-disable`
+  told the agent to `rm -f …/<persona>.md` from a user-supplied name with only a loose guard; a
+  `../` could escape the personas dir. Prose that instructs an agent to delete/copy by name must
+  spell out the input contract (bare-segment shape + allowlist membership) explicitly; "the
+  agent will be careful" is not an access control. — from [`feedback/0007`](../feedback/0007-skill-input-validation.md)
+- **When you can't execute the artifact, assert on its text.** The update test re-implemented
+  the skill's loop inline, so a regression to the old bulk-copy glob would stay green. For
+  behavior that lives in an instruction file the suite can't run, add must-contain/must-not-contain
+  checks on the file itself — a test that copies the logic only tests the copy. — from
+  [`feedback/0008`](../feedback/0008-assert-on-uninstructed-text.md)
 - **A learning is a correction, not a feature write-up.** The Reflect step on PR #8 logged
   "never ship `user.md` so update can't clobber it" as a learning — but that's just *how the
   feature works*, already captured in `architecture.md`. The developer rejected it: only record

@@ -12,8 +12,11 @@ it here).
 
 - **No argument** → number the candidates (name + title line) and ask which to disable. Act on
   the reply (a number, several, or "all").
-- **`<persona>`** → if it's a candidate, `rm -f docs/spectra/personas/<persona>.md`. Reject
-  `persona` and `user`; if not present, say so.
+- **`<persona>`** → **validate before removing anything**: the name must be a bare single
+  segment matching `^[a-z][a-z0-9-]*$` (no `/`, `..`, leading `/`, or extension) **and** appear
+  in the candidate list above. Never `rm` a path you only built by interpolating the argument —
+  a crafted name like `../foo` must be refused, not deleted. Always reject `persona` and `user`.
+  Only once validated, `rm -f docs/spectra/personas/<persona>.md`. If not present, say so.
 
 Disabling a **core** persona (engineer, tester, architect, security) is allowed and **persists
 across `spectra-update`** — update refreshes only personas that are present. Confirm the
