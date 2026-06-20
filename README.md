@@ -38,19 +38,16 @@ hook, and points your `AGENTS.md` at it. Later, pull updates with:
 
 Every change flows through one loop (full text: [`spectra/protocol.md`](spectra/protocol.md)):
 
-1. **Route** — trivial change? do it. New feature? write a **spec**. Bug or friction? write
-   **feedback** (so it becomes a lesson).
-2. **Spec** → developer approves before any code is written (`docs/specs/NNNN-*.md`).
-3. **Plan** → multi-step work becomes an ordered plan (`docs/plans/NNNN-*.md`).
-4. **Build** → executed in a git worktree on a branch.
-5. **Test** → run the suite and fix until green **before committing** (no suite? add the
-   test that proves the change).
-6. **Review** → a PR is reviewed by four personas — **engineer, tester, architect,
-   security** — who comment in a fixed format; `major`/`blocker` findings become learnings.
-7. **Merge** on approval.
-8. **Reflect** → before concluding, the **living docs** in `docs/overview/`
-   (`project`, `features`, `architecture`, `learnings`) are updated. A non-blocking
-   `pre-commit` hook nudges you if you forget.
+| # | Step | What happens |
+|---|---|---|
+| 1 | **Route** | Trivial change? do it. New feature? write a **spec**. Bug or friction? write **feedback** (so it becomes a lesson). |
+| 2 | **Spec** | Developer approves before any code is written (`docs/specs/NNNN-*.md`). |
+| 3 | **Plan** | Multi-step work becomes an ordered plan (`docs/plans/NNNN-*.md`). |
+| 4 | **Build** | Executed in a git worktree on a branch. |
+| 5 | **Test** | Run the suite and fix until green **before committing** (no suite? add the test that proves the change). |
+| 6 | **Review** | A PR is reviewed by four personas — **engineer, tester, architect, security** — who comment in a fixed format; `major`/`blocker` findings become learnings. |
+| 7 | **Merge** | On approval. |
+| 8 | **Reflect** | Before concluding, the **living docs** in `docs/overview/` (`project`, `features`, `architecture`, `learnings`) are updated. A non-blocking `pre-commit` hook nudges you if you forget. |
 
 Step 8 is the differentiator: the **feedback → learnings** loop means the system gets
 better at *your* codebase over time, instead of repeating itself.
@@ -93,7 +90,9 @@ leaving room for your actual code:[^tokens]
 docs/
   spectra/protocol.md      the protocol (agent reads this)
   spectra/personas/*       review lenses
-  specs/  plans/  feedback/   numbered artifacts (NNNN-<slug>.md)
+  specs/                   approved specs (NNNN-<slug>.md)
+  plans/                   ordered build plans (NNNN-<slug>.md)
+  feedback/                bugs & friction → lessons (NNNN-<slug>.md)
   overview/                living docs, updated every change
 AGENTS.md                  points your agent at Spectra
 .git/hooks/pre-commit      reflection reminder (copied in; not tracked)
