@@ -17,11 +17,10 @@ comment. Read both.
 
 ## Format
 
-Lead each comment with your persona's emoji + name:
+Lead each comment with a one-line tag — your persona, then a dash, then the severity:
 
 ```
-_<emoji> Spectra <Persona>_
-**<nit|minor|major|blocker>**
+_<emoji> Spectra <Persona>_ — **<nit|minor|major|blocker>**
 <problem + suggested fix>
 ```
 

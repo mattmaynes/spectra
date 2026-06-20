@@ -83,8 +83,8 @@ leaving room for your actual code:[^tokens]
 | What loads into context | Characters | Tokens (≈4 ch) |
 |---|---|---|
 | Always-on host block (in `AGENTS.md`) | 693 | **173** |
-| Full protocol + all four personas | 8,796 | **2,199** |
-| Everything, incl. install/update skills | 14,265 | **3,566** |
+| Full protocol + all four personas | 8,836 | **2,209** |
+| Everything, incl. install/update skills | 14,305 | **3,576** |
 <!-- spectra:tokens:end -->
 
 ## What lands in your repo
