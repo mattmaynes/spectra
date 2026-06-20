@@ -37,7 +37,8 @@ if [ -z "$SUBJECT" ]; then
   exit 1
 fi
 
-if printf '%s\n' "$SUBJECT" | grep -Eq "^(${TYPES})(\([^)]+\))?!?: .+"; then
+# `: .*[^[:space:]]` requires a non-empty, non-whitespace-only subject after "type: ".
+if printf '%s\n' "$SUBJECT" | grep -Eq "^(${TYPES})(\([^)]+\))?!?: .*[^[:space:]]"; then
   exit 0
 fi
 

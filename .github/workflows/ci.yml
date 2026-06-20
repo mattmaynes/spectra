@@ -7,7 +7,14 @@ name: CI
 #   - Conventional Commits on the PR title (the squash-merged commit message)
 on:
   push:
+    branches: [main]
   pull_request:
+
+# A feature branch's pushes are already covered by its PR event; only run `push` on the
+# landing branch so each SHA isn't checked twice. Cancel superseded runs on the same ref.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read

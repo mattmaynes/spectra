@@ -109,7 +109,7 @@ for m in "feat: add x" "fix(scope): y" "feat!: breaking" "chore(deps): bump" "re
   if "$ccm" "$m" >/dev/null 2>&1; then ok "accepts '$m'"; else bad "rejected valid '$m'"; fi
 done
 # rejects non-conforming subjects (exit non-zero)
-for m in "nope" "Add thing" "feat x" "feature: x" "feat:" ""; do
+for m in "nope" "Add thing" "feat x" "feature: x" "feat:" "feat:   " ""; do
   if "$ccm" "$m" >/dev/null 2>&1; then bad "accepted invalid '$m'"; else ok "rejects '$m'"; fi
 done
 
