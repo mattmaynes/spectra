@@ -4,8 +4,8 @@ Two halves, by design:
 
 - **`spectra/`** — the **shippable source of truth** (the plugin). Contains the skills
   (`skills/spectra-install`, `skills/spectra-update`), the protocol (`protocol.md`), the host
-  block (`agents.md`), the review `personas/`, and the `hooks/pre-commit`. This is what a
-  consumer installs.
+  block (`agents.md`), the review `personas/` (a shared `persona.md` review contract plus one
+  file per persona), and the `hooks/pre-commit`. This is what a consumer installs.
 - **`docs/`** — this repo's **installed instance** (Spectra dogfooding itself): the artifact
   tree (`specs/`, `plans/`, `feedback/`, `overview/`). Its `docs/spectra/` entries are
   **symlinks** back to `spectra/` — a **dogfood-only DRY convenience that is never shipped**.

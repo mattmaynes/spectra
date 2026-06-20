@@ -2,6 +2,10 @@
 
 Process lessons and feedback distilled into guidance. Append as they arise (newest first).
 
+- **A repeated instruction belongs in one place.** The review-comment contract was copy-pasted
+  into all four personas; factor it into a shared `personas/persona.md` and let each persona
+  carry only its distinct lens (with a per-persona emoji for attribution). Make persona
+  checklists opinionated and actionable, not generic. — from [`feedback/0003`](../feedback/0003-persona-depth-and-shared-format.md)
 - **A marketing claim that can rot should be machine-checked.** The README's "low token
   cost" is a selling point, so its numbers are generated from `spectra/` and enforced by a
   `pre-commit` guard + `test.sh` rather than hand-maintained — the old hand-written "~2.6k"
