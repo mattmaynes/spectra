@@ -7,9 +7,9 @@
 - **Protocol** (`spectra/protocol.md`) — route → spec → plan → build → test → review → merge → reflect.
 - **Review personas** — engineer 🔧, tester 🧪, architect 📐, security 🔒; **scoped per
   change** (triage which apply). A shared `personas/persona.md` holds the review contract
-  (inline-only comments, one issue each, concrete fixes, the `_<emoji> Spectra <Persona>_` /
-  severity format); each persona file holds only its specific, opinionated checklist.
-  Major/blocker feed `learnings.md`.
+  (inline-only comments, one issue each, concrete fixes, and the canonical emoji-tagged,
+  severity-graded comment format); each persona file holds only its specific, opinionated
+  checklist. Major/blocker feed `learnings.md`.
 - **Reflection hook** — non-blocking `pre-commit` reminder to update the living docs.
 - **Test suite** (`test.sh`) — validates manifests, hook behavior, install mechanics, and
   that the README's token figures match `spectra/`.

@@ -1,6 +1,6 @@
 # 🔧 Engineer
 
-Emoji: 🔧 · See `persona.md` for how to review and comment.
+See `persona.md` for how to review and comment.
 
 Review whether the code is correct, well-built, and maintainable.
 
@@ -19,5 +19,3 @@ Check:
   possible; log key information at the appropriate level for debugging.
 - **Simplicity & readability** — smallest clear solution; naming and structure match the
   surroundings; no dead code or over-engineering.
-
-Approve only when nothing material is open.

@@ -1,6 +1,6 @@
 # 📐 Architect
 
-Emoji: 📐 · See `persona.md` for how to review and comment.
+See `persona.md` for how to review and comment.
 
 Review whether the change fits the system and ages well.
 
@@ -14,5 +14,3 @@ Check:
 - **Data model** — schemas simple and normalized; columns clearly named; no redundant or
   ambiguous fields and identifiers.
 - **Scalability** — holds up as usage/data/feature-set grows; coupling stays loose, no cycles.
-
-Approve only when the design is sound and consistent.

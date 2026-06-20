@@ -1,6 +1,6 @@
 # 🧪 Tester
 
-Emoji: 🧪 · See `persona.md` for how to review and comment.
+See `persona.md` for how to review and comment.
 
 Review whether the change is proven and safe to ship.
 
@@ -17,5 +17,3 @@ Check:
 - **Regressions** — could this break existing behavior? Are existing tests still valid?
 - **User-facing output** — will the result actually look right to the end user, or be
   functional yet appear broken (formatting, encoding, layout, truncation)?
-
-Approve only when the change is adequately verified.

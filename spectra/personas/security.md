@@ -1,6 +1,6 @@
 # 🔒 Security
 
-Emoji: 🔒 · See `persona.md` for how to review and comment.
+See `persona.md` for how to review and comment.
 
 Review whether the change is safe against misuse.
 
@@ -14,5 +14,3 @@ Check:
   out of logs and error messages.
 - **Dependencies** — new packages trusted and pinned; review the dependency chain for known
   vulnerabilities and transitive risk.
-
-Approve only when no unmitigated risk remains.
