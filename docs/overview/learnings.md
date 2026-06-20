@@ -2,6 +2,14 @@
 
 Process lessons and feedback distilled into guidance. Append as they arise (newest first).
 
+- **Put the cheapest outcome first — but don't let the guidance outweigh what it saves.**
+  Persona selection now gates on "pure docs, no behavior change? → no personas" before the
+  add-on triggers (engineer/tester/architect/security), decided from the diff alone, before
+  reading any persona file — the runtime win is spawning fewer sub-agents. The protocol text
+  is read on *every* change, so the rewrite also had to be **smaller** than the list it
+  replaced: a first ASCII-art-tree draft nearly doubled the block and was rejected for that
+  reason. Keep the "why" in the feedback doc (read once), the rule in the protocol (read
+  always). — from [`feedback/0004`](../feedback/0004-persona-decision-tree.md)
 - **A local-only guard isn't a guarantee — promote it to CI.** The README token-drift check
   lived solely in an *untracked* `.git/hooks/pre-commit`, so anyone without the hook (fork PRs,
   fresh clones) bypassed it silently. CI (`.github/workflows/ci.yml`) re-runs `test.sh` and the

@@ -51,12 +51,12 @@ ordered steps, files touched, verification. Reference the source `NNNN`.
 2. **Test** — run the repo's test suite; fix the code or the tests until green.
    Always do this **before committing**. No suite yet? Add the test that proves this change.
 3. **Commit**, then open a **PR**.
-4. **Review** — first **scope it**: pick only the personas whose facet the change actually
-   touches; don't run all four by reflex.
-   - **engineer** — non-trivial code/logic (skip for docs/cosmetic-only or tests-only)
-   - **tester** — behavior changes (skip for cosmetic/docs-only)
-   - **architect** — structure, boundaries, or dependencies change
-   - **security** — auth, input handling, secrets, scripts that run in consumers, or new deps
+4. **Review** — scope from the diff first. Pure docs/formatting, no behavior change →
+   **no personas** (self-review, merge). Else add only the triggers that fire, not all four:
+   - **engineer** — non-trivial code/logic (skip tests-only)
+   - **tester** — observable behavior changed
+   - **architect** — boundaries, deps, or data-flow changed
+   - **security** — auth, input, secrets, consumer-run scripts, or new deps
 
    Spawn the selected personas as sub-agents. Each reads `docs/spectra/personas/persona.md`
    (how to review, comment, and the format) plus its own `docs/spectra/personas/<persona>.md`

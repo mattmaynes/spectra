@@ -40,17 +40,20 @@ row() { printf '| %s | %s | **%s** |\n' "$1" "$(commas "$2")" "$(commas "$(token
 
 # Groupings (sorted for determinism)
 host_files()  { echo "$SRC/agents.md"; }
+proto_files() { echo "$SRC/protocol.md"; }
 core_files()  { echo "$SRC/protocol.md"; find "$SRC/personas" -name '*.md' | sort; }
 all_files()   { find "$SRC" -name '*.md' | sort; }
 
 generate() {
   HOST=$(chars_of $(host_files))
+  PROTO=$(chars_of $(proto_files))
   CORE=$(chars_of $(core_files))
   ALL=$(chars_of $(all_files))
   echo "$START"
   echo '| What loads into context | Characters | Tokens (≈4 ch) |'
   echo '|---|---|---|'
   row 'Always-on host block (in `AGENTS.md`)' "$HOST"
+  row 'Protocol only (no personas needed)' "$PROTO"
   row 'Full protocol + all four personas' "$CORE"
   row 'Everything, incl. install/update skills' "$ALL"
   echo "$END"
