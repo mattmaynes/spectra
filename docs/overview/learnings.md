@@ -2,6 +2,13 @@
 
 Process lessons and feedback distilled into guidance. Append as they arise (newest first).
 
+- **A local-only guard isn't a guarantee — promote it to CI.** The README token-drift check
+  lived solely in an *untracked* `.git/hooks/pre-commit`, so anyone without the hook (fork PRs,
+  fresh clones) bypassed it silently. CI (`.github/workflows/ci.yml`) re-runs `test.sh` and the
+  same `--check` so the standard is enforced where everyone can see it, not just on the
+  original author's machine. Keep CI checkers dependency-free and dogfoodable
+  (`check-commit-msg.sh` mirrors `token-report.sh`), and feed untrusted inputs like a PR title
+  through `env:` — never interpolate them into the run command.
 - **A repeated instruction belongs in one place.** The review-comment contract was copy-pasted
   into all four personas; factor it into a shared `personas/persona.md` and let each persona
   carry only its distinct lens (with a per-persona emoji for attribution). Make persona
