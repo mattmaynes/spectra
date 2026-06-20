@@ -29,3 +29,15 @@ folder name becomes the `/<name>` command; `plugin.json` carries no explicit ski
 **Host files:** `AGENTS.md` is canonical; `CLAUDE.md` and `GEMINI.md` symlink to it; Codex
 reads `AGENTS.md` natively. The Spectra block is delimited by `<!-- spectra:start/end -->`
 markers so updates are idempotent.
+
+**Repo-local tooling (never shipped):** `scripts/` and `assets/` are this repo's own
+presentation/QA layer — explicitly *not* under `spectra/`, so `spectra-install`/`update`
+never touch a consumer with them.
+- `scripts/token-report.sh` is the single source of the README's token figures: it measures
+  `spectra/` and rewrites a marker-delimited block (`<!-- spectra:tokens:start/end -->`),
+  reusing the same idempotent-marker pattern as the host block. `--check` is wired into both
+  `test.sh` (step 8) and this repo's `.git/hooks/pre-commit` (a *second*, blocking guard
+  added beside the shipped non-blocking reflection reminder — gated on `spectra/` being
+  staged). The shipped `spectra/hooks/pre-commit` is untouched.
+- `assets/*.svg` are self-contained dark "cards" (own background + spectrum palette) so they
+  render identically under GitHub's light and dark themes, embedded via `<img>`.

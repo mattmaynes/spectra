@@ -9,4 +9,12 @@
   which apply), comments posted **inline** on PR lines in a fixed `_Spectra <Persona>_` /
   severity format; major/blocker feed `learnings.md`.
 - **Reflection hook** — non-blocking `pre-commit` reminder to update the living docs.
-- **Test suite** (`test.sh`) — validates manifests, hook behavior, and install mechanics.
+- **Test suite** (`test.sh`) — validates manifests, hook behavior, install mechanics, and
+  that the README's token figures match `spectra/`.
+- **Token-count guard** (repo-local, not shipped) — `scripts/token-report.sh` measures
+  `spectra/` (dependency-free `~4 chars/token`) and renders the README's token table behind
+  `<!-- spectra:tokens -->` markers; `--write` updates it, `--check` verifies it. A
+  repo-local `pre-commit` guard blocks any commit that edits `spectra/` without refreshing
+  the figures, so the README's efficiency claim can't drift.
+- **Branding assets** — `assets/logo.svg` (spectrum-loop wordmark) and
+  `assets/protocol-flow.svg` (the route→…→reflect loop diagram), embedded in the README.

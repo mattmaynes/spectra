@@ -1,6 +1,10 @@
-# Spectra
+<p align="center">
+  <img src="assets/logo.svg" alt="Spectra" width="470">
+</p>
 
-**Spec-driven development with learning feedback loops — installable into any repo in three commands.**
+<p align="center">
+  <strong>Spec-driven development with learning feedback loops — installable into any repo in three commands.</strong>
+</p>
 
 AI-assisted development is fast but forgetful. The spec lives in a chat message, the
 reasoning behind a decision evaporates, and the same mistakes come back next week. Spectra
@@ -28,6 +32,10 @@ hook, and points your `AGENTS.md` at it. Later, pull updates with:
 
 ## The protocol
 
+<p align="center">
+  <img src="assets/protocol-flow.svg" alt="The Spectra loop: Route, Spec, Plan, Build, Test, Review, Merge, Reflect — learnings feed the next change" width="900">
+</p>
+
 Every change flows through one loop (full text: [`spectra/protocol.md`](spectra/protocol.md)):
 
 1. **Route** — trivial change? do it. New feature? write a **spec**. Bug or friction? write
@@ -47,19 +55,37 @@ Every change flows through one loop (full text: [`spectra/protocol.md`](spectra/
 Step 8 is the differentiator: the **feedback → learnings** loop means the system gets
 better at *your* codebase over time, instead of repeating itself.
 
+## Own your protocol
+
+Spectra isn't a SaaS, a runtime, or an API you call out to — it's a handful of Markdown
+files that live **in your repo**, under your version control, read by the coding agent you
+already use. That changes what you're adopting:
+
+- **It's yours to edit.** `protocol.md` and the personas are plain prose. Tighten a step,
+  add a persona, rename an artifact directory — it's a text change, reviewed like any other.
+- **No third-party dependency.** Nothing phones home; there's no account and no lock-in.
+  Uninstall the plugin and the `docs/` it scaffolded keep working on their own.
+- **Opinionated, but flexible.** The defaults encode a real workflow (route → spec → … →
+  reflect) so you don't start from a blank page — yet every default is just a starting
+  point you can override per repo.
+- **Versioned like code.** Because the protocol is committed, changes to *how you build*
+  show up in `git log` right next to changes to *what you built*.
+
+`/spectra-update` re-syncs only the files you haven't claimed as your own, so customizing
+the protocol and pulling upstream improvements aren't mutually exclusive.
+
 ## Low token cost
 
 Spectra is deliberately terse — the whole protocol fits in a corner of the context window,
-leaving room for your actual code:
+leaving room for your actual code:[^tokens]
 
-| What loads | Rough size |
-|---|---|
-| Always-on host block (in `AGENTS.md`) | **~175 tokens** |
-| Full protocol + all four personas | **~1.6k tokens** |
-| Everything, including the install/update skills | **~2.6k tokens** |
-
-(Rough estimates at ~4 chars/token, measured from `spectra/` — reproduce with
-`cat spectra/protocol.md spectra/agents.md spectra/personas/*.md | wc -c`.)
+<!-- spectra:tokens:start -->
+| What loads into context | Characters | Tokens (≈4 ch) |
+|---|---|---|
+| Always-on host block (in `AGENTS.md`) | 693 | **173** |
+| Full protocol + all four personas | 6,305 | **1,576** |
+| Everything, incl. install/update skills | 11,774 | **2,944** |
+<!-- spectra:tokens:end -->
 
 ## What lands in your repo
 
@@ -78,7 +104,13 @@ AGENTS.md                  points your agent at Spectra
 - **`spectra/`** — the shippable source of truth: the plugin (skills, protocol, personas,
   hook). This is what gets installed.
 - **`docs/`** — Spectra dogfooding itself: this repo built using its own protocol.
+- **`assets/`** — the logo and protocol diagram (SVG) used by this README.
+- **`scripts/`** — repo-local tooling, not shipped: `token-report.sh` keeps the token
+  figures above honest (enforced by a `pre-commit` guard and `test.sh`).
 
 ## License
 
 See [LICENSE](LICENSE).
+
+[^tokens]: Measured from the Markdown in `spectra/` with a dependency-free ~4 chars/token
+    heuristic, and kept in sync with the source automatically.
