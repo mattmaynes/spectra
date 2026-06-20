@@ -55,4 +55,5 @@ If a previous install exists, prefer running `spectra-update` instead — it pre
      `AGENTS.md` natively.
 
 6. **Confirm**: list the created tree and tell the developer Spectra is installed — the next
-   change should follow `docs/spectra/protocol.md`.
+   change should follow `docs/spectra/protocol.md`. Optionally, they can run `/spectra-setup`
+   to add a 👤 User (ICP) persona that reviews user-facing changes on their customer's behalf.

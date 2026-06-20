@@ -57,6 +57,8 @@ ordered steps, files touched, verification. Reference the source `NNNN`.
    - **tester** — observable behavior changed
    - **architect** — boundaries, deps, or data-flow changed
    - **security** — auth, input, secrets, consumer-run scripts, or new deps
+   - **user** — user-facing behavior or experience, only once `docs/spectra/personas/user.md`
+     exists (a developer ran `spectra-setup`)
 
    Spawn the selected personas as sub-agents. Each reads `docs/spectra/personas/persona.md`
    (how to review, comment, and the format) plus its own `docs/spectra/personas/<persona>.md`

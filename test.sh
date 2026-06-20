@@ -26,6 +26,9 @@ echo "2. skills have frontmatter"
 for f in "$SRC"/skills/*/SKILL.md; do
   [ "$(head -1 "$f")" = "---" ] && ok "$(basename "$(dirname "$f")")" || bad "$f frontmatter"
 done
+# user.md is create-on-demand (spectra-setup writes it into a consumer) — never shipped
+[ ! -e "$SRC/personas/user.md" ] && ok "personas/user.md not shipped (create-on-demand)" \
+  || bad "personas/user.md shipped — must be created on demand by spectra-setup"
 
 echo "3. reflection hook behavior"
 T=$(mktemp -d); cd "$T"
@@ -74,10 +77,13 @@ mkdir -p docs/spectra/personas docs/specs docs/overview
 printf 'MY SPEC\n'      > docs/specs/0001.md
 printf 'MY LEARNINGS\n' > docs/overview/learnings.md
 printf 'stale\n'        > docs/spectra/protocol.md
+printf 'MY ICP\n'       > docs/spectra/personas/user.md  # developer-owned, set via spectra-setup
 cp "$SRC/protocol.md" docs/spectra/protocol.md           # the update copy steps
 cp "$SRC/personas/"*.md docs/spectra/personas/
 { [ "$(cat docs/specs/0001.md)" = "MY SPEC" ] && [ "$(cat docs/overview/learnings.md)" = "MY LEARNINGS" ]; } \
   && ok "specs/overview untouched" || bad "update clobbered user content"
+[ "$(cat docs/spectra/personas/user.md)" = "MY ICP" ] \
+  && ok "personas/user.md preserved (glob didn't clobber it)" || bad "update clobbered user.md"
 cmp -s docs/spectra/protocol.md "$SRC/protocol.md" && ok "protocol refreshed from source" || bad "protocol not refreshed"
 cd "$ROOT"; rm -rf "$T"
 
