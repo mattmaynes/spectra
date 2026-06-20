@@ -2,12 +2,12 @@
 
 Process lessons and feedback distilled into guidance. Append as they arise (newest first).
 
-- **Make "don't overwrite" structural, not procedural.** The developer-owned 👤 User (ICP)
-  persona must survive every `spectra-update`. Rather than add exclusion logic to the persona
-  copy, Spectra simply **never ships `user.md`** — `spectra-setup` writes it only into the
-  instance, so the `cp "$SRC/personas/"*.md` glob can't reach it. Preservation falls out of the
-  layout instead of relying on remembering to skip a file; the explicit doc line + a `test.sh`
-  case only guard against future drift, they aren't what makes it safe.
+- **A learning is a correction, not a feature write-up.** The Reflect step on PR #8 logged
+  "never ship `user.md` so update can't clobber it" as a learning — but that's just *how the
+  feature works*, already captured in `architecture.md`. The developer rejected it: only record
+  a learning when feedback or friction tells you to do something *differently*; restating what
+  you shipped is `features.md`/`architecture.md`, and inventing a "learning" to fill the section
+  is noise. — from [`feedback/0005`](../feedback/0005-learning-vs-feature.md)
 - **Put the cheapest outcome first — but don't let the guidance outweigh what it saves.**
   Persona selection now gates on "pure docs, no behavior change? → no personas" before the
   add-on triggers (engineer/tester/architect/security), decided from the diff alone, before
