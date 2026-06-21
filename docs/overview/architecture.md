@@ -12,9 +12,25 @@ Two halves, by design:
   A real consumer gets plain *copies* there (what `spectra-install` writes); the layout is
   identical in shape, only this repo substitutes symlinks because it owns the source.
 
-**Install flow:** `/plugin marketplace add` registers the marketplace; `/plugin install
-spectra@spectra` adds the skills; `/spectra-install` runs the skill against the target repo.
-Skills resolve bundled files via `${CLAUDE_SKILL_DIR}/../..`.
+**Install flow:** each agent installs the plugin through its own marketplace, then
+`/spectra-install` runs the skill against the target repo (in Claude Code: `/plugin marketplace
+add` + `/plugin install spectra@spectra`). The skill resolves its bundled source as `$SRC` — the
+**plugin root** (`<plugin>/skills/<name>/` → `../..`), tool-neutrally: in Claude that's
+`${CLAUDE_SKILL_DIR}/../..`, other agents expose the skill path their own way. Removing the
+hardcoded Claude env var is what lets the *same* `SKILL.md` body run under every agent.
+
+**Cross-agent packaging — one tree, many manifests.** The target agents converged on the same
+two primitives: a `SKILL.md` skill and a plugin/extension marketplace (Gemini is the lone
+exception — TOML commands, packaged separately). Because every tool's plugin root is `spectra/`,
+the `skills/`, `protocol.md`, and `personas/` are **shared with zero copies** — each agent adds
+only a thin manifest: Claude `.claude-plugin/{marketplace,plugin}.json`; Codex
+`.codex-plugin/plugin.json` + repo-root `.agents/plugins/marketplace.json`; Cursor
+`.cursor-plugin/plugin.json` + repo-root `.cursor-plugin/marketplace.json`. The marketplaces sit
+at the **repo root** (mirroring the existing Claude pattern), each with `source: ./spectra`; the
+plugin manifests' `skills: ./skills/` all resolve to the one shared tree. `test.sh` asserts every
+manifest parses and that its source/skills pointers resolve there, so a broken pointer fails CI.
+Manifest field names track each tool's June-2026 docs (Claude/Codex/Cursor Skills; Codex's
+deprecated `~/.codex/prompts/` is deliberately avoided).
 
 **Hook install:** `spectra-install` **copies** `hooks/pre-commit` into the repo's resolved
 hooks dir (`git rev-parse --git-path hooks`) — not a symlink to a tracked file — so the hook
@@ -48,9 +64,9 @@ refreshed) from the **enabled set** (developer-owned, in the config) is what let
 plain additive copy while a `/spectra-disable` still persists — the two concerns that were in
 tension under a file-presence model are decoupled.
 
-**Host files:** `AGENTS.md` is canonical; `CLAUDE.md` and `GEMINI.md` symlink to it; Codex
-reads `AGENTS.md` natively. The Spectra block is delimited by `<!-- spectra:start/end -->`
-markers so updates are idempotent.
+**Host files:** `AGENTS.md` is canonical; `CLAUDE.md` and `GEMINI.md` symlink to it; **Codex and
+Cursor read `AGENTS.md` natively** (no extra file written). The Spectra block is delimited by
+`<!-- spectra:start/end -->` markers so updates are idempotent.
 
 **Repo-local tooling (never shipped):** `scripts/` and `assets/` are this repo's own
 presentation/QA layer — explicitly *not* under `spectra/`, so `spectra-install`/`update`

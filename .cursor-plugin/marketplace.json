@@ -1,0 +1,15 @@
+{
+  "name": "spectra",
+  "owner": {
+    "name": "Matthew Maynes",
+    "email": "matthewmaynes@outlook.com"
+  },
+  "description": "Spectra — spec-driven development protocol with learning feedback loops.",
+  "plugins": [
+    {
+      "name": "spectra",
+      "source": "./spectra",
+      "description": "Install and maintain the Spectra spec-driven development protocol in your repo."
+    }
+  ]
+}

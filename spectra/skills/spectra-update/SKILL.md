@@ -5,8 +5,10 @@ description: Update the Spectra protocol files in the current repo to the instal
 
 # Update Spectra
 
-Re-sync Spectra's **distributed** files in the current repo from the bundled source at
-`${CLAUDE_SKILL_DIR}/../..` (`$SRC`). This is idempotent and **never** touches the
+Re-sync Spectra's **distributed** files in the current repo from the bundled source `$SRC` —
+this plugin's root (holds `protocol.md`, `personas/`, `agents.md`, `hooks/`), resolved from your
+skill's own location (in Claude Code, `${CLAUDE_SKILL_DIR}/../..`). This is idempotent and
+**never** touches the
 developer's own content: `docs/specs/`, `docs/plans/`, `docs/feedback/`, `docs/overview/`,
 `docs/spectra/personas/user.md`, and `docs/spectra/personas.config` (your enabled-persona
 choices) are left as-is.
@@ -17,7 +19,7 @@ If Spectra was never installed here, run `spectra-install` instead.
 
 1. **Refresh protocol + personas** (overwrite — these are Spectra-owned):
    ```sh
-   SRC="${CLAUDE_SKILL_DIR}/../.."   # bundled Spectra source
+   SRC="${CLAUDE_SKILL_DIR}/../.."   # Claude Code; on other agents set $SRC to the plugin root (above)
    cp "$SRC/protocol.md" docs/spectra/protocol.md
    mkdir -p docs/spectra/personas && cp "$SRC/personas/"*.md docs/spectra/personas/
    ```

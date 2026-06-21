@@ -21,10 +21,32 @@ python3 -m json.tool "$SRC/.claude-plugin/plugin.json"       >/dev/null && ok pl
 src=$(ROOT="$ROOT" python3 -c 'import json,os;print(json.load(open(os.environ["ROOT"]+"/.claude-plugin/marketplace.json"))["plugins"][0]["source"])')
 { [ -d "$ROOT/$src" ] && [ -f "$ROOT/$src/.claude-plugin/plugin.json" ]; } \
   && ok "source $src resolves to a plugin" || bad "source $src missing/invalid"
+# Cross-agent packaging: Codex + Cursor reuse the SAME spectra/ tree via their own marketplace +
+# plugin manifest. Each marketplace's plugin source must resolve to a dir holding that tool's
+# plugin.json, and that plugin's "skills" pointer must resolve to the one shared skills tree.
+# entry = "<repo-root marketplace path>:<tool plugin-manifest dir>"
+for entry in ".agents/plugins/marketplace.json:.codex-plugin" ".cursor-plugin/marketplace.json:.cursor-plugin"; do
+  mkt="${entry%%:*}"; pdir="${entry##*:}"
+  python3 -m json.tool "$ROOT/$mkt" >/dev/null 2>&1 && ok "$mkt parses" || { bad "$mkt parse"; continue; }
+  s=$(ROOT="$ROOT" MKT="$mkt" python3 -c 'import json,os;print(json.load(open(os.environ["ROOT"]+"/"+os.environ["MKT"]))["plugins"][0]["source"])')
+  { [ -d "$ROOT/$s" ] && [ -f "$ROOT/$s/$pdir/plugin.json" ]; } \
+    && ok "$mkt source $s resolves to a $pdir plugin" || { bad "$mkt source $s missing $pdir/plugin.json"; continue; }
+  sk=$(ROOT="$ROOT" P="$s/$pdir/plugin.json" python3 -c 'import json,os;print(json.load(open(os.environ["ROOT"]+"/"+os.environ["P"]))["skills"])')
+  { [ -d "$ROOT/$s/$sk" ] && [ -f "$ROOT/$s/$sk/spectra-install/SKILL.md" ]; } \
+    && ok "$pdir skills '$sk' resolves to the shared skills tree" || bad "$pdir skills pointer broken"
+done
 
 echo "2. skills have frontmatter"
 for f in "$SRC"/skills/*/SKILL.md; do
   [ "$(head -1 "$f")" = "---" ] && ok "$(basename "$(dirname "$f")")" || bad "$f frontmatter"
+done
+# install/update resolve $SRC tool-neutrally (one body works under Claude/Codex/Cursor). Guard
+# against a regression to a Claude-only resolution: the body must still define $SRC AND carry the
+# cross-agent guidance ("plugin" root + "other agents"), not just hardcode ${CLAUDE_SKILL_DIR}.
+for s in spectra-install spectra-update; do
+  sk="$SRC/skills/$s/SKILL.md"
+  { grep -qF 'SRC=' "$sk" && grep -qF 'plugin' "$sk" && grep -qiF 'other agents' "$sk"; } \
+    && ok "$s resolves \$SRC tool-neutrally" || bad "$s lost tool-neutral \$SRC resolution"
 done
 # user.md is create-on-demand (spectra-setup writes it into a consumer) — never shipped
 [ ! -e "$SRC/personas/user.md" ] && ok "personas/user.md not shipped (create-on-demand)" \
