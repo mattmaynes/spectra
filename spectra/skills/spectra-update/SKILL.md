@@ -27,7 +27,7 @@ If Spectra was never installed here, run `spectra-install` instead.
    **does not touch `docs/spectra/personas.config`** — that file is developer-owned and records
    which personas are *enabled*. A disabled persona's file is refreshed but stays off because its
    slug isn't in the config; a developer's `user.md` (no source) is left as-is. Change the active
-   set with `/spectra-enable` and `/spectra-disable`, never by editing persona files.
+   set with `/spectra-persona-enable` and `/spectra-persona-disable`, never by editing persona files.
 
 2. **Refresh the hook** — re-copy into the resolved hooks dir (refresh the sidecar if the
    developer chained Spectra onto a pre-existing hook):

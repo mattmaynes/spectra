@@ -120,7 +120,7 @@ done
   || bad "personas missing title/contract-ref/checklist:$miss"
 # enable/disable must edit personas.config and keep the slug validation (feedback/0007) — guard
 # against a future edit silently dropping either (the skills are prose the suite can't execute)
-for s in spectra-enable spectra-disable; do
+for s in spectra-persona-enable spectra-persona-disable; do
   sk="$SRC/skills/$s/SKILL.md"
   { grep -qF 'personas.config' "$sk" && grep -qF '[a-z][a-z0-9-]' "$sk"; } \
     && ok "$s edits personas.config and validates the slug" \

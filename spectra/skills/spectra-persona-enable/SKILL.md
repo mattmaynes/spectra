@@ -1,5 +1,5 @@
 ---
-name: spectra-enable
+name: spectra-persona-enable
 description: Turn on a Spectra review persona for this repo (e.g. designer, compliance, analytics) by adding it to docs/spectra/personas.config. Run with no argument to list the personas available to enable. Use when asked to enable, turn on, or add a review persona.
 ---
 

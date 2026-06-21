@@ -1,6 +1,6 @@
 # Thin wrapper: the command body is the shared, tool-neutral skill, injected at runtime so there
 # is exactly one source of truth (the same SKILL.md Claude/Codex/Cursor run). See architecture.md.
-description = "Turn off a Spectra review persona"
+description = "Turn on a Spectra review persona (e.g. designer, compliance, analytics)"
 prompt = """
-@{skills/spectra-disable/SKILL.md}
+@{skills/spectra-persona-enable/SKILL.md}
 """

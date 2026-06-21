@@ -1,5 +1,5 @@
 ---
-name: spectra-disable
+name: spectra-persona-disable
 description: Turn off a Spectra review persona for this repo (including a core persona like security) by removing it from docs/spectra/personas.config. Run with no argument to list the personas currently enabled. Use when asked to disable, turn off, or remove a review persona.
 ---
 
