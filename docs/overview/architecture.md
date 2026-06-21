@@ -97,12 +97,40 @@ never touch a consumer with them.
   `grep -Eq` against `<type>[scope][!]: <subject>`). Same "runs anywhere, no toolchain"
   rationale as `token-report.sh`. The convention is documented in `AGENTS.md` **outside** the
   `spectra:start/end` block, so it's repo-local and never shipped.
+- `VERSION` (repo root) is the **single source of truth** for the plugin version. It's a plain
+  `cat`-able `x.y.z` line — deliberately *not* a "canonical" manifest, so no one manifest is made
+  arbitrarily special and the release job can read the version without parsing JSON. The seven
+  version-bearing manifests (the three repo-root marketplaces' `plugins[0].version` and the four
+  `spectra/` plugin/extension top-level `version`s) are derivatives kept equal to it.
+- `scripts/bump-version.sh` (POSIX sh + `python3`) is the only writer. Modes: no-arg prints
+  `VERSION`; `X.Y.Z` validates semver (`grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'` — rejects a `v`
+  prefix or wrong arity) then writes `VERSION` and each manifest; `--check` asserts `VERSION`
+  equals every manifest's version, exiting non-zero on drift (wired into `test.sh` step 10 and
+  CI). It relies on the **one-`version`-token-per-file invariant**: each manifest holds exactly
+  one `"version"` token, so a `python3` regex does a *format-preserving surgical substitution* of
+  just that value (no `json.dump` reflow of the hand-formatted files), guarding that exactly one
+  substitution happened and the file still parses. A `SPECTRA_ROOT` override (mirroring
+  `SPECTRA_SRC`) lets `test.sh` exercise a write against a throwaway sandbox without touching the
+  real tree.
+- **Identity:** the marketplace `owner` and the plugin `author` are now `rogueoak` (the personal
+  name/email was dropped) — set once across the manifests, independent of the version.
 
-**CI (repo-local, never shipped):** `.github/workflows/ci.yml` runs on push and PR with three
-least-privilege (`contents: read`) jobs: `test` (`./test.sh`), `readme-drift`
-(`token-report.sh --check`), and `commit-lint` (PR-only, validates the PR title). CI is where
-the repo's local guards become *shared* gates: the token-drift check otherwise lives only in
-an untracked `.git/hooks/pre-commit`, so fork PRs and fresh clones are unprotected until CI
-re-runs it. The PR title is passed to the validator via an `env:` var, never interpolated into
+**CI (repo-local, never shipped):** `.github/workflows/ci.yml` runs on push and PR. The
+workflow default is `contents: read`; three jobs stay read-only — `test` (`./test.sh`),
+`readme-drift` (`token-report.sh --check`), and `commit-lint` (PR-only, validates the PR title).
+CI is where the repo's local guards become *shared* gates: the token-drift check otherwise lives
+only in an untracked `.git/hooks/pre-commit`, so fork PRs and fresh clones are unprotected until
+CI re-runs it. The PR title is passed to the validator via an `env:` var, never interpolated into
 the shell, so an untrusted title can't inject commands. Squash-merge makes the PR title the
 landed commit, so linting the title (not every intermediate commit) is the high-value gate.
+
+A fourth job, `release`, is the **one job granted `contents: write`** (job-scoped, leaving the
+workflow default read-only). It runs on `push` to `main` only, `needs: [test, readme-drift]`,
+reads `VERSION`, and — if `gh release view "$version"` 404s — runs `gh release create "$version"
+--target "$GITHUB_SHA" --generate-notes`, which mints the bare-semver tag, the Release, and the
+notes (server-side, from the Conventional Commit titles since the prior tag) in one call.
+Idempotent via the `gh release view` guard, so only a push whose `VERSION` moved to an unreleased
+value fires it. The **manifest `version` is the real update signal** for installed agents (they
+gate update detection on the version string); the **tag is the durable release marker** (and
+optional pin point) — both wired to the same `x.y.z`. `gh` runs with the ambient `github.token`
+(no PAT) and no untrusted GitHub context is interpolated into the shell.

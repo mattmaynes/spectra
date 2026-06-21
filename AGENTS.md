@@ -44,3 +44,13 @@ When merging from a worktree, `gh pr merge --delete-branch` may error trying to 
 local ref (`main` is checked out elsewhere) *after* the remote merge already succeeded — verify
 with `gh pr view <n> --json state`, then remove the branch/worktree manually. (Repo-local
 operational note; not part of the shipped plugin.)
+
+## Releasing
+
+The plugin's version lives in the root **`VERSION`** file (the source of truth) and is
+propagated to all seven manifests by `scripts/bump-version.sh X.Y.Z` (semver — `x.y.z`, no `v`
+prefix). `scripts/bump-version.sh --check` enforces that `VERSION` and every manifest agree
+(also run in `test.sh` and CI), so they can't drift. To cut a release, bump the version in a PR,
+squash-merge it to `main`, and CI auto-tags `x.y.z` (bare semver) and publishes a GitHub Release
+whose notes are generated from the Conventional Commit titles since the last tag — there's no
+`CHANGELOG.md`. (Repo-local convention; not part of the shipped plugin.)

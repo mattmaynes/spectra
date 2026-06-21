@@ -43,3 +43,10 @@
 - **Conventional Commits** — commit messages and PR titles follow
   `<type>[scope][!]: <subject>`, checked by the dependency-free `scripts/check-commit-msg.sh`
   (repo-local; documented in `AGENTS.md`, enforced by CI on PR titles).
+- **Synced plugin versioning & releases** (repo-local, not shipped) — a root `VERSION` file is
+  the single source of truth for the version stamped into all seven manifests;
+  `scripts/bump-version.sh X.Y.Z` propagates it (semver, no `v` prefix) via format-preserving
+  edits and `--check` enforces they agree (run in `test.sh` and CI). Merging a version bump to
+  `main` makes CI auto-tag the bare-semver `x.y.z` and publish a GitHub Release whose notes are
+  generated from the Conventional Commit titles since the last tag — idempotent (a no-bump push
+  releases nothing), and no `CHANGELOG.md`.

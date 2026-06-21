@@ -248,5 +248,37 @@ for m in "nope" "Add thing" "feat x" "feature: x" "feat:" "feat:   " ""; do
   if "$ccm" "$m" >/dev/null 2>&1; then bad "accepted invalid '$m'"; else ok "rejects '$m'"; fi
 done
 
+echo "10. version bump & sync"
+bv="$ROOT/scripts/bump-version.sh"
+# the committed tree's VERSION agrees with all 7 manifests
+"$bv" --check >/dev/null 2>&1 && ok "bump-version --check passes (VERSION == all 7 manifests)" \
+  || bad "bump-version --check found drift on the real tree"
+# semver-only, no v-prefix: each malformed argument must be rejected (exit non-zero)
+for v in "v1.2.3" "1.2" "nope" "1.2.3.4" ""; do
+  if "$bv" "$v" >/dev/null 2>&1; then bad "accepted invalid version '$v'"; else ok "rejects '$v'"; fi
+done
+# sandbox write: copy the 7 manifests + VERSION into $T (preserving paths), bump to 9.9.9 there,
+# and assert every copy + $T/VERSION moved while the REAL VERSION stays untouched.
+T=$(mktemp -d)
+for m in .claude-plugin/marketplace.json .agents/plugins/marketplace.json .cursor-plugin/marketplace.json \
+         spectra/.claude-plugin/plugin.json spectra/.codex-plugin/plugin.json spectra/.cursor-plugin/plugin.json \
+         spectra/gemini-extension.json; do
+  mkdir -p "$T/$(dirname "$m")"; cp "$ROOT/$m" "$T/$m"
+done
+cp "$ROOT/VERSION" "$T/VERSION"
+SPECTRA_ROOT="$T" "$bv" 9.9.9 >/dev/null 2>&1 && ok "sandbox bump to 9.9.9 succeeds" || bad "sandbox bump failed"
+[ "$(cat "$T/VERSION")" = "9.9.9" ] && ok "sandbox VERSION -> 9.9.9" || bad "sandbox VERSION not updated"
+miss=
+for m in .claude-plugin/marketplace.json .agents/plugins/marketplace.json .cursor-plugin/marketplace.json \
+         spectra/.claude-plugin/plugin.json spectra/.codex-plugin/plugin.json spectra/.cursor-plugin/plugin.json \
+         spectra/gemini-extension.json; do
+  grep -q '"version": "9.9.9"' "$T/$m" || miss="$miss $m"
+done
+[ -z "$miss" ] && ok "all 7 sandbox manifests -> 9.9.9" || bad "manifests not bumped:$miss"
+SPECTRA_ROOT="$T" "$bv" --check >/dev/null 2>&1 && ok "sandbox --check passes after bump" || bad "sandbox --check found drift after bump"
+[ "$(cat "$ROOT/VERSION")" = "0.1.0" ] && ok "real VERSION untouched by sandbox bump (still 0.1.0)" \
+  || bad "real VERSION was modified by the sandbox bump"
+rm -rf "$T"
+
 echo
 [ "$fail" -eq 0 ] && echo "PASS" || { echo "FAILURES"; exit 1; }

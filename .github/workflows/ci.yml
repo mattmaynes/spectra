@@ -47,3 +47,32 @@ jobs:
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}
         run: scripts/check-commit-msg.sh "$PR_TITLE"
+
+  # On a push to main (only), once the gates pass, tag + publish the version in VERSION. The
+  # manifest `version` is the real update signal for installed agents; this job makes the tag +
+  # GitHub Release the durable marker for the same x.y.z. It's idempotent — a push whose VERSION
+  # already has a release does nothing, so non-bump pushes create nothing. This is the ONLY job
+  # granted `contents: write` (job-scoped, leaving the workflow default `contents: read`): tagging
+  # and creating a Release are the only writes CI performs, so least-privilege keeps them isolated.
+  release:
+    name: Tag & release on version bump
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    needs: [test, readme-drift]
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tag + release if VERSION is unreleased
+        # gh + GITHUB_TOKEN are runner built-ins; no untrusted GitHub context is interpolated.
+        # `gh release create` makes the bare-semver tag (no `v`) at the target commit and
+        # generates notes server-side from the conventional-commit titles since the prior tag.
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="$(cat VERSION)"
+          if gh release view "$version" >/dev/null 2>&1; then
+            echo "Release $version already exists — nothing to do."
+            exit 0
+          fi
+          gh release create "$version" --target "$GITHUB_SHA" --generate-notes

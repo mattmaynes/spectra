@@ -1,8 +1,7 @@
 {
   "name": "spectra",
   "owner": {
-    "name": "Matthew Maynes",
-    "email": "matthewmaynes@outlook.com"
+    "name": "rogueoak"
   },
   "description": "Spectra — spec-driven development protocol with learning feedback loops.",
   "plugins": [
