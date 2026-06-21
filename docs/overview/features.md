@@ -1,11 +1,12 @@
 # Features
 
 - **Multi-agent packaging** — one shared `spectra/` source installs natively into Claude Code
-  (`.claude-plugin/`), OpenAI Codex (`.codex-plugin/` + `.agents/plugins/marketplace.json`), and
-  Cursor (`.cursor-plugin/` + `.cursor-plugin/marketplace.json`). Every agent's marketplace and
-  plugin manifest points at the same `skills/`, `protocol.md`, and `personas/` — no duplicated
-  content; the `SKILL.md` bodies are tool-neutral (resolve `$SRC` to the plugin root, not a
-  Claude env var). (Gemini CLI lands next, as a TOML-command extension over the same tree.)
+  (`.claude-plugin/`), OpenAI Codex (`.codex-plugin/` + `.agents/plugins/marketplace.json`),
+  Cursor (`.cursor-plugin/` + `.cursor-plugin/marketplace.json`), and Gemini CLI
+  (`gemini-extension.json` + `commands/*.toml`). Every agent's manifest points at the same
+  `skills/`, `protocol.md`, and `personas/` — no duplicated content; the `SKILL.md` bodies are
+  tool-neutral (resolve `$SRC` to the plugin root, not a Claude env var), and Gemini's TOML
+  commands inject the very same bodies via `@{skills/<name>/SKILL.md}`.
 - **`spectra-install` skill** — scaffolds `docs/`, copies protocol + personas, installs the
   reflection hook, wires up AGENTS.md.
 - **`spectra-update` skill** — re-syncs Spectra-owned files; copies **all** shipped persona

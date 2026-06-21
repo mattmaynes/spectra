@@ -35,6 +35,27 @@ for entry in ".agents/plugins/marketplace.json:.codex-plugin" ".cursor-plugin/ma
   { [ -d "$ROOT/$s/$sk" ] && [ -f "$ROOT/$s/$sk/spectra-install/SKILL.md" ]; } \
     && ok "$pdir skills '$sk' resolves to the shared skills tree" || bad "$pdir skills pointer broken"
 done
+# Gemini ships a TOML-command extension over the SAME tree: gemini-extension.json + one thin
+# commands/<name>.toml per skill whose prompt injects @{skills/<name>/SKILL.md} — the shared body,
+# single-source (no second copy, no generator). Assert the manifest parses, every skill has a
+# wrapper injecting its OWN existing body (+ a description), and every wrapper maps 1:1 back to a
+# real skill (so a renamed skill can neither lose its command nor orphan a stale @{} reference).
+python3 -m json.tool "$SRC/gemini-extension.json" >/dev/null 2>&1 \
+  && ok "gemini-extension.json parses" || bad "gemini-extension.json parse"
+gmiss=
+for d in "$SRC"/skills/*/; do
+  n=$(basename "$d"); t="$SRC/commands/$n.toml"
+  { [ -f "$t" ] && grep -qF "@{skills/$n/SKILL.md}" "$t" && grep -q '^description' "$t"; } \
+    || gmiss="$gmiss $n"
+done
+[ -z "$gmiss" ] && ok "every skill has a Gemini command injecting its shared body" \
+  || bad "Gemini command missing/mis-wired for:$gmiss"
+omiss=
+for t in "$SRC"/commands/*.toml; do
+  n=$(basename "$t" .toml); [ -d "$SRC/skills/$n" ] || omiss="$omiss $n"
+done
+[ -z "$omiss" ] && ok "every Gemini command maps to a real skill" \
+  || bad "Gemini command without a backing skill:$omiss"
 
 echo "2. skills have frontmatter"
 for f in "$SRC"/skills/*/SKILL.md; do

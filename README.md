@@ -11,9 +11,9 @@ reasoning behind a decision evaporates, and the same mistakes come back next wee
 fixes that by making intent explicit *before* you build and capturing learning *after* —
 all in version control, all driven by your coding agent.
 
-It's packaged natively for **Claude Code, OpenAI Codex, and Cursor** — one source of truth,
-one set of commands — so any repo can adopt the entire protocol (the workflow, the review
-personas, the artifact structure, and a reflection reminder) without copy-pasting a thing.
+It's packaged natively for **Claude Code, OpenAI Codex, Gemini CLI, and Cursor** — one source
+of truth, one set of commands — so any repo can adopt the entire protocol (the workflow, the
+review personas, the artifact structure, and a reflection reminder) without copy-pasting a thing.
 
 ## Quick start
 
@@ -33,16 +33,22 @@ codex plugin marketplace add mattmaynes/spectra
 ```
 Then install the **spectra** plugin from that marketplace and run `/spectra-install`.
 
+**Gemini CLI**
+```text
+gemini extensions install https://github.com/mattmaynes/spectra
+```
+(or `gemini extensions link .` for local development), then run `/spectra-install`.
+
 **Cursor**
 
 Add the `mattmaynes/spectra` marketplace (in-editor marketplace panel or `/add-plugin`), then
 run `/spectra-install`.
 
-All three install the **same** protocol, personas, and reflection hook from one shared source —
-the agent reads it via `AGENTS.md` (Claude through a `CLAUDE.md` symlink; Codex and Cursor
-natively). `/spectra-install` scaffolds your repo, drops in the protocol and review personas,
-installs a reflection hook, and points your `AGENTS.md` at it. Later, pull updates with
-`/spectra-update`.
+All four install the **same** protocol, personas, and reflection hook from one shared source —
+the agent reads it via `AGENTS.md` (Claude and Gemini through a `CLAUDE.md`/`GEMINI.md` symlink;
+Codex and Cursor natively). `/spectra-install` scaffolds your repo, drops in the protocol and
+review personas, installs a reflection hook, and points your `AGENTS.md` at it. Later, pull
+updates with `/spectra-update`.
 
 ## The protocol
 
