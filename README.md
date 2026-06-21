@@ -44,11 +44,8 @@ gemini extensions install https://github.com/mattmaynes/spectra
 Add the `mattmaynes/spectra` marketplace (in-editor marketplace panel or `/add-plugin`), then
 run `/spectra-install`.
 
-All four install the **same** protocol, personas, and reflection hook from one shared source —
-the agent reads it via `AGENTS.md` (Claude and Gemini through a `CLAUDE.md`/`GEMINI.md` symlink;
-Codex and Cursor natively). `/spectra-install` scaffolds your repo, drops in the protocol and
-review personas, installs a reflection hook, and points your `AGENTS.md` at it. Later, pull
-updates with `/spectra-update`.
+`/spectra-install` scaffolds your repo, drops in the protocol and review personas, installs a
+reflection hook, and points your `AGENTS.md` at it. Later, pull updates with `/spectra-update`.
 
 ## The protocol
 
@@ -69,7 +66,7 @@ Every change flows through one loop (full text: [`spectra/protocol.md`](spectra/
 | 7 | **Merge** | On approval. |
 | 8 | **Reflect** | Before concluding, the **living docs** in `docs/overview/` (`project`, `features`, `architecture`, `learnings`) are updated. A non-blocking `pre-commit` hook nudges you if you forget. |
 
-Step 8 is the differentiator: the **feedback → learnings** loop means the system gets
+The **feedback → learnings** loop means the system gets
 better at *your* codebase over time, instead of repeating itself.
 
 ## Skills
@@ -105,25 +102,6 @@ is yours to define:
 
 Flip any of them with `/spectra-enable` / `/spectra-disable`. A disabled persona costs nothing —
 its checklist only loads when it's both enabled and scoped into a review.
-
-## Own your protocol
-
-Spectra isn't a SaaS, a runtime, or an API you call out to — it's a handful of Markdown
-files that live **in your repo**, under your version control, read by the coding agent you
-already use. That changes what you're adopting:
-
-- **It's yours to edit.** `protocol.md` and the personas are plain prose. Tighten a step,
-  add a persona, rename an artifact directory — it's a text change, reviewed like any other.
-- **No third-party dependency.** Nothing phones home; there's no account and no lock-in.
-  Uninstall the plugin and the `docs/` it scaffolded keep working on their own.
-- **Opinionated, but flexible.** The defaults encode a real workflow (route → spec → … →
-  reflect) so you don't start from a blank page — yet every default is just a starting
-  point you can override per repo.
-- **Versioned like code.** Because the protocol is committed, changes to *how you build*
-  show up in `git log` right next to changes to *what you built*.
-
-`/spectra-update` re-syncs only the files you haven't claimed as your own, so customizing
-the protocol and pulling upstream improvements aren't mutually exclusive.
 
 ## Low token cost
 

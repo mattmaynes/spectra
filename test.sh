@@ -36,26 +36,40 @@ for entry in ".agents/plugins/marketplace.json:.codex-plugin" ".cursor-plugin/ma
     && ok "$pdir skills '$sk' resolves to the shared skills tree" || bad "$pdir skills pointer broken"
 done
 # Gemini ships a TOML-command extension over the SAME tree: gemini-extension.json + one thin
-# commands/<name>.toml per skill whose prompt injects @{skills/<name>/SKILL.md} — the shared body,
-# single-source (no second copy, no generator). Assert the manifest parses, every skill has a
-# wrapper injecting its OWN existing body (+ a description), and every wrapper maps 1:1 back to a
-# real skill (so a renamed skill can neither lose its command nor orphan a stale @{} reference).
-python3 -m json.tool "$SRC/gemini-extension.json" >/dev/null 2>&1 \
-  && ok "gemini-extension.json parses" || bad "gemini-extension.json parse"
-gmiss=
-for d in "$SRC"/skills/*/; do
-  n=$(basename "$d"); t="$SRC/commands/$n.toml"
-  { [ -f "$t" ] && grep -qF "@{skills/$n/SKILL.md}" "$t" && grep -q '^description' "$t"; } \
-    || gmiss="$gmiss $n"
-done
-[ -z "$gmiss" ] && ok "every skill has a Gemini command injecting its shared body" \
-  || bad "Gemini command missing/mis-wired for:$gmiss"
-omiss=
-for t in "$SRC"/commands/*.toml; do
-  n=$(basename "$t" .toml); [ -d "$SRC/skills/$n" ] || omiss="$omiss $n"
-done
-[ -z "$omiss" ] && ok "every Gemini command maps to a real skill" \
-  || bad "Gemini command without a backing skill:$omiss"
+# commands/<name>.toml per skill whose `prompt` injects @{skills/<name>/SKILL.md} — the shared
+# body, single-source (no second copy, no generator). Validate by PARSING (manifest name; every
+# TOML parses, has a non-empty description, and injects its own body INSIDE the `prompt` value)
+# and a 1:1 skill<->command map. Keying on the parsed `prompt` field — not a bare grep that would
+# match the string in a comment even with `prompt` deleted — is the feedback/0009 lesson applied.
+gout=$(SRC="$SRC" python3 <<'PY'
+import os, sys, json, glob, pathlib, tomllib
+SRC = os.environ["SRC"]; errs = []
+try:
+    m = json.load(open(f"{SRC}/gemini-extension.json"))
+    if not m.get("name"): errs.append("gemini-extension.json: empty/missing name")
+except Exception as e:
+    errs.append(f"gemini-extension.json: {e}")
+skills = {pathlib.Path(p).name for p in glob.glob(f"{SRC}/skills/*/")}
+cmds   = {pathlib.Path(p).stem for p in glob.glob(f"{SRC}/commands/*.toml")}
+for n in sorted(skills):                                   # every skill -> a valid wrapper
+    t = f"{SRC}/commands/{n}.toml"
+    if not os.path.isfile(t): errs.append(f"{n}: no command toml"); continue
+    try:
+        d = tomllib.load(open(t, "rb"))
+    except Exception as e:
+        errs.append(f"{n}.toml: parse error: {e}"); continue
+    if not d.get("description"): errs.append(f"{n}.toml: empty/missing description")
+    if f"@{{skills/{n}/SKILL.md}}" not in d.get("prompt", ""):
+        errs.append(f"{n}.toml: prompt does not inject @{{skills/{n}/SKILL.md}}")
+for c in sorted(cmds - skills):                            # no wrapper without a skill (1:1)
+    errs.append(f"{c}.toml: no backing skill")
+print("FAIL: " + "; ".join(errs) if errs else "OK")
+sys.exit(1 if errs else 0)
+PY
+)
+[ "$gout" = "OK" ] \
+  && ok "Gemini ext: manifest + 5 TOML wrappers parse, inject their own body, map 1:1" \
+  || bad "Gemini ext invalid -> $gout"
 
 echo "2. skills have frontmatter"
 for f in "$SRC"/skills/*/SKILL.md; do

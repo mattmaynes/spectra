@@ -37,7 +37,10 @@ deprecated `~/.codex/prompts/` is deliberately avoided).
 file, not a `SKILL.md`, so it can't reuse the skill files by symlink. Instead it ships a
 `gemini-extension.json` over the same `spectra/` tree plus one **thin** `commands/<name>.toml`
 per skill whose `prompt` is just `@{skills/<name>/SKILL.md}` — Gemini's runtime file-injection,
-so the command body stays the single shared skill (no second copy, no generator). `@{}` resolves
+so the command body stays the single shared skill (no second copy, no generator). The manifest is
+a **command channel only** — it sets no `contextFileName` and ships no `GEMINI.md`, because the
+protocol context lands in the *consumer* repo via `/spectra-install`'s `GEMINI.md`→`AGENTS.md`
+symlink, exactly like the other three agents. `@{}` resolves
 relative to the extension root (`spectra/`); this is the one assumption to confirm against a live
 `gemini extensions link .` (fallback if it doesn't hold: a generated TOML with a CI drift-check,
 per spec 0006). `test.sh` enforces a 1:1 map — every skill has a wrapper injecting its own body,
