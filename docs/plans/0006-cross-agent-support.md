@@ -47,7 +47,7 @@ The high-leverage PR: once the bodies are tool-neutral, Codex and Cursor reuse t
    and Cursor read `AGENTS.md` natively** (no extra file written); keep the `CLAUDE.md`/`GEMINI.md`
    symlinks. No `.cursor/rules/*.mdc` (decided).
 5. **README** — new "Install (per tool)" section: Claude (today), Codex (`codex plugin marketplace
-   add mattmaynes/spectra`), Cursor (`/add-plugin` or marketplace). Note the protocol/personas are
+   add rogueoak/spectra`), Cursor (`/add-plugin` or marketplace). Note the protocol/personas are
    identical across tools.
 6. **`test.sh`** — extend step 1 ("manifests parse"):
    - `.agents/plugins/marketplace.json`, `.cursor-plugin/marketplace.json`,
@@ -86,7 +86,7 @@ n/a (no UI, no PII, no tracking, internal tooling).
    (flat, no subdir) so command names match the other tools.
 4. **Install/update host wiring** — `GEMINI.md` symlink already handled; note Gemini can also set
    `context.fileName:["AGENTS.md","GEMINI.md"]` as an alternative. No body changes.
-5. **README** — add Gemini install (`gemini extensions install https://github.com/mattmaynes/spectra`
+5. **README** — add Gemini install (`gemini extensions install https://github.com/rogueoak/spectra`
    / `gemini extensions link .` for local dev).
 6. **`test.sh`** — assert: `gemini-extension.json` parses; exactly the five `commands/*.toml`
    exist; each TOML has a `description` and a `prompt` that injects its matching

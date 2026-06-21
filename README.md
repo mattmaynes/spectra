@@ -22,26 +22,26 @@ you want to adopt it.
 
 **Claude Code**
 ```text
-/plugin marketplace add mattmaynes/spectra
+/plugin marketplace add rogueoak/spectra
 /plugin install spectra@spectra
 /spectra-install
 ```
 
 **OpenAI Codex**
 ```text
-codex plugin marketplace add mattmaynes/spectra
+codex plugin marketplace add rogueoak/spectra
 ```
 Then install the **spectra** plugin from that marketplace and run `/spectra-install`.
 
 **Gemini CLI**
 ```text
-gemini extensions install https://github.com/mattmaynes/spectra
+gemini extensions install https://github.com/rogueoak/spectra
 ```
 (or `gemini extensions link .` for local development), then run `/spectra-install`.
 
 **Cursor**
 
-Add the `mattmaynes/spectra` marketplace (in-editor marketplace panel or `/add-plugin`), then
+Add the `rogueoak/spectra` marketplace (in-editor marketplace panel or `/add-plugin`), then
 run `/spectra-install`.
 
 `/spectra-install` scaffolds your repo, drops in the protocol and review personas, installs a
