@@ -7,8 +7,9 @@ description: Update the Spectra protocol files in the current repo to the instal
 
 Re-sync Spectra's **distributed** files in the current repo from the bundled source at
 `${CLAUDE_SKILL_DIR}/../..` (`$SRC`). This is idempotent and **never** touches the
-developer's own content: `docs/specs/`, `docs/plans/`, `docs/feedback/`,
-`docs/overview/`, and `docs/spectra/personas/user.md` are left as-is.
+developer's own content: `docs/specs/`, `docs/plans/`, `docs/feedback/`, `docs/overview/`,
+`docs/spectra/personas/user.md`, and `docs/spectra/personas.config` (your enabled-persona
+choices) are left as-is.
 
 If Spectra was never installed here, run `spectra-install` instead.
 
@@ -20,8 +21,11 @@ If Spectra was never installed here, run `spectra-install` instead.
    cp "$SRC/protocol.md" docs/spectra/protocol.md
    mkdir -p docs/spectra/personas && cp "$SRC/personas/"*.md docs/spectra/personas/
    ```
-   The copy is **shipped-personas-only** — `$SRC` has no `user.md`, so a developer's
-   `docs/spectra/personas/user.md` (from `spectra-setup`) is never overwritten.
+   This copies **all shipped persona files** (so new and updated personas always arrive), but
+   **does not touch `docs/spectra/personas.config`** — that file is developer-owned and records
+   which personas are *enabled*. A disabled persona's file is refreshed but stays off because its
+   slug isn't in the config; a developer's `user.md` (no source) is left as-is. Change the active
+   set with `/spectra-enable` and `/spectra-disable`, never by editing persona files.
 
 2. **Refresh the hook** — re-copy into the resolved hooks dir (refresh the sidecar if the
    developer chained Spectra onto a pre-existing hook):

@@ -2,6 +2,23 @@
 
 Process lessons and feedback distilled into guidance. Append as they arise (newest first).
 
+- **Don't overload one signal with two questions — give each its own representation.** A persona
+  being "active = file present" forced the file to answer both *"is it installed?"* and *"did the
+  developer enable it?"*; `spectra-update` (wants every file) and `/spectra-disable` (wants a file
+  gone) then pulled in opposite directions. Splitting them — Spectra-owned files always copied,
+  enabled set in a developer-owned `personas.config` update never touches — let update stay
+  additive *and* disables stick. When operations on a piece of state start fighting, it's usually
+  carrying two meanings. — from [`feedback/0006`](../feedback/0006-update-becomes-non-additive.md)
+- **A skill is an interface with untrusted input — validate it like code.** `spectra-disable`
+  told the agent to `rm -f …/<persona>.md` from a user-supplied name with only a loose guard; a
+  `../` could escape the personas dir. Prose that instructs an agent to delete/copy by name must
+  spell out the input contract (bare-segment shape + allowlist membership) explicitly; "the
+  agent will be careful" is not an access control. — from [`feedback/0007`](../feedback/0007-skill-input-validation.md)
+- **When you can't execute the artifact, assert on its text.** The update test re-implemented
+  the skill's loop inline, so a regression to the old bulk-copy glob would stay green. For
+  behavior that lives in an instruction file the suite can't run, add must-contain/must-not-contain
+  checks on the file itself — a test that copies the logic only tests the copy. — from
+  [`feedback/0008`](../feedback/0008-assert-on-uninstructed-text.md)
 - **A learning is a correction, not a feature write-up.** The Reflect step on PR #8 logged
   "never ship `user.md` so update can't clobber it" as a learning — but that's just *how the
   feature works*, already captured in `architecture.md`. The developer rejected it: only record

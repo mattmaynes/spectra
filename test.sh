@@ -36,6 +36,37 @@ for h in '# 👤 User (ICP)' '## Profile' '## Review'; do
 done
 [ -z "$miss" ] && ok "spectra-setup template has 👤 title + Profile + Review" \
   || bad "spectra-setup template missing heading(s):$miss"
+# all personas ship as files in personas/ (the optional ones too); the config decides which load
+for p in designer compliance analytics; do
+  [ -f "$SRC/personas/$p.md" ] || bad "persona $p missing from personas/"
+done
+ok "optional personas designer/compliance/analytics ship in personas/"
+# the shipped default config enables exactly the four core personas (off-by-default holds)
+slugs=$(grep -Ev '^[[:space:]]*(#|$)' "$SRC/personas.config" | tr '\n' ' ')
+[ "$slugs" = "engineer tester architect security " ] \
+  && ok "personas.config default = the four core personas" \
+  || bad "personas.config default drifted: [$slugs]"
+# every default slug resolves to a real persona file (config can't enable a missing persona)
+for s in $(grep -Ev '^[[:space:]]*(#|$)' "$SRC/personas.config"); do
+  [ -f "$SRC/personas/$s.md" ] || bad "config enables '$s' but personas/$s.md is missing"
+done
+ok "every enabled slug resolves to a persona file"
+# every persona has a title, references persona.md, and carries a checklist
+miss=
+for f in "$SRC"/personas/*.md; do
+  b=$(basename "$f"); [ "$b" = persona.md ] && continue
+  { grep -q '^# ' "$f" && grep -qF 'persona.md' "$f" && grep -q '^- ' "$f"; } || miss="$miss $b"
+done
+[ -z "$miss" ] && ok "every persona has a title + persona.md ref + a checklist" \
+  || bad "personas missing title/contract-ref/checklist:$miss"
+# enable/disable must edit personas.config and keep the slug validation (feedback/0007) — guard
+# against a future edit silently dropping either (the skills are prose the suite can't execute)
+for s in spectra-enable spectra-disable; do
+  sk="$SRC/skills/$s/SKILL.md"
+  { grep -qF 'personas.config' "$sk" && grep -qF '[a-z][a-z0-9-]' "$sk"; } \
+    && ok "$s edits personas.config and validates the slug" \
+    || bad "$s lost its config edit or slug validation"
+done
 
 echo "3. reflection hook behavior"
 T=$(mktemp -d); cd "$T"
@@ -76,23 +107,51 @@ refresh; refresh; refresh                             # then idempotent re-runs
 { [ "$(grep -c spectra:start AGENTS.md)" = 1 ] && [ "$(grep -c spectra:end AGENTS.md)" = 1 ]; } \
   && ok "host block idempotent (append + re-run)" || bad "host block duplicated"
 grep -q "Keep me." AGENTS.md && ok "surrounding content preserved" || bad "surrounding content lost"
+# install seeds personas.config only if absent (symmetric to update never overwriting it):
+# a regression to an unconditional cp would silently reset a developer's enabled set.
+ins="$SRC/skills/spectra-install/SKILL.md"
+grep -qF '[ -f docs/spectra/personas.config ] || cp' "$ins" \
+  && ok "install seeds personas.config only if absent" || bad "install config seed isn't guarded by [ -f ] ||"
+seed() { [ -f docs/spectra/personas.config ] || cp "$SRC/personas.config" docs/spectra/personas.config; }  # the install step
+mkdir -p docs/spectra                                              # fresh install -> seed default
+seed; cmp -s docs/spectra/personas.config "$SRC/personas.config" \
+  && ok "fresh install seeds the default config" || bad "install didn't seed personas.config"
+printf 'engineer\n' > docs/spectra/personas.config                # re-install -> must NOT reset
+seed; [ "$(cat docs/spectra/personas.config)" = "engineer" ] \
+  && ok "re-install preserves an existing config" || bad "install clobbered an existing personas.config"
 cd "$ROOT"; rm -rf "$T"
 
-echo "5. update preserves the developer's own content"
+echo "5. update copies all personas additively but preserves the config + user content"
+# Assert against the real skill body: update must bulk-copy all personas (additive) and must NOT
+# touch personas.config. The simulation below mirrors that; without these greps a skill that
+# stopped copying personas, or that overwrote the config, could keep this test green.
+upd="$SRC/skills/spectra-update/SKILL.md"
+grep -qF 'cp "$SRC/personas/"*.md' "$upd" \
+  && ok "update skill copies all personas (additive)" || bad "update skill no longer bulk-copies personas"
+grep -qF 'personas.config' "$upd" \
+  && ok "update skill documents leaving personas.config alone" || bad "update skill doesn't mention personas.config"
 T=$(mktemp -d); cd "$T"
 mkdir -p docs/spectra/personas docs/specs docs/overview
 printf 'MY SPEC\n'      > docs/specs/0001.md
 printf 'MY LEARNINGS\n' > docs/overview/learnings.md
 printf 'stale\n'        > docs/spectra/protocol.md
-printf 'MY ICP\n'       > docs/spectra/personas/user.md  # developer-owned, set via spectra-setup
-cp "$SRC/protocol.md" docs/spectra/protocol.md           # the update copy steps
-cp "$SRC/personas/"*.md docs/spectra/personas/
+printf 'stale\n'        > docs/spectra/personas/engineer.md      # shipped persona -> refresh
+printf 'MY ICP\n'       > docs/spectra/personas/user.md          # developer-owned -> preserve
+printf 'engineer\ntester\n' > docs/spectra/personas.config      # security DISABLED by developer
+cp "$SRC/protocol.md" docs/spectra/protocol.md                  # update step: protocol
+cp "$SRC/personas/"*.md docs/spectra/personas/                  # update step: all personas (additive)
+# (update does NOT touch personas.config or user.md)
 { [ "$(cat docs/specs/0001.md)" = "MY SPEC" ] && [ "$(cat docs/overview/learnings.md)" = "MY LEARNINGS" ]; } \
   && ok "specs/overview untouched" || bad "update clobbered user content"
 [ "$(cat docs/spectra/personas/user.md)" = "MY ICP" ] \
-  && ok "personas/user.md preserved (glob didn't clobber it)" || bad "update clobbered user.md"
-[ -f docs/spectra/personas/engineer.md ] \
-  && ok "shipped personas copied (glob non-empty)" || bad "persona glob matched nothing — preservation test would false-pass"
+  && ok "user.md preserved (no source to overwrite it)" || bad "update clobbered user.md"
+cmp -s docs/spectra/personas/engineer.md "$SRC/personas/engineer.md" \
+  && ok "shipped persona refreshed from source" || bad "engineer.md not refreshed"
+[ -f docs/spectra/personas/security.md ] \
+  && ok "disabled persona's file still delivered (additive copy)" || bad "update didn't copy security.md"
+[ "$(cat docs/spectra/personas.config)" = "$(printf 'engineer\ntester\n')" ] \
+  && ok "personas.config preserved — security stays disabled across update" \
+  || bad "update clobbered personas.config (would silently re-enable a disabled persona)"
 cmp -s docs/spectra/protocol.md "$SRC/protocol.md" && ok "protocol refreshed from source" || bad "protocol not refreshed"
 cd "$ROOT"; rm -rf "$T"
 
@@ -100,6 +159,8 @@ echo "6. dogfood integrity (this repo)"
 { [ -e "$ROOT/docs/spectra/protocol.md" ] && cmp -s "$ROOT/docs/spectra/protocol.md" "$SRC/protocol.md"; } \
   && ok "docs/spectra/protocol.md resolves to source" || bad "dogfood protocol symlink broken"
 [ -e "$ROOT/docs/spectra/personas/engineer.md" ] && ok "docs/spectra/personas resolves" || bad "personas symlink broken"
+{ [ -e "$ROOT/docs/spectra/personas.config" ] && cmp -s "$ROOT/docs/spectra/personas.config" "$SRC/personas.config"; } \
+  && ok "docs/spectra/personas.config resolves to source" || bad "dogfood personas.config symlink broken"
 a=$(sed -n '/<!-- spectra:start -->/,/<!-- spectra:end -->/p' "$ROOT/AGENTS.md"); b=$(cat "$SRC/agents.md")
 [ "$a" = "$b" ] && ok "AGENTS.md block matches spectra/agents.md" || bad "host block drifted from source"
 

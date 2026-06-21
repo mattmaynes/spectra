@@ -45,12 +45,46 @@ Every change flows through one loop (full text: [`spectra/protocol.md`](spectra/
 | 3 | **Plan** | Multi-step work becomes an ordered plan (`docs/plans/NNNN-*.md`). |
 | 4 | **Build** | Executed in a git worktree on a branch. |
 | 5 | **Test** | Run the suite and fix until green **before committing** (no suite? add the test that proves the change). |
-| 6 | **Review** | A PR is reviewed by four personas — **engineer, tester, architect, security** — who comment in a fixed format; `major`/`blocker` findings become learnings. |
+| 6 | **Review** | A PR is reviewed by the **personas you've enabled** (engineer, tester, architect, security by default — see [Skills](#skills)) who comment in a fixed format; `major`/`blocker` findings become learnings. |
 | 7 | **Merge** | On approval. |
 | 8 | **Reflect** | Before concluding, the **living docs** in `docs/overview/` (`project`, `features`, `architecture`, `learnings`) are updated. A non-blocking `pre-commit` hook nudges you if you forget. |
 
 Step 8 is the differentiator: the **feedback → learnings** loop means the system gets
 better at *your* codebase over time, instead of repeating itself.
+
+## Skills
+
+Spectra installs as a handful of slash commands (Claude Code skills). Run them from the repo
+where Spectra is installed:
+
+| Command | What it does |
+|---|---|
+| `/spectra-install` | Adopt Spectra in the current repo — scaffolds `docs/`, copies the protocol and review personas, seeds the enabled-persona config, installs the reflection hook, and wires up `AGENTS.md`. |
+| `/spectra-update` | Re-sync the Spectra-owned files to the installed plugin version (protocol, personas, host block, hook). Leaves your `specs/plans/feedback/overview`, your `personas.config`, and your `user.md` untouched. |
+| `/spectra-setup` | Define your repo's 👤 *User (ICP)* review persona through a short guided dialog, so reviews can judge a change on your customer's behalf. Re-run to refine it. |
+| `/spectra-enable` *`[persona]`* | Turn on a review persona. With no argument, lists the personas available to enable as a numbered menu. |
+| `/spectra-disable` *`[persona]`* | Turn off a review persona (a core one too). With no argument, lists the personas currently enabled. |
+
+### Review personas
+
+Each PR is reviewed only by the personas you've **enabled** (tracked in
+`docs/spectra/personas.config`) whose facet the change actually touches — so reviews stay
+scoped, not eight bots on every diff. Four ship on by default, three more are available, and one
+is yours to define:
+
+| Persona | Default | Reviews for |
+|---|---|---|
+| 🔧 **engineer** | on | correctness, edge cases, maintainability |
+| 🧪 **tester** | on | coverage, edge cases, honest tests |
+| 📐 **architect** | on | boundaries, dependencies, design-for-change |
+| 🔒 **security** | on | auth, input handling, secrets, dependencies |
+| 🎨 **designer** | off | visual consistency, spacing, design tokens, clear calls-to-action |
+| ⚖️ **compliance** | off | accessibility, PII minimization, i18n, GDPR/CCPA |
+| 📊 **analytics** | off | event tracking, measurable outcomes, feature-gate metrics |
+| 👤 **user (ICP)** | `/spectra-setup` | whether the change actually serves your ideal customer |
+
+Flip any of them with `/spectra-enable` / `/spectra-disable`. A disabled persona costs nothing —
+its checklist only loads when it's both enabled and scoped into a review.
 
 ## Own your protocol
 
@@ -80,9 +114,10 @@ leaving room for your actual code:[^tokens]
 | What loads into context | Characters | Tokens (≈4 ch) |
 |---|---|---|
 | Always-on host block (in `AGENTS.md`) | 693 | **173** |
-| Protocol only (no personas needed) | 4,013 | **1,003** |
-| Full protocol + all four personas | 9,271 | **2,318** |
-| Everything, incl. install/update skills | 18,459 | **4,615** |
+| Protocol only (no personas needed) | 4,347 | **1,087** |
+| Full protocol + core personas | 10,072 | **2,518** |
+| Optional personas (load only when enabled) | 2,636 | **659** |
+| Everything, incl. install/update skills | 25,489 | **6,372** |
 <!-- spectra:tokens:end -->
 
 ## What lands in your repo
@@ -90,7 +125,8 @@ leaving room for your actual code:[^tokens]
 ```
 docs/
   spectra/protocol.md      the protocol (agent reads this)
-  spectra/personas/*       review lenses
+  spectra/personas/*       review lenses (all shipped; enable the ones you want)
+  spectra/personas.config  which review personas are enabled (yours to edit)
   specs/                   approved specs (NNNN-<slug>.md)
   plans/                   ordered build plans (NNNN-<slug>.md)
   feedback/                bugs & friction → lessons (NNNN-<slug>.md)

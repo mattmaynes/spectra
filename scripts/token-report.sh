@@ -20,8 +20,10 @@ README="$ROOT/README.md"
 START='<!-- spectra:tokens:start -->'
 END='<!-- spectra:tokens:end -->'
 
-# chars_of FILE... -> total character count across the given files
-chars_of() { cat "$@" | wc -c | tr -d ' '; }
+# chars_of FILE... -> total character count across the given files (0 for no files, so an
+# empty grouping — e.g. when every persona is enabled — can't turn `cat "$@"` into a
+# stdin-blocking bare cat)
+chars_of() { [ "$#" -eq 0 ] && { echo 0; return; }; cat "$@" | wc -c | tr -d ' '; }
 
 # tokens N -> round(N / 4)
 tokens() { awk -v c="$1" 'BEGIN{ printf "%d", int(c/4 + 0.5) }'; }
@@ -38,23 +40,38 @@ commas() {
 # row LABEL CHARS -> a markdown table row "| LABEL | chars | **tokens** |"
 row() { printf '| %s | %s | **%s** |\n' "$1" "$(commas "$2")" "$(commas "$(tokens "$2")")"; }
 
-# Groupings (sorted for determinism)
-host_files()  { echo "$SRC/agents.md"; }
-proto_files() { echo "$SRC/protocol.md"; }
-core_files()  { echo "$SRC/protocol.md"; find "$SRC/personas" -name '*.md' | sort; }
-all_files()   { find "$SRC" -name '*.md' | sort; }
+# Groupings. All personas ship in personas/; personas.config's default decides which are
+# *enabled* (loaded by default). Core = protocol + the shared contract + the default-enabled
+# personas; optional = the persona files that ship but aren't enabled by default.
+default_slugs() { sed 's/[[:space:]]//g' "$SRC/personas.config" | grep -Ev '^(#|$)'; }  # one slug/line, whitespace-tolerant
+is_default()    { default_slugs | grep -qxF "$1"; }
+host_files()     { echo "$SRC/agents.md"; }
+proto_files()    { echo "$SRC/protocol.md"; }
+core_files() {
+  echo "$SRC/protocol.md"; echo "$SRC/personas.config"; echo "$SRC/personas/persona.md"
+  for s in $(default_slugs); do echo "$SRC/personas/$s.md"; done
+}
+optional_files() {
+  for f in "$SRC"/personas/*.md; do
+    b=$(basename "$f" .md); [ "$b" = persona ] && continue
+    is_default "$b" || echo "$f"
+  done
+}
+all_files() { find "$SRC" -name '*.md' | sort; echo "$SRC/personas.config"; }
 
 generate() {
   HOST=$(chars_of $(host_files))
   PROTO=$(chars_of $(proto_files))
   CORE=$(chars_of $(core_files))
+  OPT=$(chars_of $(optional_files))
   ALL=$(chars_of $(all_files))
   echo "$START"
   echo '| What loads into context | Characters | Tokens (≈4 ch) |'
   echo '|---|---|---|'
   row 'Always-on host block (in `AGENTS.md`)' "$HOST"
   row 'Protocol only (no personas needed)' "$PROTO"
-  row 'Full protocol + all four personas' "$CORE"
+  row 'Full protocol + core personas' "$CORE"
+  row 'Optional personas (load only when enabled)' "$OPT"
   row 'Everything, incl. install/update skills' "$ALL"
   echo "$END"
 }
