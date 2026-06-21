@@ -6,6 +6,19 @@
   <strong>Spec-driven development with learning feedback loops — installable into any repo in three commands.</strong>
 </p>
 
+<p align="center">
+  <a href="https://github.com/rogueoak/spectra/actions/workflows/ci.yml"><img src="https://github.com/rogueoak/spectra/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></a>
+  <a href="https://github.com/rogueoak/spectra/releases/latest"><img src="https://img.shields.io/github/v/release/rogueoak/spectra?sort=semver&label=version" alt="Latest version"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/rogueoak/spectra" alt="License: MIT"></a>
+</p>
+
+<p align="center">
+  <a href="#quick-start"><img src="https://img.shields.io/badge/Claude_Code-D97757?logo=anthropic&logoColor=white" alt="Claude Code"></a>
+  <a href="#quick-start"><img src="https://img.shields.io/badge/OpenAI_Codex-412991" alt="OpenAI Codex"></a>
+  <a href="#quick-start"><img src="https://img.shields.io/badge/Gemini_CLI-1A73E8?logo=googlegemini&logoColor=white" alt="Gemini CLI"></a>
+  <a href="#quick-start"><img src="https://img.shields.io/badge/Cursor-000000?logo=cursor&logoColor=white" alt="Cursor"></a>
+</p>
+
 AI-assisted development is fast but forgetful. The spec lives in a chat message, the
 reasoning behind a decision evaporates, and the same mistakes come back next week. Spectra
 fixes that by making intent explicit *before* you build and capturing learning *after* —
