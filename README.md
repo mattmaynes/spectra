@@ -11,24 +11,38 @@ reasoning behind a decision evaporates, and the same mistakes come back next wee
 fixes that by making intent explicit *before* you build and capturing learning *after* —
 all in version control, all driven by your coding agent.
 
-It's packaged as a native Claude Code plugin marketplace, so any repo can adopt the entire
-protocol — the workflow, the review personas, the artifact structure, and a reflection
-reminder — without copy-pasting a thing.
+It's packaged natively for **Claude Code, OpenAI Codex, and Cursor** — one source of truth,
+one set of commands — so any repo can adopt the entire protocol (the workflow, the review
+personas, the artifact structure, and a reflection reminder) without copy-pasting a thing.
 
 ## Quick start
 
+Install through your agent's native plugin system, then run `/spectra-install` in the repo
+you want to adopt it.
+
+**Claude Code**
 ```text
 /plugin marketplace add mattmaynes/spectra
 /plugin install spectra@spectra
 /spectra-install
 ```
 
-That scaffolds your repo, drops in the protocol and review personas, installs a reflection
-hook, and points your `AGENTS.md` at it. Later, pull updates with:
-
+**OpenAI Codex**
 ```text
-/spectra-update
+codex plugin marketplace add mattmaynes/spectra
 ```
+Then install the **spectra** plugin from that marketplace and run `/spectra-install`.
+
+**Cursor**
+
+Add the `mattmaynes/spectra` marketplace (in-editor marketplace panel or `/add-plugin`), then
+run `/spectra-install`.
+
+All three install the **same** protocol, personas, and reflection hook from one shared source —
+the agent reads it via `AGENTS.md` (Claude through a `CLAUDE.md` symlink; Codex and Cursor
+natively). `/spectra-install` scaffolds your repo, drops in the protocol and review personas,
+installs a reflection hook, and points your `AGENTS.md` at it. Later, pull updates with
+`/spectra-update`.
 
 ## The protocol
 
@@ -54,7 +68,7 @@ better at *your* codebase over time, instead of repeating itself.
 
 ## Skills
 
-Spectra installs as a handful of slash commands (Claude Code skills). Run them from the repo
+Spectra installs as a handful of slash commands (agent skills). Run them from the repo
 where Spectra is installed:
 
 | Command | What it does |
@@ -117,7 +131,7 @@ leaving room for your actual code:[^tokens]
 | Protocol only (no personas needed) | 4,347 | **1,087** |
 | Full protocol + core personas | 10,072 | **2,518** |
 | Optional personas (load only when enabled) | 2,636 | **659** |
-| Everything, incl. install/update skills | 25,489 | **6,372** |
+| Everything, incl. install/update skills | 26,046 | **6,512** |
 <!-- spectra:tokens:end -->
 
 ## What lands in your repo

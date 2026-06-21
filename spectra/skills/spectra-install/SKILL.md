@@ -5,8 +5,10 @@ description: Install the Spectra spec-driven development protocol into the curre
 
 # Install Spectra
 
-Set up the Spectra protocol in the **current repository**. Bundled source lives at
-`${CLAUDE_SKILL_DIR}/../..` (call it `$SRC`). Run from the repo root.
+Set up the Spectra protocol in the **current repository**. `$SRC` is this plugin's root — the
+directory holding `protocol.md`, `personas/`, `agents.md`, and `hooks/` (the parent of this
+skill's `skills/` dir). Claude Code resolves it automatically (`${CLAUDE_SKILL_DIR}/../..`); on
+any other agent, `export SPECTRA_SRC=<plugin root>` before running the steps. Run from the repo root.
 
 If a previous install exists, prefer running `spectra-update` instead — it preserves work.
 
@@ -14,7 +16,7 @@ If a previous install exists, prefer running `spectra-update` instead — it pre
 
 1. **Scaffold dirs** (keep empties tracked):
    ```sh
-   SRC="${CLAUDE_SKILL_DIR}/../.."   # bundled Spectra source
+   SRC="${SPECTRA_SRC:-${CLAUDE_SKILL_DIR:?export SPECTRA_SRC=<plugin root> (see above)}/../..}"
    mkdir -p docs/spectra/personas docs/specs docs/plans docs/feedback docs/overview
    for d in docs/specs docs/plans docs/feedback; do touch "$d/.gitkeep"; done
    ```
@@ -56,8 +58,8 @@ If a previous install exists, prefer running `spectra-update` instead — it pre
      replace everything between (and including) the markers with `$SRC/agents.md`.
    - Otherwise append `$SRC/agents.md` to the end.
    - If you created `AGENTS.md`, also symlink `CLAUDE.md` and `GEMINI.md` → `AGENTS.md`
-     (`ln -sf AGENTS.md CLAUDE.md`) unless those files already exist. Codex reads
-     `AGENTS.md` natively.
+     (`ln -sf AGENTS.md CLAUDE.md`) unless those files already exist. **Codex and Cursor read
+     `AGENTS.md` natively** (no extra file needed); the symlinks cover Claude and Gemini.
 
 6. **Confirm**: list the created tree and tell the developer Spectra is installed — the next
    change should follow `docs/spectra/protocol.md`. Optionally, they can run `/spectra-setup`
