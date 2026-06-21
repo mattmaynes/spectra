@@ -3,10 +3,17 @@
 Source spec: `docs/specs/0005-advanced-personas-and-toggles.md`. Built on branch
 `feat/advanced-personas`, based on `main` (#7/#8/#9 merged). All paths repo-relative.
 
-Core mechanism (from the spec): **active = `docs/spectra/personas/<name>.md` exists.** Shipped
-default set lives at `spectra/personas/*.md`; optional personas at `spectra/personas/optional/*.md`
-(install/update top-level glob skips them). Enable = copy a file in; disable = remove it; update
-refreshes **only present** personas. Core personas are toggleable too.
+> **Revised during review (PR #10).** The steps below describe the original "active = file
+> present" / `personas/optional/` / refresh-only-present design. After the architect review it was
+> replaced with a **config-allowlist** model: all personas ship flat in `spectra/personas/`, the
+> enabled set lives in a developer-owned `spectra/personas.config` (seeded-if-absent, never
+> overwritten), and `spectra-update` copies all persona files additively. See
+> `docs/overview/architecture.md` and `feedback/0006` for the shipped mechanism.
+
+Core mechanism (shipped): **active = slug listed in `docs/spectra/personas.config`.** All personas
+ship flat in `spectra/personas/*.md`; the config (default = four core) is developer-owned. Enable =
+add a slug; disable = remove a slug; `spectra-update` copies all persona files but never touches
+the config. Core personas are toggleable too.
 
 ## Steps
 

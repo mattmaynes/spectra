@@ -19,11 +19,16 @@ If a previous install exists, prefer running `spectra-update` instead — it pre
    for d in docs/specs docs/plans docs/feedback; do touch "$d/.gitkeep"; done
    ```
 
-2. **Copy protocol + personas** (full copies — the consumer has no `$SRC` after install):
+2. **Copy protocol + personas, seed the enabled-persona config** (full copies — the consumer
+   has no `$SRC` after install):
    ```sh
    cp "$SRC/protocol.md" docs/spectra/protocol.md
    cp "$SRC/personas/"*.md docs/spectra/personas/
+   [ -f docs/spectra/personas.config ] || cp "$SRC/personas.config" docs/spectra/personas.config
    ```
+   All persona files are copied, but only the slugs in `personas.config` (default: the four
+   core personas) are *active*; the rest are available to turn on with `/spectra-enable`. The
+   config is **seeded only if absent** so a re-install never resets the developer's choices.
 
 3. **Seed overview living docs** — only if absent (never overwrite existing):
    create `docs/overview/{project,features,architecture,learnings}.md`, each a short stub

@@ -14,9 +14,10 @@ The behavior lives in an **instruction file the suite can't execute**. Simulatin
 guards could drift apart with nothing to catch it.
 
 ## Fix
-Added text assertions on the skill body: it **must contain** the present-only loop and **must
-not contain** the bare bulk-copy glob. Also made the disabled-core case non-vacuous by asserting
-the source actually ships `security.md`.
+Added text assertions on the skill body: it **must** bulk-copy all personas
+(`cp "$SRC/personas/"*.md`) and **must** reference `personas.config` (the file it has to leave
+alone). Paired with a simulation that proves the config and `user.md` survive the copy, so the
+documented behavior and the tested behavior can't drift apart.
 
 ## Learning
 When the thing under test is prose you can't run, assert on the prose itself —

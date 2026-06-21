@@ -2,12 +2,13 @@
 
 Process lessons and feedback distilled into guidance. Append as they arise (newest first).
 
-- **When state gains a second meaning, re-audit every operation that read the old one.** Making
-  a persona "active = file present" meant absence now means *disabled*, not just *missing* — so
-  `spectra-update` re-adding the full set (correct under the old meaning) would silently undo a
-  `/spectra-disable`. The fix wasn't more logic but making update's now-non-additive contract
-  explicit and routing additions through `/spectra-enable`. Don't assume operations stay correct
-  when the meaning of their inputs shifts. — from [`feedback/0006`](../feedback/0006-update-becomes-non-additive.md)
+- **Don't overload one signal with two questions — give each its own representation.** A persona
+  being "active = file present" forced the file to answer both *"is it installed?"* and *"did the
+  developer enable it?"*; `spectra-update` (wants every file) and `/spectra-disable` (wants a file
+  gone) then pulled in opposite directions. Splitting them — Spectra-owned files always copied,
+  enabled set in a developer-owned `personas.config` update never touches — let update stay
+  additive *and* disables stick. When operations on a piece of state start fighting, it's usually
+  carrying two meanings. — from [`feedback/0006`](../feedback/0006-update-becomes-non-additive.md)
 - **A skill is an interface with untrusted input — validate it like code.** `spectra-disable`
   told the agent to `rm -f …/<persona>.md` from a user-supplied name with only a loose guard; a
   `../` could escape the personas dir. Prose that instructs an agent to delete/copy by name must

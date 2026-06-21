@@ -39,14 +39,24 @@ commas() {
 # row LABEL CHARS -> a markdown table row "| LABEL | chars | **tokens** |"
 row() { printf '| %s | %s | **%s** |\n' "$1" "$(commas "$2")" "$(commas "$(tokens "$2")")"; }
 
-# Groupings (sorted for determinism). Core = top-level personas only (the default-on set);
-# optional personas live under personas/optional/ and load only when enabled, so they are
-# excluded from the core row and reported separately.
+# Groupings. All personas ship in personas/; personas.config's default decides which are
+# *enabled* (loaded by default). Core = protocol + the shared contract + the default-enabled
+# personas; optional = the persona files that ship but aren't enabled by default.
+default_slugs() { grep -Ev '^[[:space:]]*(#|$)' "$SRC/personas.config"; }   # one slug per line
+is_default()    { default_slugs | grep -qxF "$1"; }
 host_files()     { echo "$SRC/agents.md"; }
 proto_files()    { echo "$SRC/protocol.md"; }
-core_files()     { echo "$SRC/protocol.md"; find "$SRC/personas" -maxdepth 1 -name '*.md' | sort; }
-optional_files() { find "$SRC/personas/optional" -name '*.md' | sort; }
-all_files()      { find "$SRC" -name '*.md' | sort; }
+core_files() {
+  echo "$SRC/protocol.md"; echo "$SRC/personas.config"; echo "$SRC/personas/persona.md"
+  for s in $(default_slugs); do echo "$SRC/personas/$s.md"; done
+}
+optional_files() {
+  for f in "$SRC"/personas/*.md; do
+    b=$(basename "$f" .md); [ "$b" = persona ] && continue
+    is_default "$b" || echo "$f"
+  done
+}
+all_files() { find "$SRC" -name '*.md' | sort; echo "$SRC/personas.config"; }
 
 generate() {
   HOST=$(chars_of $(host_files))

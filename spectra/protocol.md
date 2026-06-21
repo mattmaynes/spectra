@@ -52,17 +52,17 @@ ordered steps, files touched, verification. Reference the source `NNNN`.
    Always do this **before committing**. No suite yet? Add the test that proves this change.
 3. **Commit**, then open a **PR**.
 4. **Review** — scope from the diff first. Pure docs/formatting, no behavior change →
-   **no personas** (self-review, merge). Else add only the triggers that fire, not all four:
+   **no personas** (self-review, merge). Else review with the personas **enabled in
+   `docs/spectra/personas.config`** whose facet the change touches — not all by reflex. The four
+   shipped on by default and their triggers:
    - **engineer** — non-trivial code/logic (skip tests-only)
    - **tester** — observable behavior changed
    - **architect** — boundaries, deps, or data-flow changed
    - **security** — auth, input, secrets, consumer-run scripts, or new deps
-   - **user** — user-facing behavior or experience, only once `docs/spectra/personas/user.md`
-     exists (a developer ran `spectra-setup`)
 
-   Also scope in any **other** persona present in `docs/spectra/personas/` whose facet the change
-   touches — read its title/intro to decide (enable/disable via `/spectra-enable`,
-   `/spectra-disable`).
+   Also scope in any **other enabled** persona whose facet the change touches — the optional
+   designer/compliance/analytics (off by default; `/spectra-enable` to turn on), or the user 👤
+   persona when `docs/spectra/personas/user.md` exists — reading its title/intro to decide.
 
    Spawn the selected personas as sub-agents. Each reads `docs/spectra/personas/persona.md`
    (how to review, comment, and the format) plus its own `docs/spectra/personas/<persona>.md`

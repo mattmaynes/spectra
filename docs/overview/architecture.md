@@ -26,25 +26,27 @@ chains a guarded call.
 **Command discovery:** skills are auto-discovered from `spectra/skills/<name>/SKILL.md` — the
 folder name becomes the `/<name>` command; `plugin.json` carries no explicit skill list.
 
-**Persona activation — `active = file present`.** A persona participates in reviews iff
-`docs/spectra/personas/<name>.md` exists in the instance; absence is the "off" state, so a
-disabled persona costs zero loaded tokens. The shipped set is defined by source **layout**, not
-a list: `spectra/personas/*.md` are the default-on core (engineer/tester/architect/security +
-the shared `persona.md` contract), copied by `spectra-install`'s top-level `*.md` glob;
-`spectra/personas/optional/*.md` (designer/compliance/analytics) ship but sit below that glob,
-so install never copies them. `spectra-enable`/`spectra-disable` copy a file in / remove it;
-the protocol scopes in any present persona generically, so adding optional personas adds no
-always-loaded cost. The 👤 User (ICP) persona is the **developer-owned** case — `spectra-setup`
-writes `user.md` only into the instance and it's **never shipped**.
+**Persona activation — a config allowlist.** All personas ship as files in `spectra/personas/`
+(the four core engineer/tester/architect/security plus the optional designer/compliance/analytics
+and the shared `persona.md` contract). What's *active* is governed by
+`docs/spectra/personas.config` — a developer-owned newline list of enabled slugs. A persona
+participates in reviews iff its slug is listed; its file always exists, so the file's presence is
+not the switch. The config is **seeded only if absent** by `spectra-install` (default: the four
+core) and **never overwritten** by `spectra-update`, so it survives updates like
+`specs/overview/user.md`. `spectra-enable`/`spectra-disable` add/remove a slug — including a core
+one, so a repo can drop `security` and have it stick. A disabled persona's checklist never loads
+into a review (it isn't scoped in), so it costs ~nothing; the always-loaded protocol names the
+four core triggers plus one generic line for "other enabled personas", so the cost stays flat as
+the optional set grows. The 👤 User (ICP) persona is the one **file-presence** exception:
+`spectra-setup` writes `user.md` (create-on-demand, never shipped) and the protocol scopes it in
+when that file exists, independent of the config.
 
-**Update refreshes only what's present — and is therefore non-additive.** `spectra-update` loops
-over the personas already in `docs/spectra/personas/` and re-copies each from its source
-(top-level or `optional/`), instead of copying the whole shipped set. One rule covers three
-needs: a disabled persona is never re-added, an enabled optional one is refreshed, and `user.md`
-(no source) is left untouched — preservation and the toggle both fall out of the layout, not of
-any exclusion logic. The deliberate trade-off: because absence now means *disabled*, update
-**cannot** distribute a newly-shipped persona or repair a removed one — that would undo a
-`/spectra-disable`. Adding or restoring a persona is the explicit job of `/spectra-enable`.
+**Update is additive; the config is the only state it won't touch.** `spectra-update` copies
+*all* shipped persona files (`cp "$SRC/personas/"*.md`), so new and updated personas always
+arrive, but it leaves `personas.config` alone. Separating the **files** (Spectra-owned, always
+refreshed) from the **enabled set** (developer-owned, in the config) is what lets update stay a
+plain additive copy while a `/spectra-disable` still persists — the two concerns that were in
+tension under a file-presence model are decoupled.
 
 **Host files:** `AGENTS.md` is canonical; `CLAUDE.md` and `GEMINI.md` symlink to it; Codex
 reads `AGENTS.md` natively. The Spectra block is delimited by `<!-- spectra:start/end -->`

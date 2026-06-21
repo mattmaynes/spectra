@@ -3,23 +3,23 @@
 - **Plugin marketplace** — `.claude-plugin/marketplace.json` exposing the `spectra` plugin.
 - **`spectra-install` skill** — scaffolds `docs/`, copies protocol + personas, installs the
   reflection hook, wires up AGENTS.md.
-- **`spectra-update` skill** — re-syncs Spectra-owned files; **refreshes only the personas
-  already present** in the repo, so disabled personas stay off and a configured
-  `docs/spectra/personas/user.md` is preserved.
+- **`spectra-update` skill** — re-syncs Spectra-owned files; copies **all** shipped persona
+  files (additive — new/updated personas always arrive) but never touches the developer-owned
+  `docs/spectra/personas.config` or a `user.md`, so the enabled set is preserved.
 - **`spectra-setup` skill** — a guided dialog that defines the repo's 👤 *User (ICP)* persona,
   written to `docs/spectra/personas/user.md`. Re-running refines the existing persona.
 - **`spectra-enable` / `spectra-disable` skills** — toggle any review persona on or off by
-  copying its file into / removing it from `docs/spectra/personas/`. Run with no argument to
-  pick from a numbered list. Any persona is toggleable, including the core four.
+  adding/removing its slug in `docs/spectra/personas.config`. Run with no argument to pick from a
+  numbered list. Any persona is toggleable, including the core four.
 - **Protocol** (`spectra/protocol.md`) — route → spec → plan → build → test → review → merge → reflect.
-- **Review personas** — engineer 🔧, tester 🧪, architect 📐, security 🔒 on by default, plus
+- **Review personas** — engineer 🔧, tester 🧪, architect 📐, security 🔒 enabled by default, plus
   **optional** designer 🎨, compliance ⚖️, and analytics 📊 (shipped but off until enabled) and
-  a consumer-defined user 👤 (ICP, present once `spectra-setup` writes `user.md`). A persona is
-  **active iff its file exists** in `docs/spectra/personas/`; the active set is **scoped per
-  change** (triage which apply) and tuned with `spectra-enable`/`spectra-disable`. A shared
-  `personas/persona.md` holds the review contract (inline-only comments, one issue each,
-  concrete fixes, and the canonical emoji-tagged, severity-graded comment format); each persona
-  file holds only its specific, opinionated checklist. Major/blocker feed `learnings.md`.
+  a consumer-defined user 👤 (ICP, present once `spectra-setup` writes `user.md`). The active set
+  is the slugs in **`docs/spectra/personas.config`** (developer-owned, seeded with the four core,
+  preserved across updates); reviews are still **scoped per change** (triage which enabled
+  personas apply). A shared `personas/persona.md` holds the review contract (inline-only comments,
+  one issue each, concrete fixes, and the canonical emoji-tagged, severity-graded comment format);
+  each persona file holds only its specific, opinionated checklist. Major/blocker feed `learnings.md`.
 - **Reflection hook** — non-blocking `pre-commit` reminder to update the living docs.
 - **Test suite** (`test.sh`) — validates manifests, hook behavior, install mechanics, and
   that the README's token figures match `spectra/`.

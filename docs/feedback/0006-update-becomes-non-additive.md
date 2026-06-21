@@ -1,26 +1,27 @@
-# 0006 — File-presence toggling makes `spectra-update` non-additive
+# 0006 — Persona enable/disable vs. update: decouple the file from its state
 
 From the 📐 architect review of PR #10.
 
 ## Symptom
-Switching `spectra-update` from "copy all shipped personas" to "refresh only personas already
-present" silently dropped update's **distribution** role: an existing install can no longer
-receive a newly-shipped core persona, nor have a lost one repaired. The regression was invisible
-— nothing said update had stopped being additive.
+The first design made a persona active iff its file was present, and `/spectra-disable` removed
+the file. To keep a disable sticky, `spectra-update` then had to stop copying the full set and
+"refresh only present" files — which silently dropped update's **distribution** role: a
+newly-shipped or accidentally-removed persona could no longer arrive via update.
 
 ## Root cause
-The "active = file present" model overloads **absence**: a missing persona now means *either*
-"never installed" *or* "the developer ran `/spectra-disable`". Once absence can mean "disabled",
-any operation that previously treated absence as "needs filling" (update re-adding the full set)
-becomes unsafe — re-adding would silently undo a deliberate disable.
+One signal (file present/absent) was overloaded to mean two independent things: *"is this persona
+installed?"* and *"has the developer enabled it?"*. Any operation touching persona files then had
+to satisfy both meanings at once, and they conflicted — update wants to deliver every file, while
+disable wants a file to stay gone.
 
 ## Fix
-Keep update non-additive, but make it **explicit and intentional**: state in
-`spectra-update/SKILL.md` that update refreshes present personas only and never adds/restores
-one, and route additions (including newly-shipped or to-be-restored personas) through
-`/spectra-enable`. Documented the contract change in `overview/architecture.md`.
+Split the two concerns. **Files** are Spectra-owned and always shipped/copied (update is a plain
+additive `cp "$SRC/personas/"*.md`). The **enabled set** is a separate developer-owned allowlist,
+`docs/spectra/personas.config`, seeded-if-absent by install and never overwritten by update.
+Activation = slug in the config, not file presence. Update can now distribute and repair every
+persona file *and* a `/spectra-disable` still persists, because they act on different things.
 
 ## Learning
-When a piece of state gains a second meaning (here: absent = *disabled*, not just *missing*),
-audit every operation that acted on the old meaning. They don't automatically stay correct —
-each must be re-decided against the new meaning and the choice made explicit, not left implicit.
+When one piece of state is forced to answer two independent questions, the operations that read it
+will eventually pull in opposite directions. Give each question its own representation — here,
+"installed" (the file) vs. "enabled" (the config line) — and the operations stop fighting.

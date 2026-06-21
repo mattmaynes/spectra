@@ -4,6 +4,15 @@ Builds on `0004` (the create-on-demand `user.md` persona, merged via PR #8). Bra
 `feat/advanced-personas`, based on `main` (which now carries #7's gated review step and #8's
 file-presence persona rule).
 
+> **Revised during review (PR #10).** This spec was originally written around "active = persona
+> file present" with the optional personas under `personas/optional/` and a "refresh-only-present"
+> update. The 📐 architect review showed that overloaded the file with two meanings (installed vs.
+> enabled) and made `spectra-update` non-additive. The shipped design instead **ships all persona
+> files and tracks the enabled set in a developer-owned `docs/spectra/personas.config`** (seeded
+> if absent, never overwritten); update copies all files additively. The final mechanism lives in
+> `docs/overview/architecture.md` and `feedback/0006`; passages below that still say
+> "file presence" / `optional/` reflect the original approach.
+
 ## Problem
 Spectra ships four review personas (engineer 🔧, tester 🧪, architect 📐, security 🔒) and they
 are effectively always-on for any non-trivial change. Two gaps:
@@ -28,10 +37,11 @@ default.
     user-facing text translated where i18n exists), and GDPR/CCPA obligations.
   - **analytics 📊** — tracking coverage (events on clicks/inputs/key actions), measurable
     outcomes for complex flows, and measurability of success behind feature gates.
-- **Activation = file presence.** A persona is active in a repo iff
-  `docs/spectra/personas/<name>.md` exists — the same rule `0004` introduced for `user.md`.
-  Install copies the four core personas (+ the shared `persona.md` contract); the optional three
-  are absent until enabled. **Absent = not loaded = zero tokens.**
+- **Activation = a config allowlist.** *(Revised during review — see the banner above; the
+  original "active = file presence" approach was replaced.)* All personas ship as files in
+  `docs/spectra/personas/`; the **active** set is the slugs listed in
+  `docs/spectra/personas.config` (developer-owned, default = the four core). A disabled persona's
+  checklist is never scoped into a review, so **not enabled = not loaded = ~zero tokens.**
 - **`/spectra-enable [persona]`** copies an available persona's file into
   `docs/spectra/personas/`; **`/spectra-disable [persona]`** removes it. Called **without an
   argument**, each lists the relevant personas as a **numbered list** and acts on the
