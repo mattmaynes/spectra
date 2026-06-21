@@ -2,6 +2,15 @@
 
 Process lessons and feedback distilled into guidance. Append as they arise (newest first).
 
+- **A feedback loop only closes when the lessons are read back in.** The protocol told agents
+  to *write* `overview/learnings.md` (§6 Reflect) but never to *read* it — so the learning
+  store was write-only and an agent could repeat a logged mistake verbatim. Added **§0 Orient**:
+  read `learnings.md` (and apply it), `features.md`, and `architecture.md` *before* routing any
+  change. Treat `overview/` as input first, output last; recording a lesson is only half the
+  loop — the protocol has to make the next agent consult it. The sibling of
+  [`feedback/0010`](../feedback/0010-lesson-doesnt-auto-apply.md): that one says *applying* a
+  just-written lesson is manual; §0 makes *reading* the store a standing step. — from
+  [`feedback/0011`](../feedback/0011-orient-on-overview-docs.md)
 - **A just-written lesson is most at risk in the very next change.** `feedback/0009` ("key a
   regression guard on the structural line, not adjacent text") landed in PR #11; the Gemini guard
   added in PR #12 immediately repeated it — grepping the TOML for the injection string anywhere

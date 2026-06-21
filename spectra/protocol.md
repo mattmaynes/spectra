@@ -13,6 +13,16 @@ Spec-driven development with learning feedback loops. Follow this for every chan
 
 `NNNN` = zero-padded, next integer in that dir. Slug = kebab-case.
 
+## 0. Orient (before any change)
+
+The `docs/overview/` living docs are the project's memory — read them first, they are
+**inputs**, not just the outputs you write in §6:
+
+- **`learnings.md`** — past mistakes and what to do differently. **Apply them**; never
+  re-make a logged mistake.
+- **`features.md`** & **`architecture.md`** — what already exists and how it's structured.
+  Read them to understand the project so you extend it rather than duplicate or break it.
+
 ## 1. Route the change
 
 - **Trivial** (a line, a typo, an obvious fix) → implement directly. Skip to step 6.
@@ -75,6 +85,7 @@ ordered steps, files touched, verification. Reference the source `NNNN`.
 
 ## 6. Reflect (before concluding — always)
 
+Close the loop you opened in §0: the docs you read in are the docs you write back.
 Update only what changed:
 - mission/direction shifted → `overview/project.md`
 - new capability → `overview/features.md`
