@@ -2,6 +2,12 @@
 
 Process lessons and feedback distilled into guidance. Append as they arise (newest first).
 
+- **A just-written lesson is most at risk in the very next change.** `feedback/0009` ("key a
+  regression guard on the structural line, not adjacent text") landed in PR #11; the Gemini guard
+  added in PR #12 immediately repeated it — grepping the TOML for the injection string anywhere
+  instead of parsing it and asserting the `prompt` *value*. Recording a lesson isn't applying it:
+  when you write another guard of the shape you just learned about, re-run the lesson against it
+  before moving on. — from [`feedback/0010`](../feedback/0010-lesson-doesnt-auto-apply.md)
 - **Presence-of-good is not absence-of-bad.** A `test.sh` guard for the tool-neutral `$SRC`
   asserted neutral tokens were present but never that the Claude-only form was gone — so the exact
   regression it claimed to block sailed through (neutrality lived in prose; the one executable line

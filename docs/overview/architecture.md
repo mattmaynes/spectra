@@ -19,12 +19,11 @@ add` + `/plugin install spectra@spectra`). The skill resolves its bundled source
 `${CLAUDE_SKILL_DIR}/../..`, other agents expose the skill path their own way. Removing the
 hardcoded Claude env var is what lets the *same* `SKILL.md` body run under every agent.
 
-**Cross-agent packaging — one tree, many manifests.** The target agents converged on the same
-two primitives: a `SKILL.md` skill and a plugin/extension marketplace (Gemini is the lone
-exception — TOML commands, packaged separately). Because every tool's plugin root is `spectra/`,
-the `skills/`, `protocol.md`, and `personas/` are **shared with zero copies** — each agent adds
-only a thin manifest: Claude `.claude-plugin/{marketplace,plugin}.json`; Codex
-`.codex-plugin/plugin.json` + repo-root `.agents/plugins/marketplace.json`; Cursor
+**Cross-agent packaging — one tree, many manifests.** Three of the four agents converged on the
+same two primitives: a `SKILL.md` skill and a plugin/extension marketplace. Because every tool's
+plugin root is `spectra/`, the `skills/`, `protocol.md`, and `personas/` are **shared with zero
+copies** — each agent adds only a thin manifest: Claude `.claude-plugin/{marketplace,plugin}.json`;
+Codex `.codex-plugin/plugin.json` + repo-root `.agents/plugins/marketplace.json`; Cursor
 `.cursor-plugin/plugin.json` + repo-root `.cursor-plugin/marketplace.json`. The marketplaces sit
 at the **repo root** (mirroring the existing Claude pattern), each with `source: ./spectra` —
 except Codex *mandates* the nested `.agents/plugins/marketplace.json` path, so it can't be
@@ -33,6 +32,19 @@ normalized to the `<tool>-plugin/` shape the others use (don't "tidy" it). The p
 manifest parses and that its source/skills pointers resolve there, so a broken pointer fails CI.
 Manifest field names track each tool's June-2026 docs (Claude/Codex/Cursor Skills; Codex's
 deprecated `~/.codex/prompts/` is deliberately avoided).
+
+**Gemini — the one outlier, still single-source.** Gemini CLI's stable command unit is a TOML
+file, not a `SKILL.md`, so it can't reuse the skill files by symlink. Instead it ships a
+`gemini-extension.json` over the same `spectra/` tree plus one **thin** `commands/<name>.toml`
+per skill whose `prompt` is just `@{skills/<name>/SKILL.md}` — Gemini's runtime file-injection,
+so the command body stays the single shared skill (no second copy, no generator). The manifest is
+a **command channel only** — it sets no `contextFileName` and ships no `GEMINI.md`, because the
+protocol context lands in the *consumer* repo via `/spectra-install`'s `GEMINI.md`→`AGENTS.md`
+symlink, exactly like the other three agents. `@{}` resolves
+relative to the extension root (`spectra/`); this is the one assumption to confirm against a live
+`gemini extensions link .` (fallback if it doesn't hold: a generated TOML with a CI drift-check,
+per spec 0006). `test.sh` enforces a 1:1 map — every skill has a wrapper injecting its own body,
+every wrapper maps back to a real skill — so a rename can't orphan a stale `@{}` reference.
 
 **Hook install:** `spectra-install` **copies** `hooks/pre-commit` into the repo's resolved
 hooks dir (`git rev-parse --git-path hooks`) — not a symlink to a tracked file — so the hook
