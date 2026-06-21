@@ -278,6 +278,25 @@ done
 SPECTRA_ROOT="$T" "$bv" --check >/dev/null 2>&1 && ok "sandbox --check passes after bump" || bad "sandbox --check found drift after bump"
 [ "$(cat "$ROOT/VERSION")" = "0.1.0" ] && ok "real VERSION untouched by sandbox bump (still 0.1.0)" \
   || bad "real VERSION was modified by the sandbox bump"
+# format preservation: a bump must rewrite ONLY the version value, never reflow the JSON. The
+# real manifests are the pristine 0.1.0 reference; each bumped sandbox copy must differ from it
+# by exactly one line (the version). A json.dumps()-style reserialize would change many lines.
+reflow=
+for m in .claude-plugin/marketplace.json .agents/plugins/marketplace.json .cursor-plugin/marketplace.json \
+         spectra/.claude-plugin/plugin.json spectra/.codex-plugin/plugin.json spectra/.cursor-plugin/plugin.json \
+         spectra/gemini-extension.json; do
+  n=$(diff "$ROOT/$m" "$T/$m" | grep -c '^> ')
+  { [ "$n" -eq 1 ] && diff "$ROOT/$m" "$T/$m" | grep -q '9.9.9'; } || reflow="$reflow $m"
+done
+[ -z "$reflow" ] && ok "bump changes only the version line (no JSON reflow)" || bad "bump reflowed:$reflow"
+# the two read-only modes a release author relies on: no-arg prints the current version, --help exits 0
+[ "$(SPECTRA_ROOT="$T" "$bv")" = "9.9.9" ] && ok "no-arg prints the current version" || bad "no-arg didn't print VERSION"
+"$bv" --help 2>&1 | grep -qi usage && ok "--help prints usage" || bad "--help missing usage"
+# negative case: --check must FAIL when a manifest drifts from VERSION — proves the guard bites,
+# not just that it returns 0 on a clean tree. Corrupt one sandbox manifest only (real tree intact).
+python3 -c 'import re,sys; p=sys.argv[1]; s=open(p).read(); open(p,"w").write(re.sub(r"(\"version\"\s*:\s*\")[^\"]*(\")", r"\g<1>0.0.0\g<2>", s, count=1))' "$T/spectra/gemini-extension.json"
+SPECTRA_ROOT="$T" "$bv" --check >/dev/null 2>&1 && bad "--check passed despite a drifted manifest" \
+  || ok "--check fails when a manifest drifts from VERSION"
 rm -rf "$T"
 
 echo

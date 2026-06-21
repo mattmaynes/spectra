@@ -82,10 +82,13 @@ sys.exit(1 if drift else 0)
 PY
 }
 
-# write NEW -> write VERSION + surgically substitute the single version token in each manifest.
+# write NEW -> surgically substitute the single version token in each manifest, then VERSION.
 write() {
   new="$1"
-  printf '%s\n' "$new" > "$ROOT/VERSION"
+  # Atomic-ish: compute + validate every manifest substitution IN MEMORY first and write the
+  # files only once all seven pass; write VERSION LAST. So a guard failure (a stray second
+  # "version" token, a file that wouldn't parse) aborts with nothing changed on disk — never a
+  # half-bumped tree where VERSION and some manifests moved but one lagged (engineer review).
   ROOT="$ROOT" MANIFESTS="$MANIFESTS" NEW="$new" python3 - <<'PY'
 import json, os, re, sys
 
@@ -93,6 +96,7 @@ root = os.environ["ROOT"]
 manifests = os.environ["MANIFESTS"].split("\n")
 new = os.environ["NEW"]
 
+pending = {}
 for rel in manifests:
     path = os.path.join(root, rel)
     try:
@@ -114,8 +118,14 @@ for rel in manifests:
     except Exception as e:
         print(f"bump-version: {rel} would not parse after substitution: {e}", file=sys.stderr)
         sys.exit(1)
-    open(path, "w").write(updated)
+    pending[path] = updated
+
+# Every manifest validated -> only now commit them to disk.
+for path, content in pending.items():
+    open(path, "w").write(content)
 PY
+  # VERSION written last, after every manifest substitution validated + applied above.
+  printf '%s\n' "$new" > "$ROOT/VERSION"
 }
 
 # No argument at all -> print the current version. An explicitly-empty argument ("") falls
@@ -131,8 +141,9 @@ case "$1" in
     exit 0
     ;;
   --check)
-    check
-    exit $?
+    # Explicit if/else, not `check; exit $?` — under `set -e` a drift (check -> 1) would abort
+    # before `exit $?` ever ran, making it dead code on the failure path (engineer review).
+    if check; then exit 0; else exit 1; fi
     ;;
   *)
     if ! printf '%s' "$1" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then

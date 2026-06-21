@@ -61,6 +61,12 @@ jobs:
     needs: [test, readme-drift]
     permissions:
       contents: write
+    # A release must run to completion. The workflow-level concurrency is cancel-in-progress;
+    # this job-scoped, non-cancelable group overrides it so a second quick merge to main can't
+    # abort tag/Release creation mid-flight and wedge the version (architect review, PR #16).
+    concurrency:
+      group: release-${{ github.ref }}
+      cancel-in-progress: false
     steps:
       - uses: actions/checkout@v4
       - name: Tag + release if VERSION is unreleased
@@ -71,8 +77,20 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           version="$(cat VERSION)"
-          if gh release view "$version" >/dev/null 2>&1; then
+          # Defense in depth: VERSION lands via a merge; never hand it to gh unvalidated, or a
+          # value like '--cleanup-tag' would be parsed as a flag, not the tag (security review).
+          if ! printf '%s' "$version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "release: VERSION '$version' is not semver; refusing to tag/release." >&2
+            exit 1
+          fi
+          # Idempotent, but distinguish a real 404 (publish) from a transient/auth failure
+          # (fail loudly — don't fall through and risk a double-publish) (engineer review).
+          if gh release view "$version" >/dev/null 2>release-view.err; then
             echo "Release $version already exists — nothing to do."
             exit 0
+          elif ! grep -qi 'release not found' release-view.err; then
+            echo "release: 'gh release view' failed for a non-404 reason:" >&2
+            cat release-view.err >&2
+            exit 1
           fi
           gh release create "$version" --target "$GITHUB_SHA" --generate-notes
