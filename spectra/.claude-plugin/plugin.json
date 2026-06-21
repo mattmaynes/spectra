@@ -1,6 +1,6 @@
 {
   "name": "spectra",
-  "description": "Spec-driven development protocol with learning feedback loops. Adds /spectra-install, /spectra-update, /spectra-setup, /spectra-enable, and /spectra-disable.",
+  "description": "Spec-driven development protocol with learning feedback loops. Adds /spectra-install, /spectra-update, /spectra-setup, /spectra-persona-enable, and /spectra-persona-disable.",
   "version": "0.1.0",
   "author": {
     "name": "Matthew Maynes"

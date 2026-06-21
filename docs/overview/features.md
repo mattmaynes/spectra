@@ -14,7 +14,7 @@
   `docs/spectra/personas.config` or a `user.md`, so the enabled set is preserved.
 - **`spectra-setup` skill** — a guided dialog that defines the repo's 👤 *User (ICP)* persona,
   written to `docs/spectra/personas/user.md`. Re-running refines the existing persona.
-- **`spectra-enable` / `spectra-disable` skills** — toggle any review persona on or off by
+- **`spectra-persona-enable` / `spectra-persona-disable` skills** — toggle any review persona on or off by
   adding/removing its slug in `docs/spectra/personas.config`. Run with no argument to pick from a
   numbered list. Any persona is toggleable, including the core four.
 - **Protocol** (`spectra/protocol.md`) — route → spec → plan → build → test → review → merge → reflect.

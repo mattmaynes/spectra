@@ -79,8 +79,8 @@ where Spectra is installed:
 | `/spectra-install` | Adopt Spectra in the current repo — scaffolds `docs/`, copies the protocol and review personas, seeds the enabled-persona config, installs the reflection hook, and wires up `AGENTS.md`. |
 | `/spectra-update` | Re-sync the Spectra-owned files to the installed plugin version (protocol, personas, host block, hook). Leaves your `specs/plans/feedback/overview`, your `personas.config`, and your `user.md` untouched. |
 | `/spectra-setup` | Define your repo's 👤 *User (ICP)* review persona through a short guided dialog, so reviews can judge a change on your customer's behalf. Re-run to refine it. |
-| `/spectra-enable` *`[persona]`* | Turn on a review persona. With no argument, lists the personas available to enable as a numbered menu. |
-| `/spectra-disable` *`[persona]`* | Turn off a review persona (a core one too). With no argument, lists the personas currently enabled. |
+| `/spectra-persona-enable` *`[persona]`* | Turn on a review persona. With no argument, lists the personas available to enable as a numbered menu. |
+| `/spectra-persona-disable` *`[persona]`* | Turn off a review persona (a core one too). With no argument, lists the personas currently enabled. |
 
 ### Review personas
 
@@ -100,7 +100,7 @@ is yours to define:
 | 📊 **analytics** | off | event tracking, measurable outcomes, feature-gate metrics |
 | 👤 **user (ICP)** | `/spectra-setup` | whether the change actually serves your ideal customer |
 
-Flip any of them with `/spectra-enable` / `/spectra-disable`. A disabled persona costs nothing —
+Flip any of them with `/spectra-persona-enable` / `/spectra-persona-disable`. A disabled persona costs nothing —
 its checklist only loads when it's both enabled and scoped into a review.
 
 ## Low token cost
@@ -112,10 +112,10 @@ leaving room for your actual code:[^tokens]
 | What loads into context | Characters | Tokens (≈4 ch) |
 |---|---|---|
 | Always-on host block (in `AGENTS.md`) | 693 | **173** |
-| Protocol only (no personas needed) | 4,906 | **1,227** |
-| Full protocol + core personas | 10,631 | **2,658** |
+| Protocol only (no personas needed) | 4,914 | **1,229** |
+| Full protocol + core personas | 10,655 | **2,664** |
 | Optional personas (load only when enabled) | 2,636 | **659** |
-| Everything, incl. install/update skills | 26,605 | **6,651** |
+| Everything, incl. install/update skills | 26,677 | **6,669** |
 <!-- spectra:tokens:end -->
 
 ## What lands in your repo
