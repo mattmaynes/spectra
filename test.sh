@@ -40,13 +40,15 @@ echo "2. skills have frontmatter"
 for f in "$SRC"/skills/*/SKILL.md; do
   [ "$(head -1 "$f")" = "---" ] && ok "$(basename "$(dirname "$f")")" || bad "$f frontmatter"
 done
-# install/update resolve $SRC tool-neutrally (one body works under Claude/Codex/Cursor). Guard
-# against a regression to a Claude-only resolution: the body must still define $SRC AND carry the
-# cross-agent guidance ("plugin" root + "other agents"), not just hardcode ${CLAUDE_SKILL_DIR}.
+# install/update must resolve $SRC tool-neutrally so ONE body runs under Claude/Codex/Cursor. The
+# discriminating guard: the executable assignment goes through the SPECTRA_SRC override FIRST, so a
+# revert to a Claude-only `SRC="${CLAUDE_SKILL_DIR}/../.."` (the regression) no longer matches —
+# presence of neutral prose alone is not enough to catch it (feedback/0009).
 for s in spectra-install spectra-update; do
   sk="$SRC/skills/$s/SKILL.md"
-  { grep -qF 'SRC=' "$sk" && grep -qF 'plugin' "$sk" && grep -qiF 'other agents' "$sk"; } \
-    && ok "$s resolves \$SRC tool-neutrally" || bad "$s lost tool-neutral \$SRC resolution"
+  grep -qF 'SRC="${SPECTRA_SRC' "$sk" \
+    && ok "$s resolves \$SRC via SPECTRA_SRC (not Claude-only)" \
+    || bad "$s lost tool-neutral \$SRC resolution (Claude-only regression?)"
 done
 # user.md is create-on-demand (spectra-setup writes it into a consumer) — never shipped
 [ ! -e "$SRC/personas/user.md" ] && ok "personas/user.md not shipped (create-on-demand)" \

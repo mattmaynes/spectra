@@ -2,6 +2,14 @@
 
 Process lessons and feedback distilled into guidance. Append as they arise (newest first).
 
+- **Presence-of-good is not absence-of-bad.** A `test.sh` guard for the tool-neutral `$SRC`
+  asserted neutral tokens were present but never that the Claude-only form was gone — so the exact
+  regression it claimed to block sailed through (neutrality lived in prose; the one executable line
+  stayed Claude-only). When a text-assert guards a regression, key it on the structural line the
+  regression would change and that the bad state can't also satisfy — and prefer making the
+  behavior real (a concrete `SRC="${SPECTRA_SRC…` line to grep) over guarding intent that exists
+  only in description. Extends [`feedback/0008`](../feedback/0008-assert-on-uninstructed-text.md).
+  — from [`feedback/0009`](../feedback/0009-presence-asserts-miss-regressions.md)
 - **Don't overload one signal with two questions — give each its own representation.** A persona
   being "active = file present" forced the file to answer both *"is it installed?"* and *"did the
   developer enable it?"*; `spectra-update` (wants every file) and `/spectra-disable` (wants a file

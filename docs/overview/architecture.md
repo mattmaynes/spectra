@@ -26,8 +26,10 @@ the `skills/`, `protocol.md`, and `personas/` are **shared with zero copies** â€
 only a thin manifest: Claude `.claude-plugin/{marketplace,plugin}.json`; Codex
 `.codex-plugin/plugin.json` + repo-root `.agents/plugins/marketplace.json`; Cursor
 `.cursor-plugin/plugin.json` + repo-root `.cursor-plugin/marketplace.json`. The marketplaces sit
-at the **repo root** (mirroring the existing Claude pattern), each with `source: ./spectra`; the
-plugin manifests' `skills: ./skills/` all resolve to the one shared tree. `test.sh` asserts every
+at the **repo root** (mirroring the existing Claude pattern), each with `source: ./spectra` â€”
+except Codex *mandates* the nested `.agents/plugins/marketplace.json` path, so it can't be
+normalized to the `<tool>-plugin/` shape the others use (don't "tidy" it). The plugin manifests'
+`skills: ./skills/` all resolve to the one shared tree. `test.sh` asserts every
 manifest parses and that its source/skills pointers resolve there, so a broken pointer fails CI.
 Manifest field names track each tool's June-2026 docs (Claude/Codex/Cursor Skills; Codex's
 deprecated `~/.codex/prompts/` is deliberately avoided).

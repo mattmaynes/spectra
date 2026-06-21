@@ -7,8 +7,8 @@ description: Install the Spectra spec-driven development protocol into the curre
 
 Set up the Spectra protocol in the **current repository**. `$SRC` is this plugin's root — the
 directory holding `protocol.md`, `personas/`, `agents.md`, and `hooks/` (the parent of this
-skill's `skills/` dir). Resolve it from your skill's own location; in Claude Code that's
-`${CLAUDE_SKILL_DIR}/../..`, and other agents expose the path their own way. Run from the repo root.
+skill's `skills/` dir). Claude Code resolves it automatically (`${CLAUDE_SKILL_DIR}/../..`); on
+any other agent, `export SPECTRA_SRC=<plugin root>` before running the steps. Run from the repo root.
 
 If a previous install exists, prefer running `spectra-update` instead — it preserves work.
 
@@ -16,7 +16,7 @@ If a previous install exists, prefer running `spectra-update` instead — it pre
 
 1. **Scaffold dirs** (keep empties tracked):
    ```sh
-   SRC="${CLAUDE_SKILL_DIR}/../.."   # Claude Code; on other agents set $SRC to the plugin root (above)
+   SRC="${SPECTRA_SRC:-${CLAUDE_SKILL_DIR:?export SPECTRA_SRC=<plugin root> (see above)}/../..}"
    mkdir -p docs/spectra/personas docs/specs docs/plans docs/feedback docs/overview
    for d in docs/specs docs/plans docs/feedback; do touch "$d/.gitkeep"; done
    ```

@@ -131,7 +131,7 @@ leaving room for your actual code:[^tokens]
 | Protocol only (no personas needed) | 4,347 | **1,087** |
 | Full protocol + core personas | 10,072 | **2,518** |
 | Optional personas (load only when enabled) | 2,636 | **659** |
-| Everything, incl. install/update skills | 26,008 | **6,502** |
+| Everything, incl. install/update skills | 26,046 | **6,512** |
 <!-- spectra:tokens:end -->
 
 ## What lands in your repo
