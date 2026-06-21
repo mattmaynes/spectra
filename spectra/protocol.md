@@ -53,8 +53,8 @@ ordered steps, files touched, verification. Reference the source `NNNN`.
 3. **Commit**, then open a **PR**.
 4. **Review** — scope from the diff first. Pure docs/formatting, no behavior change →
    **no personas** (self-review, merge). Else review with the personas **enabled in
-   `docs/spectra/personas.config`** whose facet the change touches — not all by reflex. The four
-   shipped on by default and their triggers:
+   `docs/spectra/personas.config`** whose facet the change touches — not all by reflex. Triggers
+   for the four shipped-by-default personas (apply each only if it's still listed in the config):
    - **engineer** — non-trivial code/logic (skip tests-only)
    - **tester** — observable behavior changed
    - **architect** — boundaries, deps, or data-flow changed

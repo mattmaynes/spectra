@@ -21,7 +21,8 @@ START='<!-- spectra:tokens:start -->'
 END='<!-- spectra:tokens:end -->'
 
 # chars_of FILE... -> total character count across the given files (0 for no files, so an
-# empty grouping like personas/optional/ can't turn `cat "$@"` into a stdin-blocking bare cat)
+# empty grouping — e.g. when every persona is enabled — can't turn `cat "$@"` into a
+# stdin-blocking bare cat)
 chars_of() { [ "$#" -eq 0 ] && { echo 0; return; }; cat "$@" | wc -c | tr -d ' '; }
 
 # tokens N -> round(N / 4)
@@ -42,7 +43,7 @@ row() { printf '| %s | %s | **%s** |\n' "$1" "$(commas "$2")" "$(commas "$(token
 # Groupings. All personas ship in personas/; personas.config's default decides which are
 # *enabled* (loaded by default). Core = protocol + the shared contract + the default-enabled
 # personas; optional = the persona files that ship but aren't enabled by default.
-default_slugs() { grep -Ev '^[[:space:]]*(#|$)' "$SRC/personas.config"; }   # one slug per line
+default_slugs() { sed 's/[[:space:]]//g' "$SRC/personas.config" | grep -Ev '^(#|$)'; }  # one slug/line, whitespace-tolerant
 is_default()    { default_slugs | grep -qxF "$1"; }
 host_files()     { echo "$SRC/agents.md"; }
 proto_files()    { echo "$SRC/protocol.md"; }

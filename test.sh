@@ -59,6 +59,14 @@ for f in "$SRC"/personas/*.md; do
 done
 [ -z "$miss" ] && ok "every persona has a title + persona.md ref + a checklist" \
   || bad "personas missing title/contract-ref/checklist:$miss"
+# enable/disable must edit personas.config and keep the slug validation (feedback/0007) — guard
+# against a future edit silently dropping either (the skills are prose the suite can't execute)
+for s in spectra-enable spectra-disable; do
+  sk="$SRC/skills/$s/SKILL.md"
+  { grep -qF 'personas.config' "$sk" && grep -qF '[a-z][a-z0-9-]' "$sk"; } \
+    && ok "$s edits personas.config and validates the slug" \
+    || bad "$s lost its config edit or slug validation"
+done
 
 echo "3. reflection hook behavior"
 T=$(mktemp -d); cd "$T"
@@ -99,6 +107,18 @@ refresh; refresh; refresh                             # then idempotent re-runs
 { [ "$(grep -c spectra:start AGENTS.md)" = 1 ] && [ "$(grep -c spectra:end AGENTS.md)" = 1 ]; } \
   && ok "host block idempotent (append + re-run)" || bad "host block duplicated"
 grep -q "Keep me." AGENTS.md && ok "surrounding content preserved" || bad "surrounding content lost"
+# install seeds personas.config only if absent (symmetric to update never overwriting it):
+# a regression to an unconditional cp would silently reset a developer's enabled set.
+ins="$SRC/skills/spectra-install/SKILL.md"
+grep -qF '[ -f docs/spectra/personas.config ] || cp' "$ins" \
+  && ok "install seeds personas.config only if absent" || bad "install config seed isn't guarded by [ -f ] ||"
+seed() { [ -f docs/spectra/personas.config ] || cp "$SRC/personas.config" docs/spectra/personas.config; }  # the install step
+mkdir -p docs/spectra                                              # fresh install -> seed default
+seed; cmp -s docs/spectra/personas.config "$SRC/personas.config" \
+  && ok "fresh install seeds the default config" || bad "install didn't seed personas.config"
+printf 'engineer\n' > docs/spectra/personas.config                # re-install -> must NOT reset
+seed; [ "$(cat docs/spectra/personas.config)" = "engineer" ] \
+  && ok "re-install preserves an existing config" || bad "install clobbered an existing personas.config"
 cd "$ROOT"; rm -rf "$T"
 
 echo "5. update copies all personas additively but preserves the config + user content"
