@@ -6,8 +6,9 @@ description: Turn on a Spectra review persona for this repo (e.g. designer, comp
 # Enable a persona
 
 Active personas are the slugs listed in `docs/spectra/personas.config`; the available set is the
-persona files in `docs/spectra/personas/` (excluding `persona.md`, the shared contract, and
-`user.md`, which is governed by its own file via `spectra-setup`). A persona is on iff its slug is
+persona files in `docs/spectra/personas/` (excluding `persona.md`, the shared contract, and the
+👤 User/ICP personas `user*.md`, which are managed by their own commands — `/spectra-add-user`,
+`/spectra-update-user`, `/spectra-remove-user`, `/spectra-list-users` — not the config). A persona is on iff its slug is
 in the config — enabling = adding the line. **Candidates** = available personas whose slug is not
 already in the config.
 

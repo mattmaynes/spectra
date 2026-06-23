@@ -7,8 +7,8 @@ description: Turn off a Spectra review persona for this repo (including a core p
 
 Active personas are the slugs listed in `docs/spectra/personas.config`; disabling = removing the
 line (the persona file stays in `docs/spectra/personas/`, just unlisted). **Candidates** = slugs
-currently in the config, excluding `user` (the developer-owned ICP persona — manage it with
-`spectra-setup`).
+currently in the config, excluding the 👤 User/ICP personas (`user*.md`, developer-owned — manage
+them with `/spectra-add-user`, `/spectra-update-user`, `/spectra-remove-user`, `/spectra-list-users`).
 
 - **No argument** → number the candidates (slug + title line) and ask which to disable. Act on the
   reply (a number, several, or "all").

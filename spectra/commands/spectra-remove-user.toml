@@ -1,0 +1,6 @@
+# Thin wrapper: the command body is the shared, tool-neutral skill, injected at runtime so there
+# is exactly one source of truth (the same SKILL.md Claude/Codex/Cursor run). See architecture.md.
+description = "Remove a User (ICP) review persona from this repo"
+prompt = """
+@{skills/spectra-remove-user/SKILL.md}
+"""

@@ -68,7 +68,7 @@ sys.exit(1 if errs else 0)
 PY
 )
 [ "$gout" = "OK" ] \
-  && ok "Gemini ext: manifest + 5 TOML wrappers parse, inject their own body, map 1:1" \
+  && ok "Gemini ext: manifest + TOML wrappers parse, inject their own body, map 1:1" \
   || bad "Gemini ext invalid -> $gout"
 
 echo "2. skills have frontmatter"
@@ -85,16 +85,19 @@ for s in spectra-install spectra-update; do
     && ok "$s resolves \$SRC via SPECTRA_SRC (not Claude-only)" \
     || bad "$s lost tool-neutral \$SRC resolution (Claude-only regression?)"
 done
-# user.md is create-on-demand (spectra-setup writes it into a consumer) — never shipped
-[ ! -e "$SRC/personas/user.md" ] && ok "personas/user.md not shipped (create-on-demand)" \
-  || bad "personas/user.md shipped — must be created on demand by spectra-setup"
-# spectra-setup's embedded template carries the canonical persona shape (guards silent drift)
-setup="$SRC/skills/spectra-setup/SKILL.md"; miss=
-for h in '# 👤 User (ICP)' '## Profile' '## Review'; do
-  grep -qF "$h" "$setup" || miss="$miss|$h"
+# User/ICP personas are create-on-demand (spectra-add-user writes them into a consumer) — none ship
+if ls "$SRC"/personas/user*.md >/dev/null 2>&1; then
+  bad "personas/user*.md shipped — ICP personas must be created on demand by spectra-add-user"
+else
+  ok "no personas/user*.md shipped (create-on-demand)"
+fi
+# spectra-add-user's embedded template carries the canonical persona shape + applies-when block
+add="$SRC/skills/spectra-add-user/SKILL.md"; miss=
+for h in '# 👤 User (' '## Applies when' '## Skip when' '## Profile' '## Review'; do
+  grep -qF "$h" "$add" || miss="$miss|$h"
 done
-[ -z "$miss" ] && ok "spectra-setup template has 👤 title + Profile + Review" \
-  || bad "spectra-setup template missing heading(s):$miss"
+[ -z "$miss" ] && ok "spectra-add-user template has 👤 title + Applies/Skip when + Profile + Review" \
+  || bad "spectra-add-user template missing heading(s):$miss"
 # all personas ship as files in personas/ (the optional ones too); the config decides which load
 for p in designer compliance analytics; do
   [ -f "$SRC/personas/$p.md" ] || bad "persona $p missing from personas/"
@@ -195,15 +198,19 @@ printf 'MY SPEC\n'      > docs/specs/0001.md
 printf 'MY LEARNINGS\n' > docs/overview/learnings.md
 printf 'stale\n'        > docs/spectra/protocol.md
 printf 'stale\n'        > docs/spectra/personas/engineer.md      # shipped persona -> refresh
-printf 'MY ICP\n'       > docs/spectra/personas/user.md          # developer-owned -> preserve
+printf 'LEGACY ICP\n'   > docs/spectra/personas/user.md          # legacy single ICP -> preserve
+printf 'SMB ICP\n'      > docs/spectra/personas/user-smb.md      # multi-ICP profile -> preserve
+printf 'ENT ICP\n'      > docs/spectra/personas/user-enterprise.md  # multi-ICP profile -> preserve
 printf 'engineer\ntester\n' > docs/spectra/personas.config      # security DISABLED by developer
 cp "$SRC/protocol.md" docs/spectra/protocol.md                  # update step: protocol
 cp "$SRC/personas/"*.md docs/spectra/personas/                  # update step: all personas (additive)
-# (update does NOT touch personas.config or user.md)
+# (update does NOT touch personas.config or any user*.md)
 { [ "$(cat docs/specs/0001.md)" = "MY SPEC" ] && [ "$(cat docs/overview/learnings.md)" = "MY LEARNINGS" ]; } \
   && ok "specs/overview untouched" || bad "update clobbered user content"
-[ "$(cat docs/spectra/personas/user.md)" = "MY ICP" ] \
-  && ok "user.md preserved (no source to overwrite it)" || bad "update clobbered user.md"
+{ [ "$(cat docs/spectra/personas/user.md)" = "LEGACY ICP" ] \
+  && [ "$(cat docs/spectra/personas/user-smb.md)" = "SMB ICP" ] \
+  && [ "$(cat docs/spectra/personas/user-enterprise.md)" = "ENT ICP" ]; } \
+  && ok "every user*.md preserved (no source to overwrite them)" || bad "update clobbered a user*.md ICP persona"
 cmp -s docs/spectra/personas/engineer.md "$SRC/personas/engineer.md" \
   && ok "shipped persona refreshed from source" || bad "engineer.md not refreshed"
 [ -f docs/spectra/personas/security.md ] \

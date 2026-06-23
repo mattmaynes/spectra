@@ -71,8 +71,12 @@ ordered steps, files touched, verification. Reference the source `NNNN`.
    - **security** — auth, input, secrets, consumer-run scripts, or new deps
 
    Also scope in any **other enabled** persona whose facet the change touches — the optional
-   designer/compliance/analytics (off by default; `/spectra-persona-enable` to turn on), or the user 👤
-   persona when `docs/spectra/personas/user.md` exists — reading its title/intro to decide.
+   designer/compliance/analytics (off by default; `/spectra-persona-enable` to turn on). For the
+   👤 **user (ICP)** personas, read each `docs/spectra/personas/user*.md` (a legacy `user.md` and
+   any `user-<slug>.md`) and scope in **every** one whose **Applies when** block matches this
+   change while its **Skip when** doesn't; if none match — or none exist — no user persona reviews.
+   Manage these with `/spectra-add-user`, `/spectra-update-user`, `/spectra-remove-user`,
+   `/spectra-list-users`.
 
    Spawn the selected personas as sub-agents. Each reads `docs/spectra/personas/persona.md`
    (how to review, comment, and the format) plus its own `docs/spectra/personas/<persona>.md`
