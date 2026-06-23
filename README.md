@@ -37,8 +37,11 @@ you want to adopt it.
 ```text
 /plugin marketplace add rogueoak/spectra
 /plugin install spectra@spectra
+/reload-plugins
 /spectra-install
 ```
+`/reload-plugins` makes the newly installed plugin's commands (`/spectra-install` and the rest)
+available in your current session — without it the install won't have taken effect yet.
 
 **OpenAI Codex**
 ```text

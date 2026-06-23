@@ -2,6 +2,13 @@
 
 Process lessons and feedback distilled into guidance. Append as they arise (newest first).
 
+- **Document the host's activation step, not just the package step.** The README's Claude
+  quick start installed the plugin then jumped straight to `/spectra-install` — but in Claude
+  Code a freshly installed plugin's commands aren't loaded until `/reload-plugins`, so the next
+  step silently did nothing. An install walkthrough isn't complete at "package installed"; it's
+  complete when the agent can *see* the new commands — include whatever the harness needs to
+  load them, especially host-specific steps with no equivalent in the other tools' flows. — from
+  [`feedback/0012`](../feedback/0012-reload-plugins-after-install.md)
 - **A feedback loop only closes when the lessons are read back in.** The protocol told agents
   to *write* `overview/learnings.md` (§6 Reflect) but never to *read* it — so the learning
   store was write-only and an agent could repeat a logged mistake verbatim. Added **§0 Orient**:
