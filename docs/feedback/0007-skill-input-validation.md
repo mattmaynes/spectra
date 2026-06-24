@@ -1,4 +1,4 @@
-# 0007 — Skills that `rm`/`cp` on a user-supplied name need explicit validation
+# 0007 - Skills that `rm`/`cp` on a user-supplied name need explicit validation
 
 From the 🔒 security review of PR #10.
 
@@ -10,16 +10,16 @@ interpolation shape.
 
 ## Root cause
 Because a SKILL is prose that *instructs an agent* rather than code that runs directly, the draft
-leaned on the agent "being sensible" and on `[ -f <interpolated path> ]` — which an `../`
-traversal still satisfies — instead of validating the input.
+leaned on the agent "being sensible" and on `[ -f <interpolated path> ]` - which an `../`
+traversal still satisfies - instead of validating the input.
 
 ## Fix
 Both skills now **mandate validation before acting**: the argument must match a bare-segment
-shape (`^[a-z][a-z0-9-]*$` — no `/`, `..`, leading `/`, or extension) **and** be a member of the
+shape (`^[a-z][a-z0-9-]*$` - no `/`, `..`, leading `/`, or extension) **and** be a member of the
 computed catalog/candidate allowlist; only then `cp`/`rm`. Stated as an allowlist check, not a
 filesystem probe of an interpolated path.
 
 ## Learning
 An instruction file is an interface with untrusted input just like code is. A skill that tells an
 agent to delete or copy by a user-supplied name must spell out the input contract (shape +
-allowlist) explicitly — "the agent will be careful" is not an access control.
+allowlist) explicitly - "the agent will be careful" is not an access control.

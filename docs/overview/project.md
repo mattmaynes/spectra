@@ -1,7 +1,7 @@
 # Project
 
-**Mission:** Build and ship **Spectra** — a spec-driven development protocol with learning
-feedback loops — as an installable Claude Code plugin marketplace.
+**Mission:** Build and ship **Spectra** - a spec-driven development protocol with learning
+feedback loops - as an installable Claude Code plugin marketplace.
 
 **Why:** AI-assisted work loses the spec, the decisions, and the lessons in chat history.
 Spectra makes intent explicit before building and captures learning after, in version control.

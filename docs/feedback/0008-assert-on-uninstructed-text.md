@@ -1,4 +1,4 @@
-# 0008 — Test the skill's text, not a re-implementation of it
+# 0008 - Test the skill's text, not a re-implementation of it
 
 From the 🧪 tester review of PR #10.
 
@@ -10,7 +10,7 @@ silently break while the test stayed green.
 
 ## Root cause
 The behavior lives in an **instruction file the suite can't execute**. Simulating it proves the
-*simulation* works, not that the shipped skill still says to do it — the test and the artifact it
+*simulation* works, not that the shipped skill still says to do it - the test and the artifact it
 guards could drift apart with nothing to catch it.
 
 ## Fix
@@ -20,7 +20,7 @@ alone). Paired with a simulation that proves the config and `user.md` survive th
 documented behavior and the tested behavior can't drift apart.
 
 ## Learning
-When the thing under test is prose you can't run, assert on the prose itself —
-must-contain/must-not-contain checks on the artifact — so the documented behavior and the real
+When the thing under test is prose you can't run, assert on the prose itself -
+must-contain/must-not-contain checks on the artifact - so the documented behavior and the real
 behavior can't quietly diverge. A test that copies the logic instead of referencing it only
 tests the copy.

@@ -1,4 +1,4 @@
-# 0003 — Conventional commits & CI
+# 0003 - Conventional commits & CI
 
 ## Problem
 This repo has no automated quality gate: `test.sh` and the README token guard only run if a
@@ -6,12 +6,12 @@ contributor remembers to (the token guard lives in an *untracked* `.git/hooks/pr
 a fresh clone or a PR from a fork is unprotected). Commit and PR-title style is also
 unspecified and inconsistent (`Add …`, `Bootstrap …`, `Refine …`), so history isn't
 machine-readable and offers no shared convention. Two gaps, one theme: the standards this repo
-already cares about aren't enforced where everyone can see them — in CI.
+already cares about aren't enforced where everyone can see them - in CI.
 
 ## Outcome
 - Every PR and push runs a **GitHub Actions** workflow that (a) runs `test.sh` and (b) runs
-  the README-drift check (`scripts/token-report.sh --check`) — the same guard the local
-  pre-commit hook applies — so a stale README or a failing suite **blocks the merge**, not just
+  the README-drift check (`scripts/token-report.sh --check`) - the same guard the local
+  pre-commit hook applies - so a stale README or a failing suite **blocks the merge**, not just
   the local committer.
 - Every **PR title** is validated against the [Conventional Commits](https://www.conventionalcommits.org)
   spec by a dependency-free check; a non-conforming title fails CI.
@@ -21,10 +21,10 @@ already cares about aren't enforced where everyone can see them — in CI.
 
 ## Scope
 - **In:**
-  - `.github/workflows/ci.yml` — runs on `push` and `pull_request`; jobs: `test` (runs
+  - `.github/workflows/ci.yml` - runs on `push` and `pull_request`; jobs: `test` (runs
     `./test.sh`) and `readme-drift` (`scripts/token-report.sh --check`), plus a
     `pull_request`-only `commit-lint` job validating the PR title.
-  - `scripts/check-commit-msg.sh` — repo-local, dependency-free POSIX validator: takes a
+  - `scripts/check-commit-msg.sh` - repo-local, dependency-free POSIX validator: takes a
     message string, exits non-zero if it doesn't match the conventional-commits grammar.
     Reused by CI and runnable locally.
   - Documentation: a short conventional-commits rule in `AGENTS.md` (this repo's own host
@@ -45,15 +45,15 @@ already cares about aren't enforced where everyone can see them — in CI.
     locally.
 
 ## Approach
-- **Workflow** (`.github/workflows/ci.yml`): `ubuntu-latest` (ships `python3`, `awk`, `git` —
+- **Workflow** (`.github/workflows/ci.yml`): `ubuntu-latest` (ships `python3`, `awk`, `git` -
   everything `test.sh` and `token-report.sh` need). Triggers: `push` and `pull_request`.
   - `test` job: `./test.sh`. (Its step 8 already covers token drift, but a dedicated
     `readme-drift` step makes the "README hasn't drifted" guarantee explicit and independently
-    legible — mirrors the local hook's intent.)
+    legible - mirrors the local hook's intent.)
   - `commit-lint` job (`if: github.event_name == 'pull_request'`): pass
     `${{ github.event.pull_request.title }}` to `scripts/check-commit-msg.sh`.
 - **Validator** (`scripts/check-commit-msg.sh`): a POSIX `grep -Eq` against the conventional
-  grammar — `type(optional scope)(optional !): subject` — with the standard type set
+  grammar - `type(optional scope)(optional !): subject` - with the standard type set
   (`feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert`). On failure it prints the
   offending message and a one-line example, then exits 1. Dependency-free so it runs in CI and
   in a local hook identically (same rationale as `token-report.sh`).
@@ -72,6 +72,6 @@ already cares about aren't enforced where everyone can see them — in CI.
       exits non-zero. CI fails a PR with a non-conventional title.
 - [ ] `test.sh` includes a `check-commit-msg.sh` case and still ends `PASS`.
 - [ ] `AGENTS.md` documents the conventional-commits rule (outside the spectra block).
-- [ ] **Nothing under `spectra/` changed** — token figures and consumer install/update are
+- [ ] **Nothing under `spectra/` changed** - token figures and consumer install/update are
       unaffected.
 - [ ] `docs/overview/` updated (features, architecture, learnings).
