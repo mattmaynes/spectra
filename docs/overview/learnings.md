@@ -2,6 +2,12 @@
 
 Process lessons and feedback distilled into guidance. Append as they arise (newest first).
 
+- **Re-apply input-validation to every path when you add or generalize a name-acting skill.** A
+  logged validation lesson (`feedback/0007`) protects only the files it was written in. When you
+  add a new skill that writes/deletes by a name, or widen the set a name ranges over, restate the
+  contract (`^[a-z][a-z0-9-]*$`, allowlist, no interpolated paths) on *every* branch — new sibling
+  skills and the explicit-arg path, not just the menu path. A validated no-arg path beside an
+  unvalidated arg path is still a hole. — from [`feedback/0013`](../feedback/0013-new-name-skills-must-reapply-validation.md)
 - **Document the host's activation step, not just the package step.** The README's Claude
   quick start installed the plugin then jumped straight to `/spectra-install` — but in Claude
   Code a freshly installed plugin's commands aren't loaded until `/reload-plugins`, so the next

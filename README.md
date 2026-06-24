@@ -93,8 +93,11 @@ where Spectra is installed:
 | Command | What it does |
 |---|---|
 | `/spectra-install` | Adopt Spectra in the current repo — scaffolds `docs/`, copies the protocol and review personas, seeds the enabled-persona config, installs the reflection hook, and wires up `AGENTS.md`. |
-| `/spectra-update` | Re-sync the Spectra-owned files to the installed plugin version (protocol, personas, host block, hook). Leaves your `specs/plans/feedback/overview`, your `personas.config`, and your `user.md` untouched. |
-| `/spectra-setup` | Define your repo's 👤 *User (ICP)* review persona through a short guided dialog, so reviews can judge a change on your customer's behalf. Re-run to refine it. |
+| `/spectra-update` | Re-sync the Spectra-owned files to the installed plugin version (protocol, personas, host block, hook). Leaves your `specs/plans/feedback/overview`, your `personas.config`, and your `user*.md` ICP personas untouched. |
+| `/spectra-add-user` | Define a new 👤 *User (ICP)* review persona through a short guided dialog — one per customer profile — so reviews can judge a change on that customer's behalf. Each profile says *when* it applies. |
+| `/spectra-update-user` | Refine an existing ICP persona: pick one, Spectra reads it back, and a short dialog updates its profile or when it applies. |
+| `/spectra-remove-user` | Remove an ICP persona so it stops being scoped into reviews. |
+| `/spectra-list-users` | List the ICP personas defined in this repo and when each one applies. |
 | `/spectra-persona-enable` *`[persona]`* | Turn on a review persona. With no argument, lists the personas available to enable as a numbered menu. |
 | `/spectra-persona-disable` *`[persona]`* | Turn off a review persona (a core one too). With no argument, lists the personas currently enabled. |
 
@@ -102,8 +105,9 @@ where Spectra is installed:
 
 Each PR is reviewed only by the personas you've **enabled** (tracked in
 `docs/spectra/personas.config`) whose facet the change actually touches — so reviews stay
-scoped, not eight bots on every diff. Four ship on by default, three more are available, and one
-is yours to define:
+scoped, not eight bots on every diff. Four ship on by default, three more are available, and the
+👤 user (ICP) lens is yours to define — one persona per customer profile, each scoped to the
+changes it cares about:
 
 | Persona | Default | Reviews for |
 |---|---|---|
@@ -114,7 +118,7 @@ is yours to define:
 | 🎨 **designer** | off | visual consistency, spacing, design tokens, clear calls-to-action |
 | ⚖️ **compliance** | off | accessibility, PII minimization, i18n, GDPR/CCPA |
 | 📊 **analytics** | off | event tracking, measurable outcomes, feature-gate metrics |
-| 👤 **user (ICP)** | `/spectra-setup` | whether the change actually serves your ideal customer |
+| 👤 **user (ICP)** | `/spectra-add-user` | whether the change actually serves your ideal customer — define one persona per customer profile, each scoped to the changes it cares about |
 
 Flip any of them with `/spectra-persona-enable` / `/spectra-persona-disable`. A disabled persona costs nothing —
 its checklist only loads when it's both enabled and scoped into a review.
@@ -128,10 +132,10 @@ leaving room for your actual code:[^tokens]
 | What loads into context | Characters | Tokens (≈4 ch) |
 |---|---|---|
 | Always-on host block (in `AGENTS.md`) | 693 | **173** |
-| Protocol only (no personas needed) | 4,914 | **1,229** |
-| Full protocol + core personas | 10,655 | **2,664** |
+| Protocol only (no personas needed) | 5,225 | **1,306** |
+| Full protocol + core personas | 10,966 | **2,742** |
 | Optional personas (load only when enabled) | 2,636 | **659** |
-| Everything, incl. install/update skills | 26,677 | **6,669** |
+| Everything, incl. install/update skills | 33,851 | **8,463** |
 <!-- spectra:tokens:end -->
 
 ## What lands in your repo

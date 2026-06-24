@@ -63,13 +63,17 @@ and the shared `persona.md` contract). What's *active* is governed by
 participates in reviews iff its slug is listed; its file always exists, so the file's presence is
 not the switch. The config is **seeded only if absent** by `spectra-install` (default: the four
 core) and **never overwritten** by `spectra-update`, so it survives updates like
-`specs/overview/user.md`. `spectra-persona-enable`/`spectra-persona-disable` add/remove a slug — including a core
+`specs/overview` and the `user*.md` ICP personas. `spectra-persona-enable`/`spectra-persona-disable` add/remove a slug — including a core
 one, so a repo can drop `security` and have it stick. A disabled persona's checklist never loads
 into a review (it isn't scoped in), so it costs ~nothing; the always-loaded protocol names the
 four core triggers plus one generic line for "other enabled personas", so the cost stays flat as
-the optional set grows. The 👤 User (ICP) persona is the one **file-presence** exception:
-`spectra-setup` writes `user.md` (create-on-demand, never shipped) and the protocol scopes it in
-when that file exists, independent of the config.
+the optional set grows. The 👤 User (ICP) personas are the **file-presence** exception: a repo can
+define **many**, one file per customer profile (`user-<slug>.md`, plus a legacy single `user.md`),
+each created on demand by `spectra-add-user` (never shipped). They live outside `personas.config`
+entirely — managed by their own CRUD commands (`spectra-add-user`/`-update-user`/`-remove-user`/
+`-list-users`) — and the protocol scopes each one in per its **Applies when / Skip when** block:
+every profile whose slice the change touches reviews, none if none match. Natural-language
+applicability keeps scoping LLM-judged, with no globs/tags or new runtime.
 
 **Update is additive; the config is the only state it won't touch.** `spectra-update` copies
 *all* shipped persona files (`cp "$SRC/personas/"*.md`), so new and updated personas always

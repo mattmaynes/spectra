@@ -62,6 +62,7 @@ If a previous install exists, prefer running `spectra-update` instead — it pre
      `AGENTS.md` natively** (no extra file needed); the symlinks cover Claude and Gemini.
 
 6. **Confirm**: list the created tree and tell the developer Spectra is installed — the next
-   change should follow `docs/spectra/protocol.md`. Optionally, they can run `/spectra-setup`
-   to add a 👤 User (ICP) persona that reviews user-facing changes on their customer's behalf,
-   or `/spectra-persona-enable` to turn on extra review personas (designer, compliance, analytics).
+   change should follow `docs/spectra/protocol.md`. Optionally, they can run `/spectra-add-user`
+   to define a 👤 User (ICP) persona (one per customer profile) that reviews user-facing changes
+   on that customer's behalf, or `/spectra-persona-enable` to turn on extra review personas
+   (designer, compliance, analytics).

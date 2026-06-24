@@ -12,15 +12,21 @@
 - **`spectra-update` skill** — re-syncs Spectra-owned files; copies **all** shipped persona
   files (additive — new/updated personas always arrive) but never touches the developer-owned
   `docs/spectra/personas.config` or a `user.md`, so the enabled set is preserved.
-- **`spectra-setup` skill** — a guided dialog that defines the repo's 👤 *User (ICP)* persona,
-  written to `docs/spectra/personas/user.md`. Re-running refines the existing persona.
+- **User (ICP) persona commands** — full CRUD over the repo's 👤 *User (ICP)* personas, one file
+  per customer profile (`docs/spectra/personas/user-<slug>.md`; a legacy single `user.md` still
+  works): **`spectra-add-user`** (guided dialog → new profile), **`spectra-update-user`** (read a
+  profile back and refine it), **`spectra-remove-user`** (delete one), **`spectra-list-users`**
+  (show them). Each profile carries an **Applies when / Skip when** block so reviews scope it in
+  only for the changes that profile cares about — multiple distinct customers, each judged on its
+  own slice. (Replaces the former single `spectra-setup`.)
 - **`spectra-persona-enable` / `spectra-persona-disable` skills** — toggle any review persona on or off by
   adding/removing its slug in `docs/spectra/personas.config`. Run with no argument to pick from a
   numbered list. Any persona is toggleable, including the core four.
 - **Protocol** (`spectra/protocol.md`) — route → spec → plan → build → test → review → merge → reflect.
 - **Review personas** — engineer 🔧, tester 🧪, architect 📐, security 🔒 enabled by default, plus
   **optional** designer 🎨, compliance ⚖️, and analytics 📊 (shipped but off until enabled) and
-  a consumer-defined user 👤 (ICP, present once `spectra-setup` writes `user.md`). The active set
+  consumer-defined user 👤 (ICP) personas — one per customer profile, each present once
+  `spectra-add-user` writes its `user-<slug>.md` and scoped per its Applies-when block. The active set
   is the slugs in **`docs/spectra/personas.config`** (developer-owned, seeded with the four core,
   preserved across updates); reviews are still **scoped per change** (triage which enabled
   personas apply). A shared `personas/persona.md` holds the review contract (inline-only comments,

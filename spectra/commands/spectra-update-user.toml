@@ -1,6 +1,6 @@
 # Thin wrapper: the command body is the shared, tool-neutral skill, injected at runtime so there
 # is exactly one source of truth (the same SKILL.md Claude/Codex/Cursor run). See architecture.md.
-description = "Define this repo's User (ICP) review persona through a short guided dialog"
+description = "Refine an existing User (ICP) review persona through a short guided dialog"
 prompt = """
-@{skills/spectra-setup/SKILL.md}
+@{skills/spectra-update-user/SKILL.md}
 """

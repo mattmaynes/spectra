@@ -10,8 +10,9 @@ this plugin's root (holds `protocol.md`, `personas/`, `agents.md`, `hooks/`). Cl
 it automatically (`${CLAUDE_SKILL_DIR}/../..`); on any other agent, `export SPECTRA_SRC=<plugin
 root>` first. This is idempotent and **never** touches the
 developer's own content: `docs/specs/`, `docs/plans/`, `docs/feedback/`, `docs/overview/`,
-`docs/spectra/personas/user.md`, and `docs/spectra/personas.config` (your enabled-persona
-choices) are left as-is.
+`docs/spectra/personas/user*.md` (every User/ICP persona — a legacy `user.md` and any
+`user-<slug>.md`), and `docs/spectra/personas.config` (your enabled-persona choices) are left
+as-is.
 
 If Spectra was never installed here, run `spectra-install` instead.
 
@@ -26,7 +27,7 @@ If Spectra was never installed here, run `spectra-install` instead.
    This copies **all shipped persona files** (so new and updated personas always arrive), but
    **does not touch `docs/spectra/personas.config`** — that file is developer-owned and records
    which personas are *enabled*. A disabled persona's file is refreshed but stays off because its
-   slug isn't in the config; a developer's `user.md` (no source) is left as-is. Change the active
+   slug isn't in the config; a developer's `user*.md` ICP personas (no source) are left as-is. Change the active
    set with `/spectra-persona-enable` and `/spectra-persona-disable`, never by editing persona files.
 
 2. **Refresh the hook** — re-copy into the resolved hooks dir (refresh the sidecar if the
