@@ -1,4 +1,4 @@
-# 0005 — Optional advanced personas & enable/disable toggles
+# 0005 - Optional advanced personas & enable/disable toggles
 
 Builds on `0004` (the create-on-demand `user.md` persona, merged via PR #8). Branch
 `feat/advanced-personas`, based on `main` (which now carries #7's gated review step and #8's
@@ -18,26 +18,26 @@ Spectra ships four review personas (engineer 🔧, tester 🧪, architect 📐, 
 are effectively always-on for any non-trivial change. Two gaps:
 
 1. **No room for specialist perspectives.** Some changes deserve a *designer*, a *compliance*,
-   or an *analytics* review — but most repos/changes don't, and baking those checklists into the
+   or an *analytics* review - but most repos/changes don't, and baking those checklists into the
    always-considered set would tax every review (more sub-agents, more tokens) for a perspective
    that rarely applies.
 2. **No way to tune the active set.** A repo can't say "I don't want a security persona" or
    "turn on the designer." The set is fixed.
 
 We want extra personas that are **available but off by default and cost zero tokens until
-enabled**, and a way to toggle *any* persona on or off — with the four core personas on by
+enabled**, and a way to toggle *any* persona on or off - with the four core personas on by
 default.
 
 ## Outcome
 - Three new **optional** personas ship with the plugin but are **not installed** by default:
-  - **designer 🎨** — visual consistency: element sizing (buttons, inputs), spacing/margins/
+  - **designer 🎨** - visual consistency: element sizing (buttons, inputs), spacing/margins/
     padding, design-token use over ad-hoc styles, and minimizing confusing end-user choices
     (competing CTAs, misleading button text).
-  - **compliance ⚖️** — accessibility standards, PII minimization, i18n coverage (all
+  - **compliance ⚖️** - accessibility standards, PII minimization, i18n coverage (all
     user-facing text translated where i18n exists), and GDPR/CCPA obligations.
-  - **analytics 📊** — tracking coverage (events on clicks/inputs/key actions), measurable
+  - **analytics 📊** - tracking coverage (events on clicks/inputs/key actions), measurable
     outcomes for complex flows, and measurability of success behind feature gates.
-- **Activation = a config allowlist.** *(Revised during review — see the banner above; the
+- **Activation = a config allowlist.** *(Revised during review - see the banner above; the
   original "active = file presence" approach was replaced.)* All personas ship as files in
   `docs/spectra/personas/`; the **active** set is the slugs listed in
   `docs/spectra/personas.config` (developer-owned, default = the four core). A disabled persona's
@@ -46,35 +46,35 @@ default.
   `docs/spectra/personas/`; **`/spectra-disable [persona]`** removes it. Called **without an
   argument**, each lists the relevant personas as a **numbered list** and acts on the
   developer's reply (single number, or several). Any toggleable persona can be enabled or
-  disabled — including the four core ones — so a repo can drop security or add designer freely.
+  disabled - including the four core ones - so a repo can drop security or add designer freely.
 - **Toggles survive `/spectra-update`.** Update **refreshes only the personas already present**
   in the instance (re-copying each from source if a source exists) instead of copying the whole
   shipped set. A disabled persona stays gone; an enabled optional one gets refreshed; a
-  developer-owned `user.md` (no source) is left untouched — one rule replaces `0004`'s
+  developer-owned `user.md` (no source) is left untouched - one rule replaces `0004`'s
   "glob has no `user.md`" reasoning and the new "don't re-enable" need.
 
 ## Scope
 - **In:**
-  - `spectra/personas/optional/{designer,compliance,analytics}.md` — three new persona files in
+  - `spectra/personas/optional/{designer,compliance,analytics}.md` - three new persona files in
     the same shape as the shipped four (a `See persona.md` line + an opinionated checklist).
     Placed in an `optional/` subdir so install/update's top-level `*.md` glob skips them and the
     "ships but off by default" intent is structural, not a maintained list.
-  - `spectra/skills/spectra-enable/SKILL.md` and `spectra/skills/spectra-disable/SKILL.md` — two
+  - `spectra/skills/spectra-enable/SKILL.md` and `spectra/skills/spectra-disable/SKILL.md` - two
     terse skills (kept minimal to hold token cost down). Discover the catalog from the source
     layout (no hardcoded persona list): enable lists optional personas not yet present; disable
     lists currently-present toggleable personas.
-  - `spectra/skills/spectra-update/SKILL.md` — change step 1's persona copy to **refresh
+  - `spectra/skills/spectra-update/SKILL.md` - change step 1's persona copy to **refresh
     only present** personas (the loop above); update the preservation note to the unified rule.
-  - `spectra/protocol.md` — §5.4: keep the four core triggers + `user`; add **one** generic
+  - `spectra/protocol.md` - §5.4: keep the four core triggers + `user`; add **one** generic
     line so reviewers also scope in any *other* present persona whose facet the change touches
-    (read its title/intro to decide). No per-optional-persona enumeration — that keeps the
+    (read its title/intro to decide). No per-optional-persona enumeration - that keeps the
     always-loaded protocol size flat regardless of how many optional personas exist.
-  - `spectra/skills/spectra-install/SKILL.md` — Confirm step points at `/spectra-enable` as an
+  - `spectra/skills/spectra-install/SKILL.md` - Confirm step points at `/spectra-enable` as an
     optional next step (alongside the existing `/spectra-setup` pointer). Install still copies
     only the four core.
-  - `spectra/.claude-plugin/plugin.json` — `description` mentions `/spectra-enable` and
+  - `spectra/.claude-plugin/plugin.json` - `description` mentions `/spectra-enable` and
     `/spectra-disable`.
-  - `test.sh` — (a) optional personas exist in source under `personas/optional/` and are **not**
+  - `test.sh` - (a) optional personas exist in source under `personas/optional/` and are **not**
     copied by the install glob; (b) new persona files have a `See persona.md` line + a checklist;
     (c) rewrite the update test to the refresh-only-present loop and assert: disabled core
     persona stays absent, enabled optional persona refreshes, `user.md` preserved; (d)
@@ -84,7 +84,7 @@ default.
 - **Out:**
   - Auto-enabling any optional persona, or auto-detecting "this repo has a UI / collects PII /
     uses feature gates" to suggest one. Enabling is an explicit developer action.
-  - Changing the four core persona *checklists* or *how* reviews are spawned — only *which*
+  - Changing the four core persona *checklists* or *how* reviews are spawned - only *which*
     personas are eligible and how the active set is configured.
   - A config file / registry for the active set (a file-presence model is simpler, matches
     `0004`, and keeps the disabled state at literally zero always-loaded tokens).
@@ -120,7 +120,7 @@ default.
   - Both **refuse `persona`** (the shared contract, not a reviewer) and leave `user.md` to
     `spectra-setup` (don't delete developer-owned content). Confirm the resulting active set.
 - **Protocol scoping line.** One added sentence after the core triggers: *"Also scope in any
-  other persona present in `docs/spectra/personas/` whose facet the change touches — read its
+  other persona present in `docs/spectra/personas/` whose facet the change touches - read its
   title/intro to decide."* Optional personas thus participate exactly like the core ones once
   present, with no always-loaded cost when absent.
 - **Token honesty.** The README rows stay meaningful: "protocol + core personas" is unchanged by

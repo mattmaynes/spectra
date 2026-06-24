@@ -1,51 +1,51 @@
 # Features
 
-- **Multi-agent packaging** — one shared `spectra/` source installs natively into Claude Code
+- **Multi-agent packaging** - one shared `spectra/` source installs natively into Claude Code
   (`.claude-plugin/`), OpenAI Codex (`.codex-plugin/` + `.agents/plugins/marketplace.json`),
   Cursor (`.cursor-plugin/` + `.cursor-plugin/marketplace.json`), and Gemini CLI
   (`gemini-extension.json` + `commands/*.toml`). Every agent's manifest points at the same
-  `skills/`, `protocol.md`, and `personas/` — no duplicated content; the `SKILL.md` bodies are
+  `skills/`, `protocol.md`, and `personas/` - no duplicated content; the `SKILL.md` bodies are
   tool-neutral (resolve `$SRC` to the plugin root, not a Claude env var), and Gemini's TOML
   commands inject the very same bodies via `@{skills/<name>/SKILL.md}`.
-- **`spectra-install` skill** — scaffolds `docs/`, copies protocol + personas, installs the
+- **`spectra-install` skill** - scaffolds `docs/`, copies protocol + personas, installs the
   reflection hook, wires up AGENTS.md.
-- **`spectra-update` skill** — re-syncs Spectra-owned files; copies **all** shipped persona
-  files (additive — new/updated personas always arrive) but never touches the developer-owned
+- **`spectra-update` skill** - re-syncs Spectra-owned files; copies **all** shipped persona
+  files (additive - new/updated personas always arrive) but never touches the developer-owned
   `docs/spectra/personas.config` or a `user.md`, so the enabled set is preserved.
-- **User (ICP) persona commands** — full CRUD over the repo's 👤 *User (ICP)* personas, one file
+- **User (ICP) persona commands** - full CRUD over the repo's 👤 *User (ICP)* personas, one file
   per customer profile (`docs/spectra/personas/user-<slug>.md`; a legacy single `user.md` still
   works): **`spectra-add-user`** (guided dialog → new profile), **`spectra-update-user`** (read a
   profile back and refine it), **`spectra-remove-user`** (delete one), **`spectra-list-users`**
   (show them). Each profile carries an **Applies when / Skip when** block so reviews scope it in
-  only for the changes that profile cares about — multiple distinct customers, each judged on its
+  only for the changes that profile cares about - multiple distinct customers, each judged on its
   own slice. (Replaces the former single `spectra-setup`.)
-- **`spectra-persona-enable` / `spectra-persona-disable` skills** — toggle any review persona on or off by
+- **`spectra-persona-enable` / `spectra-persona-disable` skills** - toggle any review persona on or off by
   adding/removing its slug in `docs/spectra/personas.config`. Run with no argument to pick from a
   numbered list. Any persona is toggleable, including the core four.
-- **Protocol** (`spectra/protocol.md`) — route → spec → plan → build → test → review → merge → reflect.
-- **Review personas** — engineer 🔧, tester 🧪, architect 📐, security 🔒 enabled by default, plus
+- **Protocol** (`spectra/protocol.md`) - route → spec → plan → build → test → review → merge → reflect.
+- **Review personas** - engineer 🔧, tester 🧪, architect 📐, security 🔒 enabled by default, plus
   **optional** designer 🎨, compliance ⚖️, and analytics 📊 (shipped but off until enabled) and
-  consumer-defined user 👤 (ICP) personas — one per customer profile, each present once
+  consumer-defined user 👤 (ICP) personas - one per customer profile, each present once
   `spectra-add-user` writes its `user-<slug>.md` and scoped per its Applies-when block. The active set
   is the slugs in **`docs/spectra/personas.config`** (developer-owned, seeded with the four core,
   preserved across updates); reviews are still **scoped per change** (triage which enabled
   personas apply). A shared `personas/persona.md` holds the review contract (inline-only comments,
   one issue each, concrete fixes, and the canonical emoji-tagged, severity-graded comment format);
   each persona file holds only its specific, opinionated checklist. Major/blocker feed `learnings.md`.
-- **Reflection hook** — non-blocking `pre-commit` reminder to update the living docs.
-- **Test suite** (`test.sh`) — validates manifests, hook behavior, install mechanics, and
+- **Reflection hook** - non-blocking `pre-commit` reminder to update the living docs.
+- **Test suite** (`test.sh`) - validates manifests, hook behavior, install mechanics, and
   that the README's token figures match `spectra/`.
-- **Token-count guard** (repo-local, not shipped) — `scripts/token-report.sh` measures
+- **Token-count guard** (repo-local, not shipped) - `scripts/token-report.sh` measures
   `spectra/` (dependency-free `~4 chars/token`) and renders the README's token table behind
   `<!-- spectra:tokens -->` markers; `--write` updates it, `--check` verifies it. A
   repo-local `pre-commit` guard blocks any commit that edits `spectra/` without refreshing
   the figures, so the README's efficiency claim can't drift.
-- **Branding assets** — `assets/logo.svg` (spectrum-loop wordmark) and
+- **Branding assets** - `assets/logo.svg` (spectrum-loop wordmark) and
   `assets/protocol-flow.svg` (the route→…→reflect loop diagram), embedded in the README.
-- **CI** (repo-local, `.github/workflows/ci.yml`) — on push and PR: runs `test.sh`, re-runs
+- **CI** (repo-local, `.github/workflows/ci.yml`) - on push and PR: runs `test.sh`, re-runs
   the README token-drift guard (`token-report.sh --check`) so fork PRs and fresh clones are
   covered even though the local hook is untracked, and validates the PR title against
   Conventional Commits.
-- **Conventional Commits** — commit messages and PR titles follow
+- **Conventional Commits** - commit messages and PR titles follow
   `<type>[scope][!]: <subject>`, checked by the dependency-free `scripts/check-commit-msg.sh`
   (repo-local; documented in `AGENTS.md`, enforced by CI on PR titles).

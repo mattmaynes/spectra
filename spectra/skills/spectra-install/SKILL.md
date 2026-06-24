@@ -1,16 +1,16 @@
 ---
 name: spectra-install
-description: Install the Spectra spec-driven development protocol into the current repo — scaffolds docs/, copies the protocol + personas, installs the reflection hook, and wires up AGENTS.md. Use when a repo wants to adopt Spectra.
+description: Install the Spectra spec-driven development protocol into the current repo - scaffolds docs/, copies the protocol + personas, installs the reflection hook, and wires up AGENTS.md. Use when a repo wants to adopt Spectra.
 ---
 
 # Install Spectra
 
-Set up the Spectra protocol in the **current repository**. `$SRC` is this plugin's root — the
+Set up the Spectra protocol in the **current repository**. `$SRC` is this plugin's root - the
 directory holding `protocol.md`, `personas/`, `agents.md`, and `hooks/` (the parent of this
 skill's `skills/` dir). Claude Code resolves it automatically (`${CLAUDE_SKILL_DIR}/../..`); on
 any other agent, `export SPECTRA_SRC=<plugin root>` before running the steps. Run from the repo root.
 
-If a previous install exists, prefer running `spectra-update` instead — it preserves work.
+If a previous install exists, prefer running `spectra-update` instead - it preserves work.
 
 ## Steps
 
@@ -21,7 +21,7 @@ If a previous install exists, prefer running `spectra-update` instead — it pre
    for d in docs/specs docs/plans docs/feedback; do touch "$d/.gitkeep"; done
    ```
 
-2. **Copy protocol + personas, seed the enabled-persona config** (full copies — the consumer
+2. **Copy protocol + personas, seed the enabled-persona config** (full copies - the consumer
    has no `$SRC` after install):
    ```sh
    cp "$SRC/protocol.md" docs/spectra/protocol.md
@@ -32,11 +32,11 @@ If a previous install exists, prefer running `spectra-update` instead — it pre
    core personas) are *active*; the rest are available to turn on with `/spectra-persona-enable`. The
    config is **seeded only if absent** so a re-install never resets the developer's choices.
 
-3. **Seed overview living docs** — only if absent (never overwrite existing):
+3. **Seed overview living docs** - only if absent (never overwrite existing):
    create `docs/overview/{project,features,architecture,learnings}.md`, each a short stub
    (`# Project`, one line: "Describe the mission." etc.). These are filled in during Reflect.
 
-4. **Install the reflection hook** — **copy** it into the repo's resolved hooks dir (not a
+4. **Install the reflection hook** - **copy** it into the repo's resolved hooks dir (not a
    symlink to a tracked file: copying keeps updates explicit and reviewable, and the
    resolved path works with `core.hooksPath` and worktrees):
    ```sh
@@ -52,7 +52,7 @@ If a previous install exists, prefer running `spectra-update` instead — it pre
    ```
    Tell the developer if you chained onto a pre-existing hook.
 
-5. **Wire up the host file** — pick `AGENTS.md` if present, else `CLAUDE.md` if present,
+5. **Wire up the host file** - pick `AGENTS.md` if present, else `CLAUDE.md` if present,
    else create `AGENTS.md`. Insert the block from `$SRC/agents.md`:
    - If the file already contains `<!-- spectra:start -->` … `<!-- spectra:end -->`,
      replace everything between (and including) the markers with `$SRC/agents.md`.
@@ -61,7 +61,7 @@ If a previous install exists, prefer running `spectra-update` instead — it pre
      (`ln -sf AGENTS.md CLAUDE.md`) unless those files already exist. **Codex and Cursor read
      `AGENTS.md` natively** (no extra file needed); the symlinks cover Claude and Gemini.
 
-6. **Confirm**: list the created tree and tell the developer Spectra is installed — the next
+6. **Confirm**: list the created tree and tell the developer Spectra is installed - the next
    change should follow `docs/spectra/protocol.md`. Optionally, they can run `/spectra-add-user`
    to define a 👤 User (ICP) persona (one per customer profile) that reviews user-facing changes
    on that customer's behalf, or `/spectra-persona-enable` to turn on extra review personas

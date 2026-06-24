@@ -1,4 +1,4 @@
-# 0001 — Spectra protocol & marketplace
+# 0001 - Spectra protocol & marketplace
 
 ## Problem
 AI-assisted development drifts: specs, decisions, and lessons live in chat and are lost.

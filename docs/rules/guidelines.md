@@ -9,8 +9,9 @@ time, so keep each rule a single, checkable line.
    a spaced hyphen ` - `, a comma, parentheses, or two sentences.
    - Yes: "Trellis is small - read it in a sitting."
    - The spaced hyphen above does the job a long dash would.
-2. Prefer ASCII everywhere. Reach for a Unicode character only when it carries real meaning
-   (a name, a currency, a math symbol), not for typographic flourish.
+2. Other Unicode is fine where it pulls its weight: arrows, math symbols, an ellipsis, a section
+   ref, or emoji that carry meaning. Don't reach for it as pure decoration, but don't contort
+   prose to avoid it either.
 
 ## Code
 

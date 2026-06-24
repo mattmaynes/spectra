@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <strong>Spec-driven development with learning feedback loops — installable into any repo in three commands.</strong>
+  <strong>Spec-driven development with learning feedback loops - installable into any repo in three commands.</strong>
 </p>
 
 <p align="center">
@@ -21,11 +21,11 @@
 
 AI-assisted development is fast but forgetful. The spec lives in a chat message, the
 reasoning behind a decision evaporates, and the same mistakes come back next week. Spectra
-fixes that by making intent explicit *before* you build and capturing learning *after* —
+fixes that by making intent explicit *before* you build and capturing learning *after* -
 all in version control, all driven by your coding agent.
 
-It's packaged natively for **Claude Code, OpenAI Codex, Gemini CLI, and Cursor** — one source
-of truth, one set of commands — so any repo can adopt the entire protocol (the workflow, the
+It's packaged natively for **Claude Code, OpenAI Codex, Gemini CLI, and Cursor** - one source
+of truth, one set of commands - so any repo can adopt the entire protocol (the workflow, the
 review personas, the artifact structure, and a reflection reminder) without copy-pasting a thing.
 
 ## Quick start
@@ -41,7 +41,7 @@ you want to adopt it.
 /spectra-install
 ```
 `/reload-plugins` makes the newly installed plugin's commands (`/spectra-install` and the rest)
-available in your current session — without it the install won't have taken effect yet.
+available in your current session - without it the install won't have taken effect yet.
 
 **OpenAI Codex**
 ```text
@@ -66,7 +66,7 @@ reflection hook, and points your `AGENTS.md` at it. Later, pull updates with `/s
 ## The protocol
 
 <p align="center">
-  <img src="assets/protocol-flow.svg" alt="The Spectra loop: Route, Spec, Plan, Build, Test, Review, Merge, Reflect — learnings feed the next change" width="900">
+  <img src="assets/protocol-flow.svg" alt="The Spectra loop: Route, Spec, Plan, Build, Test, Review, Merge, Reflect - learnings feed the next change" width="900">
 </p>
 
 Every change flows through one loop (full text: [`spectra/protocol.md`](spectra/protocol.md)):
@@ -78,7 +78,7 @@ Every change flows through one loop (full text: [`spectra/protocol.md`](spectra/
 | 3 | **Plan** | Multi-step work becomes an ordered plan (`docs/plans/NNNN-*.md`). |
 | 4 | **Build** | Executed in a git worktree on a branch. |
 | 5 | **Test** | Run the suite and fix until green **before committing** (no suite? add the test that proves the change). |
-| 6 | **Review** | A PR is reviewed by the **personas you've enabled** (engineer, tester, architect, security by default — see [Skills](#skills)) who comment in a fixed format; `major`/`blocker` findings become learnings. |
+| 6 | **Review** | A PR is reviewed by the **personas you've enabled** (engineer, tester, architect, security by default - see [Skills](#skills)) who comment in a fixed format; `major`/`blocker` findings become learnings. |
 | 7 | **Merge** | On approval. |
 | 8 | **Reflect** | Before concluding, the **living docs** in `docs/overview/` (`project`, `features`, `architecture`, `learnings`) are updated. A non-blocking `pre-commit` hook nudges you if you forget. |
 
@@ -92,9 +92,9 @@ where Spectra is installed:
 
 | Command | What it does |
 |---|---|
-| `/spectra-install` | Adopt Spectra in the current repo — scaffolds `docs/`, copies the protocol and review personas, seeds the enabled-persona config, installs the reflection hook, and wires up `AGENTS.md`. |
+| `/spectra-install` | Adopt Spectra in the current repo - scaffolds `docs/`, copies the protocol and review personas, seeds the enabled-persona config, installs the reflection hook, and wires up `AGENTS.md`. |
 | `/spectra-update` | Re-sync the Spectra-owned files to the installed plugin version (protocol, personas, host block, hook). Leaves your `specs/plans/feedback/overview`, your `personas.config`, and your `user*.md` ICP personas untouched. |
-| `/spectra-add-user` | Define a new 👤 *User (ICP)* review persona through a short guided dialog — one per customer profile — so reviews can judge a change on that customer's behalf. Each profile says *when* it applies. |
+| `/spectra-add-user` | Define a new 👤 *User (ICP)* review persona through a short guided dialog - one per customer profile - so reviews can judge a change on that customer's behalf. Each profile says *when* it applies. |
 | `/spectra-update-user` | Refine an existing ICP persona: pick one, Spectra reads it back, and a short dialog updates its profile or when it applies. |
 | `/spectra-remove-user` | Remove an ICP persona so it stops being scoped into reviews. |
 | `/spectra-list-users` | List the ICP personas defined in this repo and when each one applies. |
@@ -104,9 +104,9 @@ where Spectra is installed:
 ### Review personas
 
 Each PR is reviewed only by the personas you've **enabled** (tracked in
-`docs/spectra/personas.config`) whose facet the change actually touches — so reviews stay
+`docs/spectra/personas.config`) whose facet the change actually touches - so reviews stay
 scoped, not eight bots on every diff. Four ship on by default, three more are available, and the
-👤 user (ICP) lens is yours to define — one persona per customer profile, each scoped to the
+👤 user (ICP) lens is yours to define - one persona per customer profile, each scoped to the
 changes it cares about:
 
 | Persona | Default | Reviews for |
@@ -118,24 +118,24 @@ changes it cares about:
 | 🎨 **designer** | off | visual consistency, spacing, design tokens, clear calls-to-action |
 | ⚖️ **compliance** | off | accessibility, PII minimization, i18n, GDPR/CCPA |
 | 📊 **analytics** | off | event tracking, measurable outcomes, feature-gate metrics |
-| 👤 **user (ICP)** | `/spectra-add-user` | whether the change actually serves your ideal customer — define one persona per customer profile, each scoped to the changes it cares about |
+| 👤 **user (ICP)** | `/spectra-add-user` | whether the change actually serves your ideal customer - define one persona per customer profile, each scoped to the changes it cares about |
 
-Flip any of them with `/spectra-persona-enable` / `/spectra-persona-disable`. A disabled persona costs nothing —
+Flip any of them with `/spectra-persona-enable` / `/spectra-persona-disable`. A disabled persona costs nothing -
 its checklist only loads when it's both enabled and scoped into a review.
 
 ## Low token cost
 
-Spectra is deliberately terse — the whole protocol fits in a corner of the context window,
+Spectra is deliberately terse - the whole protocol fits in a corner of the context window,
 leaving room for your actual code:[^tokens]
 
 <!-- spectra:tokens:start -->
 | What loads into context | Characters | Tokens (≈4 ch) |
 |---|---|---|
-| Always-on host block (in `AGENTS.md`) | 693 | **173** |
-| Protocol only (no personas needed) | 5,225 | **1,306** |
-| Full protocol + core personas | 10,966 | **2,742** |
-| Optional personas (load only when enabled) | 2,636 | **659** |
-| Everything, incl. install/update skills | 33,851 | **8,463** |
+| Always-on host block (in `AGENTS.md`) | 691 | **173** |
+| Protocol only (no personas needed) | 5,167 | **1,292** |
+| Full protocol + core personas | 10,840 | **2,710** |
+| Optional personas (load only when enabled) | 2,608 | **652** |
+| Everything, incl. install/update skills | 33,561 | **8,390** |
 <!-- spectra:tokens:end -->
 
 ## What lands in your repo
@@ -155,11 +155,11 @@ AGENTS.md                  points your agent at Spectra
 
 ## Repo layout (this repo)
 
-- **`spectra/`** — the shippable source of truth: the plugin (skills, protocol, personas,
+- **`spectra/`** - the shippable source of truth: the plugin (skills, protocol, personas,
   hook). This is what gets installed.
-- **`docs/`** — Spectra dogfooding itself: this repo built using its own protocol.
-- **`assets/`** — the logo and protocol diagram (SVG) used by this README.
-- **`scripts/`** — repo-local tooling, not shipped: `token-report.sh` keeps the token
+- **`docs/`** - Spectra dogfooding itself: this repo built using its own protocol.
+- **`assets/`** - the logo and protocol diagram (SVG) used by this README.
+- **`scripts/`** - repo-local tooling, not shipped: `token-report.sh` keeps the token
   figures above honest (enforced by a `pre-commit` guard and `test.sh`).
 
 ## License
