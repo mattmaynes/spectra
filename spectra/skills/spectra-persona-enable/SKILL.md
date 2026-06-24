@@ -17,7 +17,8 @@ already in the config.
 - **`<persona>`** → **validate first**: the name must match `^[a-z][a-z0-9-]*$` (a bare slug — no
   `/`, `..`, leading `/`, or extension) **and** correspond to an existing
   `docs/spectra/personas/<persona>.md` (an allowlist check, never a path built by interpolating
-  the argument). Reject `persona` (shared contract). If valid and not already listed, append the
+  the argument). Reject `persona` (shared contract) and any `user`/`user-*` slug (ICP personas are
+  managed by `/spectra-add-user` etc., not the config). If valid and not already listed, append the
   slug as its own line in `docs/spectra/personas.config`. If already enabled, say so.
 
 Confirm the now-active set. Enabled personas get scoped into future reviews per the protocol.

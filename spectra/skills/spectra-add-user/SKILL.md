@@ -18,9 +18,15 @@ to **see** the defined profiles, `/spectra-list-users`.
 ## Steps
 
 1. **Name the profile** — ask the developer which customer slice this is (a short name like
-   "SMB", "Enterprise admin", "Hobbyist"). Derive a kebab-case `<slug>` from it and target
-   `docs/spectra/personas/user-<slug>.md`. **If that file already exists**, stop and point the
-   developer at `/spectra-update-user` (this skill only creates) — don't overwrite.
+   "SMB", "Enterprise admin", "Hobbyist"). Derive a kebab-case `<slug>` from it. **Validate the
+   slug before building any path** (it becomes a filename): it MUST match `^[a-z][a-z0-9-]*$` — a
+   bare slug with no `/`, `..`, leading `/`, or extension. If the name can't be reduced to that,
+   ask the developer for a simpler one rather than interpolating it into a path. Also reject any
+   slug that would collide with a shipped persona (`engineer`, `tester`, `architect`, `security`,
+   `designer`, `compliance`, `analytics`, `persona`) — the target lives in the same directory.
+   Only then form the target `docs/spectra/personas/user-<slug>.md`. **If that file already
+   exists**, stop and point the developer at `/spectra-update-user` (this skill only creates) —
+   don't overwrite.
 
 2. **Describe** — ask for an initial description of this profile: who are they, and what part of
    the product do they live in?

@@ -24,10 +24,11 @@ root. It writes only the selected persona file; it reads nothing from `$SRC`.
    profile should weigh in on a review vs. sit out** (its Applies when / Skip when). One focused
    round, not an interrogation.
 
-4. **Rewrite** — write the file back in the canonical structure (a `# 👤 User (<Name>)` title, a
-   `See persona.md…` line, **Applies when**, **Skip when**, **Profile**, and **Review** sections —
-   same shape `/spectra-add-user` produces), preserving everything that didn't change and folding
-   in the updates. Don't blank fields the dialog didn't touch.
+4. **Rewrite** — write the file back in the canonical structure — the **exact template block in
+   `spectra-add-user`'s SKILL.md** (the `# 👤 User (<Name>)` title, `See persona.md…` line,
+   **Applies when**, **Skip when**, **Profile**, and **Review** sections) is the single source of
+   that shape; reproduce it rather than inventing a variant. Preserve everything that didn't change
+   and fold in the updates. Don't blank fields the dialog didn't touch.
 
 5. **Confirm** — tell the developer the refined 👤 User (<Name>) persona is saved and which
    reviews it now applies to.

@@ -17,8 +17,11 @@ Delete a customer profile so it no longer participates in reviews. (To edit one 
 2. **Confirm** — show the chosen file's title and ask the developer to confirm deletion (this is
    destructive and the profile's wording is not recoverable except from git history).
 
-3. **Delete** — on confirmation, `rm` the selected file. Remove only that file; never touch the
-   shipped personas, `persona.md`, or `personas.config`.
+3. **Delete** — on confirmation, `rm` the selected file. The target MUST be one of the exact
+   paths enumerated in Step 1 (bind the developer's choice to a listed entry) — never an `rm` of a
+   path built by interpolating a name or slug the developer typed, so a `..`/`/` payload can't
+   escape the directory. Remove only that one file; never touch the shipped personas, `persona.md`,
+   or `personas.config`.
 
 4. **Confirm** — tell the developer the 👤 User (<Name>) persona is removed and will no longer be
    scoped into reviews. If other ICP personas remain, list them; if it was the last one, note that

@@ -70,6 +70,23 @@ PY
 [ "$gout" = "OK" ] \
   && ok "Gemini ext: manifest + TOML wrappers parse, inject their own body, map 1:1" \
   || bad "Gemini ext invalid -> $gout"
+# version is bumped across all manifests in lockstep at release — a partial bump would ship
+# mismatched manifests, so assert the four plugin/extension manifests + the marketplace agree.
+vers=$(ROOT="$ROOT" SRC="$SRC" python3 -c '
+import json, os
+ROOT, SRC = os.environ["ROOT"], os.environ["SRC"]
+v = set()
+for p in [f"{SRC}/.claude-plugin/plugin.json", f"{SRC}/.codex-plugin/plugin.json",
+          f"{SRC}/.cursor-plugin/plugin.json", f"{SRC}/gemini-extension.json"]:
+    v.add(json.load(open(p)).get("version"))
+v.add(json.load(open(f"{ROOT}/.claude-plugin/marketplace.json"))["plugins"][0].get("version"))
+print(next(iter(v)) if len(v) == 1 else "MISMATCH:" + ",".join(sorted(map(str, v))))
+')
+case "$vers" in
+  MISMATCH:*) bad "manifest versions disagree -> ${vers#MISMATCH:}" ;;
+  "")         bad "manifest version missing" ;;
+  *)          ok "all manifests share one version ($vers)" ;;
+esac
 
 echo "2. skills have frontmatter"
 for f in "$SRC"/skills/*/SKILL.md; do

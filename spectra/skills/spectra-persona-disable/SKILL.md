@@ -13,7 +13,8 @@ them with `/spectra-add-user`, `/spectra-update-user`, `/spectra-remove-user`, `
 - **No argument** → number the candidates (slug + title line) and ask which to disable. Act on the
   reply (a number, several, or "all").
 - **`<persona>`** → **validate first**: the name must match `^[a-z][a-z0-9-]*$` (a bare slug — no
-  `/`, `..`, leading `/`, or extension) **and** be a current candidate. Reject `user`. If valid,
+  `/`, `..`, leading `/`, or extension) **and** be a current candidate. Reject any `user`/`user-*`
+  slug (ICP personas — manage with `/spectra-remove-user`). If valid,
   delete that slug's line from `docs/spectra/personas.config`. If not enabled, say so.
 
 Disabling a **core** persona (engineer, tester, architect, security) is allowed and persists: the
