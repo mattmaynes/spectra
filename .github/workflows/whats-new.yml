@@ -1,7 +1,9 @@
 name: Update What's new
 
 # When a GitHub Release is published, refresh the "What's new" block in the README with the
-# release tag and the first line of its notes.
+# release tag and the first line of its notes. The headline extraction and block rewrite live
+# in scripts/whats-new.sh (dependency-free, unit-tested by test.sh) - this workflow just feeds
+# it the release event and lands the result.
 #
 # Unlike a repo with an unprotected main, spectra's `main` is governed by a ruleset that
 # requires a pull request (no direct pushes). The ruleset sets 0 required approvals and adds
@@ -27,51 +29,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out default branch
-        uses: actions/checkout@v4
+        # Pinned to a full SHA (v4.2.2) - this job holds write tokens and self-merges to main.
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           ref: ${{ github.event.repository.default_branch }}
 
-      - name: Rewrite the What's new block
+      - name: Refresh the What's new block
         env:
           TAG: ${{ github.event.release.tag_name }}
           NAME: ${{ github.event.release.name }}
           BODY: ${{ github.event.release.body }}
-        run: |
-          python3 - <<'PY'
-          import os, re
-
-          tag = os.environ["TAG"].strip()
-          name = os.environ.get("NAME", "").strip()
-          body = os.environ.get("BODY", "")
-
-          # Headline = first non-empty, non-heading line of the release notes.
-          # Fall back to the release title, then to a generic line.
-          headline = ""
-          for line in body.splitlines():
-              line = line.strip()
-              if line and not line.startswith("#"):
-                  headline = line
-                  break
-          if not headline:
-              headline = name or "New release available."
-
-          block = f"<!-- whats-new -->\n**{tag}** - {headline}\n<!-- /whats-new -->"
-
-          with open("README.md", encoding="utf-8") as f:
-              readme = f.read()
-
-          new_readme, count = re.subn(
-              r"<!-- whats-new -->.*?<!-- /whats-new -->",
-              lambda _: block,
-              readme,
-              flags=re.S,
-          )
-          if count == 0:
-              raise SystemExit("No <!-- whats-new --> markers found in README.md")
-
-          with open("README.md", "w", encoding="utf-8") as f:
-              f.write(new_readme)
-          PY
+        run: scripts/whats-new.sh --write
 
       - name: Land the refresh through a PR if changed
         env:
@@ -89,11 +57,16 @@ jobs:
           git switch -c "$BRANCH"
           git add README.md
           git commit -m "docs: refresh What's new for ${TAG}"
-          # --force-with-lease so a re-run of the same release reuses the branch cleanly.
-          git push --force-with-lease origin "$BRANCH"
+          # Plain --force: the branch is a disposable, per-tag bot branch and checkout fetched
+          # only the default branch, so there's no remote-tracking ref for --force-with-lease to
+          # lease against (it would fail "stale info" on a re-run). The concurrency group above
+          # is what actually serializes writers.
+          git push --force origin "$BRANCH"
+          # Reuse an existing PR on a re-run instead of dying on "already exists" under `set -e`.
           gh pr create --base "$BASE" --head "$BRANCH" \
             --title "docs: refresh What's new for ${TAG}" \
-            --body "Automated by the What's new workflow from the ${TAG} release notes."
+            --body "Automated by the What's new workflow from the ${TAG} release notes." \
+            || echo "PR already open for ${BRANCH}; proceeding to merge."
           # No required checks on the ruleset, so the PR is mergeable at once; retry briefly in
           # case GitHub hasn't finished computing mergeability.
           for i in 1 2 3 4 5; do

@@ -30,9 +30,9 @@ review personas, the artifact structure, and a reflection reminder) without copy
 
 ## What's new
 
-<!-- whats-new -->
+<!-- spectra:whats-new:start -->
 **1.0.0** - First stable release. 🎉
-<!-- /whats-new -->
+<!-- spectra:whats-new:end -->
 
 See every release at
 **[github.com/rogueoak/spectra/releases/latest](https://github.com/rogueoak/spectra/releases/latest)**.

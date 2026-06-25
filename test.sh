@@ -272,5 +272,30 @@ for m in "nope" "Add thing" "feat x" "feature: x" "feat:" "feat:   " ""; do
   if "$ccm" "$m" >/dev/null 2>&1; then bad "accepted invalid '$m'"; else ok "rejects '$m'"; fi
 done
 
+echo "10. What's new block + headline extraction"
+wn="$ROOT/scripts/whats-new.sh"
+wnstart='<!-- spectra:whats-new:start -->'; wnend='<!-- spectra:whats-new:end -->'
+# The block the workflow rewrites must exist exactly once, or a future README edit that drops a
+# marker passes CI yet breaks the next release (the rewrite aborts on a missing/duplicate pair).
+{ [ "$(grep -cF "$wnstart" "$ROOT/README.md")" = 1 ] && [ "$(grep -cF "$wnend" "$ROOT/README.md")" = 1 ]; } \
+  && ok "README has exactly one What's new marker pair" || bad "README What's new markers missing or duplicated"
+# headline = first non-empty, non-heading line of the release body
+out=$(TAG=9.9.9 NAME="t" BODY="$(printf '## Heading\nFirst real line.\nsecond')" "$wn" print)
+printf '%s\n' "$out" | grep -qF '**9.9.9** - First real line.' \
+  && ok "extracts first non-heading line" || bad "headline extraction (first line) wrong"
+# heading-only / empty body -> falls back to the release name
+out=$(TAG=9.9.9 NAME="Fallback name" BODY="# only a heading" "$wn" print)
+printf '%s\n' "$out" | grep -qF '**9.9.9** - Fallback name' \
+  && ok "falls back to release name when body has no usable line" || bad "headline name-fallback wrong"
+# CRLF release bodies: the trailing CR is stripped from the headline
+out=$(TAG=9.9.9 BODY="$(printf 'CRLF line\r\nsecond')" "$wn" print)
+printf '%s\n' "$out" | grep -qF '**9.9.9** - CRLF line' || bad "headline keeps a trailing CR on CRLF bodies"
+printf '%s\n' "$out" | grep -qF '**9.9.9** - CRLF line' && ok "strips trailing CR from CRLF bodies"
+# defense-in-depth: a crafted first line can't smuggle comment markers into the block
+hl=$(TAG=9.9.9 NAME="" BODY="evil <!-- spectra:whats-new:end --> tail" "$wn" print | grep '^\*\*9.9.9\*\*')
+case "$hl" in *'<!--'*|*'-->'*) bad "headline not sanitized (comment markers leaked)";; *) ok "sanitizes comment markers in the headline";; esac
+# missing TAG is a hard error, not a silent empty block
+TAG="" BODY="x" "$wn" print >/dev/null 2>&1 && bad "whats-new.sh accepted an empty TAG" || ok "whats-new.sh requires TAG"
+
 echo
 [ "$fail" -eq 0 ] && echo "PASS" || { echo "FAILURES"; exit 1; }

@@ -17,17 +17,26 @@ front page stays current without manual edits on every release.
 ## Scope
 - **In:**
   - `README.md` - a `## What's new` section between the intro and Quick start, wrapping the
-    headline in `<!-- whats-new -->` / `<!-- /whats-new -->` markers, plus a "see every release"
-    pointer. Seeded with the current latest release (`1.0.0`).
-  - `.github/workflows/whats-new.yml` - on `release: [published]`, rewrites the block (first
-    non-heading line of the notes; falls back to the release title) and lands it via an
-    auto-created, self-squash-merged PR.
+    headline in `<!-- spectra:whats-new:start -->` / `<!-- spectra:whats-new:end -->` markers
+    (the repo's existing marker convention, shared with the `spectra:tokens` block), plus a "see
+    every release" pointer. Seeded with the current latest release (`1.0.0`).
+  - `scripts/whats-new.sh` - repo-local, dependency-free (POSIX sh + awk/sed), mirroring
+    `token-report.sh`: extracts the headline (first non-heading line of the notes, else the
+    release title) and rewrites the block. `--write` updates README in place; no arg prints it.
+    Unit-tested by `test.sh` (section 10).
+  - `.github/workflows/whats-new.yml` - on `release: [published]`, calls `whats-new.sh --write`
+    and lands the change via an auto-created, self-squash-merged PR.
 - **Out:**
   - Changing how releases are cut or tagged.
   - A full changelog or release-notes generator - this is a single headline, not a history.
   - Touching the `spectra:tokens` block or token report (independent README machinery).
 
 ## Approach
+The headline extraction and block rewrite live in `scripts/whats-new.sh` (dependency-free,
+unit-tested), exactly like `token-report.sh` owns the `spectra:tokens` block - so the branching
+logic is covered by `test.sh` rather than only exercised at a live release. The workflow is a
+thin wrapper that feeds it the release event and lands the result.
+
 Mirror Trellis's `whats-new.yml`, with one deliberate divergence forced by governance:
 
 - **Trellis** `main` has no ruleset, so its workflow commits the README change and pushes
@@ -39,9 +48,11 @@ Mirror Trellis's `whats-new.yml`, with one deliberate divergence forced by gover
   stays intact; the bot just uses the front door.
 
 Key decisions / trade-offs:
-- **Untrusted release body** is passed to Python via env vars and only ever used as a string
-  (`.splitlines()`, regex `subn` on fixed markers) - never interpolated into a shell command, so
-  no injection. Release notes are maintainer-authored, so markdown in the headline is low risk.
+- **Untrusted release body** reaches `whats-new.sh` only through env vars and is used purely as
+  string data (awk line scan, marker substitution) - never interpolated into a shell command, so
+  no injection. As defense-in-depth the headline is stripped of comment markers and length-capped
+  so a crafted first line can't corrupt the block region. Release notes are maintainer-authored,
+  so the residual risk is low.
 - **Least-privilege token**: `contents: write` (push the branch) + `pull-requests: write` (open
   and merge). Nothing else.
 - **PR over bypass actor**: keeping every write to `main` behind a PR is more in keeping with a
@@ -50,10 +61,11 @@ Key decisions / trade-offs:
 ## Acceptance
 - [ ] README renders a `## What's new` section with the seeded `**1.0.0**` headline and the
       releases-page pointer.
-- [ ] `<!-- whats-new -->` / `<!-- /whats-new -->` markers are present and wrap exactly the
-      headline line.
-- [ ] `.github/workflows/whats-new.yml` triggers on `release: [published]`, extracts the first
-      non-heading note line, and updates the block.
-- [ ] The workflow lands the change through a PR (no direct push to `main`).
+- [ ] `<!-- spectra:whats-new:start -->` / `<!-- spectra:whats-new:end -->` markers are present
+      and wrap exactly the headline line.
+- [ ] `scripts/whats-new.sh` extracts the first non-heading note line (else the release title),
+      sanitizes it, and rewrites the block; `test.sh` section 10 covers these cases.
+- [ ] `.github/workflows/whats-new.yml` triggers on `release: [published]`, calls the script, and
+      lands the change through a PR (no direct push to `main`).
 - [ ] `test.sh` and the README token-drift check still pass (the new section is independent of
       the token block).
