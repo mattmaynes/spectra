@@ -1,12 +1,12 @@
 #!/bin/sh
-# Spectra conventional-commit check — validates a commit message / PR title against the
+# Spectra conventional-commit check - validates a commit message / PR title against the
 # Conventional Commits spec (https://www.conventionalcommits.org).
 #
 # REPO-LOCAL TOOLING. Not part of the shippable plugin (nothing under spectra/) and never
 # installed into consumer repos. Conventional commits is *this repo's* convention; it's
 # enforced in CI (.github/workflows/ci.yml) on PR titles and runnable locally.
 #
-# Dependency-free (POSIX sh + grep) so it runs identically in CI and a local hook — same
+# Dependency-free (POSIX sh + grep) so it runs identically in CI and a local hook - same
 # rationale as scripts/token-report.sh.
 #
 # Grammar (first line only):
