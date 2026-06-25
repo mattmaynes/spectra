@@ -3,7 +3,7 @@ name: CI
 # Enforce, for everyone, the standards this repo already cares about locally:
 #   - test.sh (manifests, hooks, install mechanics, dogfood integrity)
 #   - the README token-drift guard (same check as the local pre-commit hook, but it lives in
-#     an untracked hook — so fork PRs and fresh clones are only covered here)
+#     an untracked hook - so fork PRs and fresh clones are only covered here)
 #   - Conventional Commits on the PR title (the squash-merged commit message)
 on:
   push:

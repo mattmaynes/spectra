@@ -11,7 +11,7 @@ changed_overview=$(printf '%s\n' "$staged" | grep -E '^docs/overview/')
 if [ -n "$changed_work" ] && [ -z "$changed_overview" ]; then
   y=$(printf '\033[33m'); r=$(printf '\033[0m')
   echo "${y}spectra:${r} specs/plans/feedback changed but docs/overview/ was not."
-  echo "        Reflect before concluding — update project / features / architecture / learnings."
+  echo "        Reflect before concluding - update project / features / architecture / learnings."
   echo "        (Reminder only; commit proceeds.)"
 fi
 

@@ -36,11 +36,11 @@ for entry in ".agents/plugins/marketplace.json:.codex-plugin" ".cursor-plugin/ma
     && ok "$pdir skills '$sk' resolves to the shared skills tree" || bad "$pdir skills pointer broken"
 done
 # Gemini ships a TOML-command extension over the SAME tree: gemini-extension.json + one thin
-# commands/<name>.toml per skill whose `prompt` injects @{skills/<name>/SKILL.md} — the shared
+# commands/<name>.toml per skill whose `prompt` injects @{skills/<name>/SKILL.md} - the shared
 # body, single-source (no second copy, no generator). Validate by PARSING (manifest name; every
 # TOML parses, has a non-empty description, and injects its own body INSIDE the `prompt` value)
-# and a 1:1 skill<->command map. Keying on the parsed `prompt` field — not a bare grep that would
-# match the string in a comment even with `prompt` deleted — is the feedback/0009 lesson applied.
+# and a 1:1 skill<->command map. Keying on the parsed `prompt` field - not a bare grep that would
+# match the string in a comment even with `prompt` deleted - is the feedback/0009 lesson applied.
 gout=$(SRC="$SRC" python3 <<'PY'
 import os, sys, json, glob, pathlib, tomllib
 SRC = os.environ["SRC"]; errs = []
@@ -70,7 +70,7 @@ PY
 [ "$gout" = "OK" ] \
   && ok "Gemini ext: manifest + TOML wrappers parse, inject their own body, map 1:1" \
   || bad "Gemini ext invalid -> $gout"
-# version is bumped across all manifests in lockstep at release — a partial bump would ship
+# version is bumped across all manifests in lockstep at release - a partial bump would ship
 # mismatched manifests, so assert the four plugin/extension manifests + the marketplace agree.
 vers=$(ROOT="$ROOT" SRC="$SRC" python3 -c '
 import json, os
@@ -94,7 +94,7 @@ for f in "$SRC"/skills/*/SKILL.md; do
 done
 # install/update must resolve $SRC tool-neutrally so ONE body runs under Claude/Codex/Cursor. The
 # discriminating guard: the executable assignment goes through the SPECTRA_SRC override FIRST, so a
-# revert to a Claude-only `SRC="${CLAUDE_SKILL_DIR}/../.."` (the regression) no longer matches —
+# revert to a Claude-only `SRC="${CLAUDE_SKILL_DIR}/../.."` (the regression) no longer matches -
 # presence of neutral prose alone is not enough to catch it (feedback/0009).
 for s in spectra-install spectra-update; do
   sk="$SRC/skills/$s/SKILL.md"
@@ -102,9 +102,9 @@ for s in spectra-install spectra-update; do
     && ok "$s resolves \$SRC via SPECTRA_SRC (not Claude-only)" \
     || bad "$s lost tool-neutral \$SRC resolution (Claude-only regression?)"
 done
-# User/ICP personas are create-on-demand (spectra-add-user writes them into a consumer) — none ship
+# User/ICP personas are create-on-demand (spectra-add-user writes them into a consumer) - none ship
 if ls "$SRC"/personas/user*.md >/dev/null 2>&1; then
-  bad "personas/user*.md shipped — ICP personas must be created on demand by spectra-add-user"
+  bad "personas/user*.md shipped - ICP personas must be created on demand by spectra-add-user"
 else
   ok "no personas/user*.md shipped (create-on-demand)"
 fi
@@ -138,7 +138,7 @@ for f in "$SRC"/personas/*.md; do
 done
 [ -z "$miss" ] && ok "every persona has a title + persona.md ref + a checklist" \
   || bad "personas missing title/contract-ref/checklist:$miss"
-# enable/disable must edit personas.config and keep the slug validation (feedback/0007) — guard
+# enable/disable must edit personas.config and keep the slug validation (feedback/0007) - guard
 # against a future edit silently dropping either (the skills are prose the suite can't execute)
 for s in spectra-persona-enable spectra-persona-disable; do
   sk="$SRC/skills/$s/SKILL.md"
@@ -233,7 +233,7 @@ cmp -s docs/spectra/personas/engineer.md "$SRC/personas/engineer.md" \
 [ -f docs/spectra/personas/security.md ] \
   && ok "disabled persona's file still delivered (additive copy)" || bad "update didn't copy security.md"
 [ "$(cat docs/spectra/personas.config)" = "$(printf 'engineer\ntester\n')" ] \
-  && ok "personas.config preserved — security stays disabled across update" \
+  && ok "personas.config preserved - security stays disabled across update" \
   || bad "update clobbered personas.config (would silently re-enable a disabled persona)"
 cmp -s docs/spectra/protocol.md "$SRC/protocol.md" && ok "protocol refreshed from source" || bad "protocol not refreshed"
 cd "$ROOT"; rm -rf "$T"
@@ -258,7 +258,7 @@ echo "8. README token figures in sync with spectra/"
 if "$ROOT/scripts/token-report.sh" --check >/dev/null 2>&1; then
   ok "token-report --check passes (README matches spectra/)"
 else
-  bad "README token figures stale — run scripts/token-report.sh --write"
+  bad "README token figures stale - run scripts/token-report.sh --write"
 fi
 
 echo "9. conventional-commit validator"

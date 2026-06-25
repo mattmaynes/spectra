@@ -1,11 +1,11 @@
 #!/bin/sh
-# Spectra token report — keeps the README's "Low token cost" figures honest.
+# Spectra token report - keeps the README's "Low token cost" figures honest.
 #
 # REPO-LOCAL TOOLING. This is not part of the shippable plugin (nothing under spectra/)
 # and is never installed into consumer repos. It exists only to measure this repo's own
 # spectra/ source and keep README.md in sync.
 #
-# Heuristic: ~4 chars/token (dependency-free — no tokenizer needed, so the pre-commit hook
+# Heuristic: ~4 chars/token (dependency-free - no tokenizer needed, so the pre-commit hook
 # runs anywhere). Counts are grouped to mirror what actually loads into an agent's context.
 #
 # Usage:
@@ -21,7 +21,7 @@ START='<!-- spectra:tokens:start -->'
 END='<!-- spectra:tokens:end -->'
 
 # chars_of FILE... -> total character count across the given files (0 for no files, so an
-# empty grouping — e.g. when every persona is enabled — can't turn `cat "$@"` into a
+# empty grouping - e.g. when every persona is enabled - can't turn `cat "$@"` into a
 # stdin-blocking bare cat)
 chars_of() { [ "$#" -eq 0 ] && { echo 0; return; }; cat "$@" | wc -c | tr -d ' '; }
 
@@ -90,7 +90,7 @@ case "${1:-print}" in
   write|--write)
     grep -qF "$START" "$README" || { echo "token-report: markers not found in README.md" >&2; exit 1; }
     BLOCKF=$(mktemp); generate > "$BLOCKF"
-    # Read the (multi-line) block from a file via getline — BSD awk rejects multi-line -v.
+    # Read the (multi-line) block from a file via getline - BSD awk rejects multi-line -v.
     awk -v bf="$BLOCKF" -v s="$START" -v e="$END" '
       index($0, s) { while ((getline ln < bf) > 0) print ln; close(bf); skip=1; next }
       index($0, e) { skip=0; next }
