@@ -31,6 +31,12 @@ The `docs/overview/` living docs are the project's memory - read them first, the
 
 ## 2. Spec (features)
 
+**One spec is one independently shippable feature, and maps to one PR.** A spec is the
+smallest change that ships on its own and leaves the system whole - working software, working
+docs. Two features that can ship apart belong in two specs, not one batched spec. Shared setup
+a group needs - a recipe, infra, new deps - lives in the *first* spec of the group; the rest
+reference it and stay small. Small specs review cleanly and map 1:1 to a PR.
+
 Write `docs/specs/NNNN-<slug>.md`:
 - **Problem** - what/why, who it's for.
 - **Outcome** - observable behavior when done.

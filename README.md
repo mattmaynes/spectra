@@ -132,10 +132,10 @@ leaving room for your actual code:[^tokens]
 | What loads into context | Characters | Tokens (≈4 ch) |
 |---|---|---|
 | Always-on host block (in `AGENTS.md`) | 691 | **173** |
-| Protocol only (no personas needed) | 5,167 | **1,292** |
-| Full protocol + core personas | 10,840 | **2,710** |
+| Protocol only (no personas needed) | 5,614 | **1,404** |
+| Full protocol + core personas | 11,287 | **2,822** |
 | Optional personas (load only when enabled) | 2,608 | **652** |
-| Everything, incl. install/update skills | 33,561 | **8,390** |
+| Everything, incl. install/update skills | 34,008 | **8,502** |
 <!-- spectra:tokens:end -->
 
 ## What lands in your repo
