@@ -110,3 +110,13 @@ an untracked `.git/hooks/pre-commit`, so fork PRs and fresh clones are unprotect
 re-runs it. The PR title is passed to the validator via an `env:` var, never interpolated into
 the shell, so an untrusted title can't inject commands. Squash-merge makes the PR title the
 landed commit, so linting the title (not every intermediate commit) is the high-value gate.
+
+**Release automation (repo-local, never shipped):** `.github/workflows/whats-new.yml` runs on
+`release: [published]` and refreshes the README's `<!-- whats-new -->` block from the first
+non-heading line of the release notes. Because `main`'s ruleset forbids direct pushes, it can't
+commit back the way an unprotected repo would; instead it opens a `chore/whats-new-<tag>` branch
+and squash-merges its own PR (the ruleset sets 0 required approvals and no required status
+checks, so a bot PR is immediately mergeable). The untrusted release body reaches Python only
+through `env:` vars and is used purely as string data, mirroring the injection-safe handling of
+the PR title in `ci.yml`. Token (`contents: write` + `pull-requests: write`) is the minimum to
+push the branch and merge the PR.

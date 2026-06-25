@@ -1,0 +1,105 @@
+name: Update What's new
+
+# When a GitHub Release is published, refresh the "What's new" block in the README with the
+# release tag and the first line of its notes.
+#
+# Unlike a repo with an unprotected main, spectra's `main` is governed by a ruleset that
+# requires a pull request (no direct pushes). The ruleset sets 0 required approvals and adds
+# no required status checks, so this workflow lands the refresh through an auto-created PR that
+# it squash-merges itself. Everything still flows through a PR, keeping the ruleset intact.
+
+on:
+  release:
+    types: [published]
+
+# Least privilege: push the branch (contents) and open + merge the PR (pull-requests).
+permissions:
+  contents: write
+  pull-requests: write
+
+# Serialize releases so two near-simultaneous publishes can't open competing PRs.
+concurrency:
+  group: whats-new
+  cancel-in-progress: false
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out default branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+
+      - name: Rewrite the What's new block
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+          NAME: ${{ github.event.release.name }}
+          BODY: ${{ github.event.release.body }}
+        run: |
+          python3 - <<'PY'
+          import os, re
+
+          tag = os.environ["TAG"].strip()
+          name = os.environ.get("NAME", "").strip()
+          body = os.environ.get("BODY", "")
+
+          # Headline = first non-empty, non-heading line of the release notes.
+          # Fall back to the release title, then to a generic line.
+          headline = ""
+          for line in body.splitlines():
+              line = line.strip()
+              if line and not line.startswith("#"):
+                  headline = line
+                  break
+          if not headline:
+              headline = name or "New release available."
+
+          block = f"<!-- whats-new -->\n**{tag}** - {headline}\n<!-- /whats-new -->"
+
+          with open("README.md", encoding="utf-8") as f:
+              readme = f.read()
+
+          new_readme, count = re.subn(
+              r"<!-- whats-new -->.*?<!-- /whats-new -->",
+              lambda _: block,
+              readme,
+              flags=re.S,
+          )
+          if count == 0:
+              raise SystemExit("No <!-- whats-new --> markers found in README.md")
+
+          with open("README.md", "w", encoding="utf-8") as f:
+              f.write(new_readme)
+          PY
+
+      - name: Land the refresh through a PR if changed
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name }}
+          BASE: ${{ github.event.repository.default_branch }}
+        run: |
+          if git diff --quiet -- README.md; then
+            echo "What's new already current; nothing to do."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          BRANCH="chore/whats-new-${TAG}"
+          git switch -c "$BRANCH"
+          git add README.md
+          git commit -m "docs: refresh What's new for ${TAG}"
+          # --force-with-lease so a re-run of the same release reuses the branch cleanly.
+          git push --force-with-lease origin "$BRANCH"
+          gh pr create --base "$BASE" --head "$BRANCH" \
+            --title "docs: refresh What's new for ${TAG}" \
+            --body "Automated by the What's new workflow from the ${TAG} release notes."
+          # No required checks on the ruleset, so the PR is mergeable at once; retry briefly in
+          # case GitHub hasn't finished computing mergeability.
+          for i in 1 2 3 4 5; do
+            gh pr merge "$BRANCH" --squash --delete-branch && exit 0
+            echo "merge not ready (attempt $i); retrying..."
+            sleep 5
+          done
+          echo "::error::Could not squash-merge the What's new PR for ${TAG}"
+          exit 1

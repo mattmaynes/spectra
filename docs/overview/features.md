@@ -49,3 +49,8 @@
 - **Conventional Commits** - commit messages and PR titles follow
   `<type>[scope][!]: <subject>`, checked by the dependency-free `scripts/check-commit-msg.sh`
   (repo-local; documented in `AGENTS.md`, enforced by CI on PR titles).
+- **README "What's new"** (repo-local, `.github/workflows/whats-new.yml`) - a `## What's new`
+  section in the README carries a one-line headline for the latest release behind
+  `<!-- whats-new -->` markers. On `release: [published]` the workflow rewrites it from the
+  first non-heading line of the release notes and lands the change through a self-squash-merged
+  PR (since `main` forbids direct pushes), so the front page stays current without manual edits.
