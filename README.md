@@ -31,7 +31,7 @@ review personas, the artifact structure, and a reflection reminder) without copy
 ## What's new
 
 <!-- spectra:whats-new:start -->
-**1.0.0** - First stable release. 🎉
+**1.0.1** - A small protocol clarification.
 <!-- spectra:whats-new:end -->
 
 See every release at
