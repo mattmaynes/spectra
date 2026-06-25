@@ -110,3 +110,17 @@ an untracked `.git/hooks/pre-commit`, so fork PRs and fresh clones are unprotect
 re-runs it. The PR title is passed to the validator via an `env:` var, never interpolated into
 the shell, so an untrusted title can't inject commands. Squash-merge makes the PR title the
 landed commit, so linting the title (not every intermediate commit) is the high-value gate.
+
+**Release automation (repo-local, never shipped):** `scripts/whats-new.sh` owns the README's
+`<!-- spectra:whats-new:start/end -->` block exactly as `token-report.sh` owns the
+`spectra:tokens` block - same dependency-free POSIX-sh + marker-rewrite pattern, so its headline
+extraction is unit-tested by `test.sh` (section 10) rather than only exercised live.
+`.github/workflows/whats-new.yml` is a thin wrapper: on `release: [published]` it runs the script
+with the release event in `env:`. Because `main`'s ruleset forbids direct pushes, it can't commit
+back the way an unprotected repo would; instead it opens a `chore/whats-new-<tag>` branch and
+squash-merges its own PR (the ruleset sets 0 required approvals and no required status checks, so
+a bot PR is immediately mergeable). The untrusted release body reaches the script only through
+`env:` vars and is used purely as string data (and the headline is marker-stripped and
+length-capped), mirroring the injection-safe PR-title handling in `ci.yml`. Token
+(`contents: write` + `pull-requests: write`) is the minimum to push the branch and merge the PR.
+The checkout action is pinned to a full commit SHA since the job carries write tokens.

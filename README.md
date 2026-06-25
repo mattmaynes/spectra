@@ -28,6 +28,17 @@ It's packaged natively for **Claude Code, OpenAI Codex, Gemini CLI, and Cursor**
 of truth, one set of commands - so any repo can adopt the entire protocol (the workflow, the
 review personas, the artifact structure, and a reflection reminder) without copy-pasting a thing.
 
+## What's new
+
+<!-- spectra:whats-new:start -->
+**1.0.0** - First stable release. 🎉
+<!-- spectra:whats-new:end -->
+
+See every release at
+**[github.com/rogueoak/spectra/releases/latest](https://github.com/rogueoak/spectra/releases/latest)**.
+The line above is rewritten from the first line of the latest release's notes each time a
+release is published - no manual edits here.
+
 ## Quick start
 
 Install through your agent's native plugin system, then run `/spectra-install` in the repo

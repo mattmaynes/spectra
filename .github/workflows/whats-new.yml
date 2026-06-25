@@ -1,0 +1,78 @@
+name: Update What's new
+
+# When a GitHub Release is published, refresh the "What's new" block in the README with the
+# release tag and the first line of its notes. The headline extraction and block rewrite live
+# in scripts/whats-new.sh (dependency-free, unit-tested by test.sh) - this workflow just feeds
+# it the release event and lands the result.
+#
+# Unlike a repo with an unprotected main, spectra's `main` is governed by a ruleset that
+# requires a pull request (no direct pushes). The ruleset sets 0 required approvals and adds
+# no required status checks, so this workflow lands the refresh through an auto-created PR that
+# it squash-merges itself. Everything still flows through a PR, keeping the ruleset intact.
+
+on:
+  release:
+    types: [published]
+
+# Least privilege: push the branch (contents) and open + merge the PR (pull-requests).
+permissions:
+  contents: write
+  pull-requests: write
+
+# Serialize releases so two near-simultaneous publishes can't open competing PRs.
+concurrency:
+  group: whats-new
+  cancel-in-progress: false
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out default branch
+        # Pinned to a full SHA (v4.2.2) - this job holds write tokens and self-merges to main.
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+
+      - name: Refresh the What's new block
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+          NAME: ${{ github.event.release.name }}
+          BODY: ${{ github.event.release.body }}
+        run: scripts/whats-new.sh --write
+
+      - name: Land the refresh through a PR if changed
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name }}
+          BASE: ${{ github.event.repository.default_branch }}
+        run: |
+          if git diff --quiet -- README.md; then
+            echo "What's new already current; nothing to do."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          BRANCH="chore/whats-new-${TAG}"
+          git switch -c "$BRANCH"
+          git add README.md
+          git commit -m "docs: refresh What's new for ${TAG}"
+          # Plain --force: the branch is a disposable, per-tag bot branch and checkout fetched
+          # only the default branch, so there's no remote-tracking ref for --force-with-lease to
+          # lease against (it would fail "stale info" on a re-run). The concurrency group above
+          # is what actually serializes writers.
+          git push --force origin "$BRANCH"
+          # Reuse an existing PR on a re-run instead of dying on "already exists" under `set -e`.
+          gh pr create --base "$BASE" --head "$BRANCH" \
+            --title "docs: refresh What's new for ${TAG}" \
+            --body "Automated by the What's new workflow from the ${TAG} release notes." \
+            || echo "PR already open for ${BRANCH}; proceeding to merge."
+          # No required checks on the ruleset, so the PR is mergeable at once; retry briefly in
+          # case GitHub hasn't finished computing mergeability.
+          for i in 1 2 3 4 5; do
+            gh pr merge "$BRANCH" --squash --delete-branch && exit 0
+            echo "merge not ready (attempt $i); retrying..."
+            sleep 5
+          done
+          echo "::error::Could not squash-merge the What's new PR for ${TAG}"
+          exit 1
