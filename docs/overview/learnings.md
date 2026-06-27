@@ -1,7 +1,18 @@
 # Learnings
 
-Process lessons and feedback distilled into guidance. Append as they arise (newest first).
+General rules distilled from feedback and friction - each must improve how we build, not just
+record how one feature turned out. Append as they arise (newest first).
 
+- **A learning must generalize past the change that taught it.** Reflect steps kept logging
+  genuine "do it differently" corrections that applied only to the one feature that produced them
+  - real, but with no future change to guide, so they diluted the store. The §6 definition
+  guarded against feature *descriptions* and *manufactured* lessons, but never required a learning
+  to transfer. A correction earns a place in `learnings.md` only if it will guide work in some
+  other context; a fix specific to the feature you just shipped is part of that feature's story
+  (`features.md` / `architecture.md`). Test every candidate against "would this guide a change
+  elsewhere?" before logging it. Extends [`feedback/0005`](../feedback/0005-learning-vs-feature.md)
+  (a learning isn't a feature write-up) with the generality axis. - from
+  [`feedback/0014`](../feedback/0014-learnings-must-generalize.md)
 - **Re-apply input-validation to every path when you add or generalize a name-acting skill.** A
   logged validation lesson (`feedback/0007`) protects only the files it was written in. When you
   add a new skill that writes/deletes by a name, or widen the set a name ranges over, restate the
