@@ -52,8 +52,8 @@ Write `docs/feedback/NNNN-<slug>.md`:
 - **Symptom** - what went wrong / what hurt.
 - **Root cause** - why (best understanding).
 - **Fix** - the change.
-- **Learning** - the general rule to apply next time, not just this one fix. Feeds
-  `overview/learnings.md` in step 6.
+- **Learning** - the general rule to apply next time, not just this one fix. If it generalizes
+  past this change, it feeds `overview/learnings.md` in step 6.
 
 ## 4. Plan
 
@@ -107,8 +107,8 @@ A **learning** is a rule you'd apply *differently* next time that **outlives the
 taught it** - it improves how the project is built from here on, not just how one feature turned
 out. Distil it from feedback or friction and keep it general: a lesson that only ever applies to
 the feature you just shipped belongs in that feature's story (`features.md` / `architecture.md`),
-not here. No feedback and no recurring rule, no learning - don't manufacture one to fill the
-section.
+not here. No feedback, no learning; nothing that generalizes, no learning - don't manufacture
+one to fill the section.
 
 A `pre-commit` hook reminds you if specs/plans/feedback changed without an overview update.
 The reminder is non-blocking - skip it only when truly nothing changed.
