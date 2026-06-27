@@ -55,3 +55,10 @@
   release's notes and rewrites the block; `.github/workflows/whats-new.yml` runs it on
   `release: [published]` and lands the change through a self-squash-merged PR (since `main`
   forbids direct pushes), so the front page stays current without manual edits.
+- **Plugin versioning & releases** (repo-local, not shipped) - one version in a root `VERSION`
+  file, mirrored into all seven manifests. `scripts/bump-version.sh X.Y.Z` rewrites them
+  together; `--check` (in `test.sh`) fails CI if any drift. Merging a `VERSION` bump triggers
+  the `release` job in `ci.yml`, which tags the bare-semver version at the commit and publishes
+  a GitHub Release - from `docs/releases/<x.y.z>.md` when present (author-controlled headline),
+  else auto-generated notes. Publishing then feeds the "What's new" refresh, so one bump fans
+  out to tag, Release, and README headline. Documented under "Releasing" in `AGENTS.md`.

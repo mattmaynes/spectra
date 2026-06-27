@@ -297,5 +297,35 @@ case "$hl" in *'<!--'*|*'-->'*) bad "headline not sanitized (comment markers lea
 # missing TAG is a hard error, not a silent empty block
 TAG="" BODY="x" "$wn" print >/dev/null 2>&1 && bad "whats-new.sh accepted an empty TAG" || ok "whats-new.sh requires TAG"
 
+echo "11. version sync across all 7 manifests (VERSION + bump-version.sh)"
+bv="$ROOT/scripts/bump-version.sh"
+# The seven version-bearing manifests (paths relative to ROOT) - kept in lockstep with the
+# script's own list; if a manifest is added/removed both must move together.
+mans='.claude-plugin/marketplace.json
+.agents/plugins/marketplace.json
+.cursor-plugin/marketplace.json
+spectra/.claude-plugin/plugin.json
+spectra/.codex-plugin/plugin.json
+spectra/.cursor-plugin/plugin.json
+spectra/gemini-extension.json'
+# the committed tree agrees: VERSION == every manifest's lone version token
+if "$bv" --check >/dev/null 2>&1; then ok "bump-version --check passes (all 7 manifests match VERSION)"; else bad "manifests drift from VERSION - run scripts/bump-version.sh \$(cat VERSION)"; fi
+# semver gate: reject a v-prefix, too-few/too-many parts, garbage, and empty
+for v in "v1.2.3" "1.2" "1.2.3.4" "nope" ""; do
+  if "$bv" "$v" >/dev/null 2>&1; then bad "bump-version accepted invalid '$v'"; else ok "bump-version rejects '$v'"; fi
+done
+# sandbox write: propagates X.Y.Z to all 7 + VERSION, converges under --check, and never
+# touches the real tree (SPECTRA_ROOT override, mirroring the SPECTRA_SRC pattern).
+real_before=$(cat "$ROOT/VERSION")
+T=$(mktemp -d)
+for f in $mans VERSION; do mkdir -p "$T/$(dirname "$f")"; cp "$ROOT/$f" "$T/$f"; done
+if SPECTRA_ROOT="$T" "$bv" 9.9.9 >/dev/null 2>&1; then ok "bump-version 9.9.9 writes the sandbox"; else bad "bump-version 9.9.9 failed in sandbox"; fi
+synced=1; [ "$(cat "$T/VERSION")" = "9.9.9" ] || synced=0
+for f in $mans; do [ "$(grep -c '"version": *"9.9.9"' "$T/$f")" = 1 ] || synced=0; done
+[ "$synced" = 1 ] && ok "all 7 manifests + VERSION now read 9.9.9" || bad "bump-version 9.9.9 left a manifest unsynced"
+SPECTRA_ROOT="$T" "$bv" --check >/dev/null 2>&1 && ok "sandbox --check converges after write" || bad "sandbox --check did not converge"
+[ "$(cat "$ROOT/VERSION")" = "$real_before" ] && ok "real VERSION untouched by the sandbox write" || bad "sandbox write leaked into the real VERSION"
+rm -rf "$T"
+
 echo
 [ "$fail" -eq 0 ] && echo "PASS" || { echo "FAILURES"; exit 1; }

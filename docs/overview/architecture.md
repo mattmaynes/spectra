@@ -124,3 +124,23 @@ a bot PR is immediately mergeable). The untrusted release body reaches the scrip
 length-capped), mirroring the injection-safe PR-title handling in `ci.yml`. Token
 (`contents: write` + `pull-requests: write`) is the minimum to push the branch and merge the PR.
 The checkout action is pinned to a full commit SHA since the job carries write tokens.
+
+**Versioning & release publishing (repo-local, never shipped):** the plugin version has one
+source of truth - the root `VERSION` file - and the seven manifests (three repo-root
+marketplaces, three `spectra/*plugin.json`, `spectra/gemini-extension.json`) are derivatives.
+`scripts/bump-version.sh` (POSIX sh + `python3`, the `token-report.sh` dependency rationale)
+keeps them identical: `X.Y.Z` rewrites all eight files via a *format-preserving surgical
+substitution* of the single `"version"` token (never a JSON re-serialize that would reflow the
+hand-formatted files), validating every manifest in memory and writing `VERSION` last so a guard
+failure can't leave a half-bumped tree; `--check` is the inverse invariant and is wired into
+`test.sh` (section 11), the guard that would have caught the two manifests stranded at `0.1.1`
+(`feedback` #27). A fourth `ci.yml` job, `release`, closes the loop: push-only, `needs: [test,
+readme-drift]`, and the *only* job elevated to `contents: write` (job-scoped; the workflow stays
+read-only). It reads `VERSION` and, when no release for it exists yet (idempotent `gh release
+view` guard), runs `gh release create "$VERSION" --target "$GITHUB_SHA"` - creating the
+bare-semver tag at the merge commit in one call - with `--notes-file docs/releases/$VERSION.md`
+when the author wrote one (so the headline stays human and feeds `whats-new.yml`), else
+`--generate-notes`. So a single `VERSION` bump merged to `main` fans out to: tag -> Release ->
+README "What's new". The manifest `version` is the real update signal each agent gates on; the
+tag is the durable marker - both wired to the same `x.y.z`. Identity across the manifests is
+`rogueoak` (owner/author), the personal name/email dropped post org-transfer.

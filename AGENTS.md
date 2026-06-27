@@ -32,6 +32,25 @@ resolve every review thread before merge; the repo-specific catches are:
   checked out elsewhere) *after* the remote merge already succeeded. Verify with
   `gh pr view <n> --json state`, then remove the branch/worktree manually.
 
+## Releasing
+
+The plugin version is one number, held in the root **`VERSION`** file and mirrored into all
+seven manifests. Never hand-edit a manifest's `version`: run `scripts/bump-version.sh X.Y.Z`
+(semver, no `v`), which rewrites `VERSION` + every manifest together; `test.sh` fails CI if they
+ever drift (`bump-version.sh --check`).
+
+To cut a release:
+
+1. `scripts/bump-version.sh X.Y.Z`.
+2. Write `docs/releases/X.Y.Z.md` - first non-heading line is the headline (see that dir's
+   `README.md`); skip the file to fall back to auto-generated notes.
+3. Open a PR and squash-merge to `main`.
+
+On merge, the `release` job in `.github/workflows/ci.yml` (push-only, after the gating checks)
+sees the new `VERSION`, tags `X.Y.Z` at that commit, and publishes the GitHub Release from your
+notes. Publishing then fires `whats-new.yml`, which refreshes the README "What's new" headline.
+The job is idempotent - a push whose `VERSION` already has a release does nothing.
+
 <!-- trellis:start -->
 ## Trellis conventions
 

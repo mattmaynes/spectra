@@ -47,3 +47,38 @@ jobs:
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}
         run: scripts/check-commit-msg.sh "$PR_TITLE"
+
+  release:
+    name: Tag + GitHub Release on version bump
+    runs-on: ubuntu-latest
+    # Landing branch only, and only after the gating checks pass. This is the one privileged
+    # job (it can create tags/releases), so it must never run on untrusted PR code - hence
+    # push-only + needs. Everything else stays read-only at the workflow level.
+    if: github.event_name == 'push'
+    needs: [test, readme-drift]
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create the release when VERSION is new
+        # Idempotent: a push whose VERSION already has a release does nothing, so the job only
+        # fires on the commit that bumps VERSION. gh creates the bare-semver tag at this commit
+        # in the same call - no separate git tag/push. Prefer a hand-written notes file (its
+        # first non-heading line becomes the README headline via whats-new.yml); fall back to
+        # auto-generated notes from the conventional-commit titles since the previous tag.
+        run: |
+          v="$(cat VERSION)"
+          if gh release view "$v" >/dev/null 2>&1; then
+            echo "Release $v already exists; nothing to do."
+            exit 0
+          fi
+          notes="docs/releases/$v.md"
+          if [ -f "$notes" ]; then
+            echo "Publishing release $v from $notes"
+            gh release create "$v" --target "$GITHUB_SHA" --notes-file "$notes"
+          else
+            echo "Publishing release $v with auto-generated notes (no $notes)"
+            gh release create "$v" --target "$GITHUB_SHA" --generate-notes
+          fi
