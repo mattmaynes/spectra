@@ -111,16 +111,21 @@ re-runs it. The PR title is passed to the validator via an `env:` var, never int
 the shell, so an untrusted title can't inject commands. Squash-merge makes the PR title the
 landed commit, so linting the title (not every intermediate commit) is the high-value gate.
 
-**Release automation (repo-local, never shipped):** `scripts/whats-new.sh` owns the README's
-`<!-- spectra:whats-new:start/end -->` block exactly as `token-report.sh` owns the
-`spectra:tokens` block - same dependency-free POSIX-sh + marker-rewrite pattern, so its headline
-extraction is unit-tested by `test.sh` (section 10) rather than only exercised live.
-`.github/workflows/whats-new.yml` is a thin wrapper: on `release: [published]` it runs the script
-with the release event in `env:`. Because `main`'s ruleset forbids direct pushes, it can't commit
-back the way an unprotected repo would; instead it opens a `chore/whats-new-<tag>` branch and
-squash-merges its own PR (the ruleset sets 0 required approvals and no required status checks, so
-a bot PR is immediately mergeable). The untrusted release body reaches the script only through
-`env:` vars and is used purely as string data (and the headline is marker-stripped and
-length-capped), mirroring the injection-safe PR-title handling in `ci.yml`. Token
-(`contents: write` + `pull-requests: write`) is the minimum to push the branch and merge the PR.
-The checkout action is pinned to a full commit SHA since the job carries write tokens.
+**Release automation (the Trellis plugin-release template, owned):** versioning and releases come
+from the Trellis `plugin-release` template (installed via `/trellis-install --template
+plugin-release`, tracked in `docs/rules/.trellis-owned-plugin-release`, refreshed by
+`/trellis-update`). The owned files - `scripts/bump-version.sh`, `scripts/whats-new.sh`,
+`.github/workflows/release.yml`, `.github/workflows/whats-new.yml`, `docs/releases/README.md` -
+are never hand-edited; the consumer owns only `VERSION`, `.version-manifests`, and the per-release
+`docs/releases/<x.y.z>.md`. The root `VERSION` is the single source of truth; `bump-version.sh`
+mirrors it into the seven manifests listed in `.version-manifests` via a format-preserving
+substitution, and `--check` (wired into `test.sh` section 11) fails CI on drift. `release.yml`
+fires on `workflow_run` of the `CI` workflow succeeding on `main`, tags the bare-semver version,
+and publishes a Release from the notes file (else `--generate-notes`); it is the only job elevated
+to `contents: write` (job-scoped), SHA-pinned, idempotent via `gh release view`. `whats-new.yml`
+then fires on `workflow_run` of `Release` (not `release: [published]`, which a `GITHUB_TOKEN`-made
+release never triggers), runs `whats-new.sh` to rewrite the README's `<!-- whats-new:start/end -->`
+block, and lands it through a self-squash-merged PR (since `main` forbids direct pushes). The
+untrusted release body reaches the script only via `env:`, marker-stripped and length-capped.
+Adopting the template replaced Spectra's earlier bespoke `whats-new` (its `release: [published]`
+workflow and `spectra:whats-new` markers), so Spectra and Trellis now run the identical pipeline.

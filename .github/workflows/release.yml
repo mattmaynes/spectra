@@ -1,0 +1,62 @@
+name: Release
+
+# Shipped by Trellis's "plugin-release" template and OWNED by Trellis - re-run trellis-update
+# to refresh it. Do not hand-edit.
+#
+# Tags a bare-semver release and publishes a GitHub Release whenever the root VERSION moves.
+# It runs AFTER your CI workflow succeeds on a push to main (workflow_run), so it never publishes
+# unvalidated code and needs no knowledge of your CI's job names.
+#
+# This file is OWNED by the plugin-release template and refreshed by trellis-update - do NOT edit
+# it. It waits on a CI workflow named "CI": to adopt the template, name your CI workflow `CI`
+# rather than changing the line below (any edit here is overwritten on the next update).
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+
+# Default to read-only; the release job elevates itself for the one write it needs.
+permissions:
+  contents: read
+
+jobs:
+  release:
+    name: Tag + GitHub Release on version bump
+    runs-on: ubuntu-latest
+    # Only after a push to main's CI concluded successfully. Requiring event == 'push' is the
+    # fork guard: a fork PR's CI runs as 'pull_request', so it can never reach this write token -
+    # even a fork whose branch is named 'main' (which would otherwise satisfy head_branch). The
+    # head_branch check is kept as defense in depth.
+    if: >-
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'main'
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      # Pinned to a full SHA (v4.2.2) because this job carries a write token.
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+      - name: Create the release when VERSION is new
+        # Idempotent: a run whose VERSION already has a release does nothing, so this only
+        # publishes on the commit that bumps VERSION. Prefer a hand-written notes file (its
+        # first non-heading line becomes the README headline via whats-new.yml); fall back to
+        # auto-generated notes from the conventional-commit titles since the previous tag.
+        run: |
+          v="$(cat VERSION)"
+          if gh release view "$v" >/dev/null 2>&1; then
+            echo "Release $v already exists; nothing to do."
+            exit 0
+          fi
+          sha="$(git rev-parse HEAD)"
+          notes="docs/releases/$v.md"
+          if [ -f "$notes" ]; then
+            echo "Publishing release $v from $notes"
+            gh release create "$v" --target "$sha" --notes-file "$notes"
+          else
+            echo "Publishing release $v with auto-generated notes (no $notes)"
+            gh release create "$v" --target "$sha" --generate-notes
+          fi
