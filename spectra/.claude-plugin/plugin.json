@@ -1,7 +1,7 @@
 {
   "name": "spectra",
   "description": "Spec-driven development protocol with learning feedback loops. Adds /spectra-install, /spectra-update, /spectra-add-user, /spectra-update-user, /spectra-remove-user, /spectra-list-users, /spectra-persona-enable, and /spectra-persona-disable.",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "author": {
     "name": "Matthew Maynes"
   },
