@@ -1,16 +1,20 @@
 #!/bin/sh
-# Spectra "What's new" updater - keeps the README's headline current with the latest release.
+# "What's new" updater - keeps the README's headline current with the latest release.
 #
-# REPO-LOCAL TOOLING. This is not part of the shippable plugin (nothing under spectra/) and is
-# never installed into consumer repos. It exists only to refresh this repo's README from a
-# published GitHub Release, and is called by .github/workflows/whats-new.yml.
+# Shipped by Trellis's plugin-release template and OWNED by Trellis (refreshed by
+# trellis-update). Do not hand-edit. Called by .github/workflows/whats-new.yml after the Release
+# workflow publishes a GitHub Release.
 #
-# Dependency-free (POSIX sh + awk/sed), same rationale as token-report.sh: the workflow and a
-# local run behave identically and need no toolchain. Inputs arrive via env (as the release
-# event provides them):
+# Dependency-free (POSIX sh + awk/sed) so the workflow and a local run behave identically.
+# Inputs arrive via env:
 #   TAG  (required) release tag, e.g. 1.2.0
 #   NAME (optional) release title - fallback headline
 #   BODY (optional) release notes - headline = its first non-empty, non-heading line
+#
+# The README must carry the marker pair once (the consumer seeds it):
+#   <!-- whats-new:start -->
+#   ...one line...
+#   <!-- whats-new:end -->
 #
 # Usage:
 #   scripts/whats-new.sh            print the generated block (markers inclusive)
@@ -19,8 +23,8 @@ set -eu
 
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 README="$ROOT/README.md"
-START='<!-- spectra:whats-new:start -->'
-END='<!-- spectra:whats-new:end -->'
+START='<!-- whats-new:start -->'
+END='<!-- whats-new:end -->'
 
 TAG="${TAG:-}"
 NAME="${NAME:-}"

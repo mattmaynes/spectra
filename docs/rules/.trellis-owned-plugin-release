@@ -1,0 +1,5 @@
+docs/releases/README.md
+scripts/bump-version.sh
+scripts/whats-new.sh
+.github/workflows/release.yml
+.github/workflows/whats-new.yml

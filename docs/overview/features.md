@@ -49,9 +49,16 @@
 - **Conventional Commits** - commit messages and PR titles follow
   `<type>[scope][!]: <subject>`, checked by the dependency-free `scripts/check-commit-msg.sh`
   (repo-local; documented in `AGENTS.md`, enforced by CI on PR titles).
-- **README "What's new"** (repo-local) - a `## What's new` section in the README carries a
-  one-line headline for the latest release behind `<!-- spectra:whats-new:start/end -->` markers.
-  `scripts/whats-new.sh` (dependency-free, like `token-report.sh`) extracts the headline from a
-  release's notes and rewrites the block; `.github/workflows/whats-new.yml` runs it on
-  `release: [published]` and lands the change through a self-squash-merged PR (since `main`
-  forbids direct pushes), so the front page stays current without manual edits.
+- **Plugin versioning & releases** (from the Trellis **plugin-release** template; owned, refreshed
+  by `/trellis-update`) - the root `VERSION` is the single source of truth, mirrored into all seven
+  manifests by `scripts/bump-version.sh` (`--check` fails CI on drift; `test.sh` section 11 wires
+  it in). Merging a `VERSION` bump triggers `.github/workflows/release.yml` (on `workflow_run` of
+  `CI` succeeding on `main`), which tags the bare-semver version and publishes a GitHub Release from
+  `docs/releases/<x.y.z>.md`.
+- **README "What's new"** (from the same template; owned) - a `## What's new` section carries a
+  one-line headline for the latest release behind `<!-- whats-new:start/end -->` markers.
+  `scripts/whats-new.sh` extracts the headline and rewrites the block; `.github/workflows/whats-new.yml`
+  runs it on `workflow_run` of `Release` (so it survives the `GITHUB_TOKEN`-recursion rule that
+  silences `release: [published]` for automated releases) and lands the change through a
+  self-squash-merged PR (since `main` forbids direct pushes), so the front page stays current
+  without manual edits.
