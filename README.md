@@ -31,7 +31,7 @@ review personas, the artifact structure, and a reflection reminder) without copy
 ## What's new
 
 <!-- whats-new:start -->
-**1.0.2** - A protocol clarification: learnings must generalize past the change that taught them.
+**1.0.3** - Spectra now uses the shared Trellis plugin-release pipeline for versioning and releases.
 <!-- whats-new:end -->
 
 See every release at
